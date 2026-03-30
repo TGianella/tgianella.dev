@@ -1,0 +1,118 @@
+---
+import { useTranslations, getLocalizedPath, type Locale } from '../i18n/utils';
+
+interface Props {
+  lang: Locale;
+  currentPath: string;
+}
+
+const { lang, currentPath } = Astro.props;
+const t = useTranslations(lang);
+
+const links = [
+  { href: getLocalizedPath('/', lang), label: t.nav.home },
+  { href: getLocalizedPath('/blog', lang), label: t.nav.blog },
+  { href: getLocalizedPath('/talks', lang), label: t.nav.talks },
+  { href: getLocalizedPath('/gallery', lang), label: t.nav.gallery },
+];
+
+const alternateLang = t.langSwitcher.lang as Locale;
+const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, ''), alternateLang);
+---
+
+<nav class="nav" aria-label="Main navigation">
+  <div class="nav__inner">
+    <a href={getLocalizedPath('/', lang)} class="nav__logo" aria-label={t.seo.siteName}>
+      {t.seo.siteName}
+    </a>
+
+    <ul class="nav__links" role="list">
+      {links.map(({ href, label }) => (
+        <li>
+          <a
+            href={href}
+            class:list={['nav__link', { 'nav__link--active': currentPath === href }]}
+            aria-current={currentPath === href ? 'page' : undefined}
+          >
+            {label}
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <a href={alternatePath} class="nav__lang" lang={alternateLang} hreflang={alternateLang}>
+      {t.langSwitcher.label}
+    </a>
+  </div>
+</nav>
+
+<style>
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: var(--layer-2);
+    block-size: var(--nav-height);
+    background-color: color-mix(in oklch, var(--surface-1) 85%, transparent);
+    backdrop-filter: blur(12px);
+    border-block-end: 1px solid color-mix(in oklch, var(--text-1) 10%, transparent);
+  }
+
+  .nav__inner {
+    display: flex;
+    align-items: center;
+    gap: var(--size-4);
+    max-inline-size: var(--layout-max-width);
+    margin-inline: auto;
+    padding-inline: var(--size-4);
+    block-size: 100%;
+  }
+
+  .nav__logo {
+    font-weight: var(--font-weight-7);
+    text-decoration: none;
+    color: var(--text-1);
+    margin-inline-end: auto;
+  }
+
+  .nav__links {
+    display: flex;
+    gap: var(--size-3);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav__link {
+    text-decoration: none;
+    color: var(--text-2);
+    font-size: var(--font-size-0);
+    padding-block: var(--size-1);
+    transition: color 0.2s;
+  }
+
+  .nav__link:hover,
+  .nav__link--active {
+    color: var(--text-1);
+  }
+
+  .nav__lang {
+    font-size: var(--font-size-0);
+    color: var(--text-2);
+    text-decoration: none;
+    padding: var(--size-1) var(--size-2);
+    border: 1px solid color-mix(in oklch, var(--text-2) 40%, transparent);
+    border-radius: var(--radius-2);
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .nav__lang:hover {
+    color: var(--text-1);
+    border-color: var(--text-1);
+  }
+
+  @media (width < 640px) {
+    .nav__links {
+      display: none;
+    }
+  }
+</style>

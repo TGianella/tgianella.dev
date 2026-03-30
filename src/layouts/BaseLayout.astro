@@ -1,0 +1,117 @@
+---
+import { ViewTransitions } from 'astro:transitions';
+import Nav from '../components/Nav.astro';
+import { useTranslations, getLocalizedPath, getAlternateLocale, type Locale } from '../i18n/utils';
+import '../styles/global.css';
+
+interface Props {
+  lang: Locale;
+  title: string;
+  description: string;
+  /** Canonical path without locale prefix, e.g. "/blog/my-post" */
+  canonicalPath?: string;
+  ogImage?: string;
+}
+
+const { lang, title, description, canonicalPath = '/', ogImage } = Astro.props;
+const t = useTranslations(lang);
+const currentPath = Astro.url.pathname;
+
+const alternateLang = getAlternateLocale(lang);
+const alternateUrl = new URL(getLocalizedPath(canonicalPath, alternateLang), Astro.site);
+const canonicalUrl = new URL(getLocalizedPath(canonicalPath, lang), Astro.site);
+
+const ogImageUrl = ogImage ?? new URL('/og-default.png', Astro.site).toString();
+const pageTitle = `${title} — ${t.seo.siteName}`;
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Primary -->
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+
+    <!-- Alternate locale -->
+    <link rel="alternate" hreflang={lang} href={canonicalUrl} />
+    <link rel="alternate" hreflang={alternateLang} href={alternateUrl} />
+    <link rel="alternate" hreflang="x-default" href={new URL(getLocalizedPath(canonicalPath, 'en'), Astro.site)} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:site_name" content={t.seo.siteName} />
+    <meta property="og:locale" content={lang === 'en' ? 'en_US' : 'fr_FR'} />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content={t.seo.twitterHandle} />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+
+    <!-- RSS -->
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={`${t.seo.siteName} — Blog (${lang.toUpperCase()})`}
+      href={`/${lang}/rss.xml`}
+    />
+
+    <ViewTransitions />
+  </head>
+  <body>
+    <Nav lang={lang} currentPath={currentPath} />
+
+    <main id="main-content">
+      <slot />
+    </main>
+
+    <footer class="footer">
+      <div class="footer__inner">
+        <p class="footer__copy">
+          &copy; {new Date().getFullYear()} {t.seo.siteName}. {t.footer.rights}
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style>
+  #main-content {
+    max-inline-size: var(--layout-max-width);
+    margin-inline: auto;
+    padding-inline: var(--size-4);
+    padding-block-start: var(--size-8);
+    padding-block-end: var(--size-14);
+  }
+
+  .footer {
+    border-block-start: 1px solid color-mix(in oklch, var(--text-1) 10%, transparent);
+    padding-block: var(--size-6);
+  }
+
+  .footer__inner {
+    max-inline-size: var(--layout-max-width);
+    margin-inline: auto;
+    padding-inline: var(--size-4);
+  }
+
+  .footer__copy {
+    color: var(--text-2);
+    font-size: var(--font-size-0);
+    margin: 0;
+  }
+</style>
