@@ -1,5 +1,5 @@
 ---
-import { ViewTransitions } from 'astro:transitions';
+import { ClientRouter } from 'astro:transitions';
 import Nav from '../components/Nav.astro';
 import { useTranslations, getLocalizedPath, getAlternateLocale, type Locale } from '../i18n/utils';
 import '../styles/global.css';
@@ -70,7 +70,7 @@ const pageTitle = `${title} — ${t.seo.siteName}`;
       href={`/${lang}/rss.xml`}
     />
 
-    <ViewTransitions />
+    <ClientRouter />
   </head>
   <body>
     <Nav lang={lang} currentPath={currentPath} />
