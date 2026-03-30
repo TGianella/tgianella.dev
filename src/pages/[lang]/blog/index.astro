@@ -1,0 +1,144 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { useTranslations, locales, type Locale } from '../../../i18n/utils';
+import { getCollection } from 'astro:content';
+
+export function getStaticPaths() {
+  return locales.map(lang => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params as { lang: Locale };
+const t = useTranslations(lang);
+
+const posts = (await getCollection('blog', ({ id }) => id.startsWith(`${lang}/`)))
+  .filter(p => !p.data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'long' });
+const slugOf = (id: string) => id.replace(`${lang}/`, '');
+---
+
+<BaseLayout
+  lang={lang}
+  title={t.blog.title}
+  description={t.blog.description}
+  canonicalPath="/blog"
+>
+  <header class="page-header animate-on-scroll">
+    <h1 class="page-header__title">{t.blog.title}</h1>
+    <p class="page-header__desc">{t.blog.description}</p>
+  </header>
+
+  <ul class="post-list" role="list">
+    {posts.map(post => (
+      <li class="animate-on-scroll">
+        <a href={`/${lang}/blog/${slugOf(post.id)}`} class="post-item">
+          <div class="post-item__meta">
+            <time datetime={post.data.pubDate.toISOString()} class="post-item__date">
+              {dateFormatter.format(post.data.pubDate)}
+            </time>
+            {post.data.tags.length > 0 && (
+              <ul class="tag-list" role="list" aria-label={t.blog.tags}>
+                {post.data.tags.map(tag => <li class="tag">{tag}</li>)}
+              </ul>
+            )}
+          </div>
+          <h2 class="post-item__title">{post.data.title}</h2>
+          <p class="post-item__desc">{post.data.description}</p>
+          <span class="post-item__read-more">{t.blog.backToList.replace('← ', '')} →</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</BaseLayout>
+
+<style>
+  .page-header {
+    padding-block-end: var(--size-8);
+    border-block-end: 1px solid color-mix(in oklch, var(--text-1) 8%, transparent);
+    margin-block-end: var(--size-8);
+  }
+
+  .page-header__title {
+    font-size: var(--font-size-6);
+    margin: 0 0 var(--size-2);
+  }
+
+  .page-header__desc {
+    color: var(--text-2);
+    margin: 0;
+  }
+
+  .post-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-1);
+  }
+
+  .post-item {
+    display: grid;
+    gap: var(--size-2);
+    padding: var(--size-5) 0;
+    border-block-end: 1px solid color-mix(in oklch, var(--text-1) 8%, transparent);
+    text-decoration: none;
+    color: inherit;
+    transition: translate 0.2s;
+
+    &:hover {
+      translate: var(--size-2) 0;
+    }
+
+    &:hover .post-item__title {
+      color: var(--color-brand);
+    }
+  }
+
+  .post-item__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--size-3);
+    flex-wrap: wrap;
+  }
+
+  .post-item__date {
+    font-size: var(--font-size-0);
+    color: var(--text-2);
+  }
+
+  .post-item__title {
+    font-size: var(--font-size-3);
+    margin: 0;
+    transition: color 0.2s;
+  }
+
+  .post-item__desc {
+    color: var(--text-2);
+    margin: 0;
+    max-inline-size: 60ch;
+  }
+
+  .post-item__read-more {
+    font-size: var(--font-size-0);
+    color: var(--color-brand);
+  }
+
+  .tag-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: var(--size-1);
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    font-size: var(--font-size-00);
+    padding: 2px var(--size-2);
+    background: color-mix(in oklch, var(--color-brand) 15%, transparent);
+    color: var(--color-brand);
+    border-radius: var(--radius-round);
+  }
+</style>
