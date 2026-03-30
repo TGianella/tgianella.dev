@@ -1,0 +1,53 @@
+import { defineCollection, z } from 'astro:content';
+
+const blog = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    pubDate: z.coerce.date(),
+    updatedDate: z.coerce.date().optional(),
+    cover: z.string().optional(), // R2 image URL
+    coverAlt: z.string().optional(),
+    tags: z.array(z.string()).default([]),
+    draft: z.boolean().default(false),
+  }),
+});
+
+const talks = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    abstract: z.string(),
+    event: z.string(),
+    eventUrl: z.string().url().optional(),
+    date: z.coerce.date(),
+    location: z.string(),
+    videoId: z.string().optional(), // YouTube video ID
+    slides: z.string().url().optional(),
+    tags: z.array(z.string()).default([]),
+  }),
+});
+
+const gallery = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    coverImage: z.string(), // R2 image URL
+    coverImageAlt: z.string(),
+    date: z.coerce.date(),
+    photos: z.array(
+      z.object({
+        src: z.string(), // R2 image URL
+        alt: z.string(),
+        caption: z.string().optional(),
+        width: z.number(),
+        height: z.number(),
+      })
+    ),
+  }),
+});
+
+export const collections = { blog, talks, gallery };
