@@ -1,0 +1,165 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { useTranslations, locales, type Locale } from '../../../i18n/utils';
+import { getCollection } from 'astro:content';
+
+export function getStaticPaths() {
+  return locales.map(lang => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params as { lang: Locale };
+const t = useTranslations(lang);
+
+const talks = (await getCollection('talks', ({ id }) => id.startsWith(`${lang}/`)))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'long' });
+const slugOf = (id: string) => id.replace(`${lang}/`, '');
+---
+
+<BaseLayout
+  lang={lang}
+  title={t.talks.title}
+  description={t.talks.description}
+  canonicalPath="/talks"
+>
+  <header class="page-header animate-on-scroll">
+    <h1 class="page-header__title">{t.talks.title}</h1>
+    <p class="page-header__desc">{t.talks.description}</p>
+  </header>
+
+  <ul class="talk-list" role="list">
+    {talks.map(talk => (
+      <li class="animate-on-scroll">
+        <a href={`/${lang}/talks/${slugOf(talk.id)}`} class="talk-item">
+          <div class="talk-item__side">
+            <time datetime={talk.data.date.toISOString()} class="talk-item__date">
+              {dateFormatter.format(talk.data.date)}
+            </time>
+            {talk.data.videoId && (
+              <span class="talk-item__has-video" aria-label="Video available">▶</span>
+            )}
+          </div>
+          <div class="talk-item__body">
+            <h2 class="talk-item__title">{talk.data.title}</h2>
+            <p class="talk-item__event">
+              {talk.data.event} — {talk.data.location}
+            </p>
+            <p class="talk-item__desc">{talk.data.description}</p>
+            {talk.data.tags.length > 0 && (
+              <ul class="tag-list" role="list">
+                {talk.data.tags.map(tag => <li class="tag">{tag}</li>)}
+              </ul>
+            )}
+          </div>
+        </a>
+      </li>
+    ))}
+  </ul>
+</BaseLayout>
+
+<style>
+  .page-header {
+    padding-block-end: var(--size-8);
+    border-block-end: 1px solid color-mix(in oklch, var(--text-1) 8%, transparent);
+    margin-block-end: var(--size-8);
+  }
+
+  .page-header__title {
+    font-size: var(--font-size-6);
+    margin: 0 0 var(--size-2);
+  }
+
+  .page-header__desc {
+    color: var(--text-2);
+    margin: 0;
+  }
+
+  .talk-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .talk-item {
+    display: grid;
+    grid-template-columns: 11rem 1fr;
+    gap: var(--size-6);
+    padding-block: var(--size-6);
+    border-block-end: 1px solid color-mix(in oklch, var(--text-1) 8%, transparent);
+    text-decoration: none;
+    color: inherit;
+    transition: translate 0.2s;
+
+    &:hover {
+      translate: var(--size-2) 0;
+    }
+
+    &:hover .talk-item__title {
+      color: var(--color-brand);
+    }
+
+    @media (width < 640px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .talk-item__side {
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-2);
+    padding-block-start: var(--size-1);
+  }
+
+  .talk-item__date {
+    font-size: var(--font-size-0);
+    color: var(--text-2);
+    font-feature-settings: "tnum";
+  }
+
+  .talk-item__has-video {
+    font-size: var(--font-size-0);
+    color: var(--color-brand);
+    width: fit-content;
+    padding: 2px var(--size-2);
+    border: 1px solid var(--color-brand);
+    border-radius: var(--radius-2);
+  }
+
+  .talk-item__title {
+    font-size: var(--font-size-3);
+    margin: 0 0 var(--size-1);
+    transition: color 0.2s;
+  }
+
+  .talk-item__event {
+    font-size: var(--font-size-0);
+    color: var(--text-2);
+    margin: 0 0 var(--size-2);
+  }
+
+  .talk-item__desc {
+    color: var(--text-2);
+    margin: 0 0 var(--size-3);
+    max-inline-size: 55ch;
+  }
+
+  .tag-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: var(--size-1);
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    font-size: var(--font-size-00);
+    padding: 2px var(--size-2);
+    background: color-mix(in oklch, var(--color-brand) 15%, transparent);
+    color: var(--color-brand);
+    border-radius: var(--radius-round);
+  }
+</style>

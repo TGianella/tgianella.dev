@@ -1,0 +1,232 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { useTranslations, locales, type Locale } from '../../../i18n/utils';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const talks = await getCollection('talks');
+  return talks.flatMap(talk => {
+    const [lang, ...slugParts] = talk.id.split('/');
+    if (!locales.includes(lang as Locale)) return [];
+    return [{
+      params: { lang, slug: slugParts.join('/') },
+      props: { talk },
+    }];
+  });
+}
+
+const { lang, slug } = Astro.params as { lang: Locale; slug: string };
+const { talk } = Astro.props;
+const t = useTranslations(lang);
+const { Content } = await render(talk);
+
+const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'long' });
+---
+
+<BaseLayout
+  lang={lang}
+  title={talk.data.title}
+  description={talk.data.description}
+  canonicalPath={`/talks/${slug}`}
+>
+  <article>
+    <a href={`/${lang}/talks`} class="back-link">{t.talks.backToList}</a>
+
+    <header class="talk-header">
+      <div class="talk-header__meta">
+        <time datetime={talk.data.date.toISOString()} class="talk-header__date">
+          {dateFormatter.format(talk.data.date)}
+        </time>
+        <span class="talk-header__event">
+          {t.talks.at} {talk.data.event}
+          {talk.data.eventUrl && (
+            <a href={talk.data.eventUrl} target="_blank" rel="noopener noreferrer">↗</a>
+          )}
+        </span>
+        <span class="talk-header__location">{talk.data.location}</span>
+      </div>
+
+      <h1 class="talk-header__title">{talk.data.title}</h1>
+
+      <div class="talk-header__actions">
+        {talk.data.videoId && (
+          <a href={`#video`} class="btn btn--primary">{t.talks.watchTalk} ↓</a>
+        )}
+        {talk.data.slides && (
+          <a href={talk.data.slides} target="_blank" rel="noopener noreferrer" class="btn btn--secondary">
+            {t.talks.viewSlides} ↗
+          </a>
+        )}
+      </div>
+
+      {talk.data.tags.length > 0 && (
+        <ul class="tag-list" role="list">
+          {talk.data.tags.map(tag => <li class="tag">{tag}</li>)}
+        </ul>
+      )}
+    </header>
+
+    <!-- Abstract -->
+    <section class="abstract">
+      <p>{talk.data.abstract}</p>
+    </section>
+
+    <!-- Video embed -->
+    {talk.data.videoId && (
+      <section class="video-section" id="video">
+        <div class="video-wrapper">
+          <iframe
+            src={`https://www.youtube.com/embed/${talk.data.videoId}`}
+            title={talk.data.title}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+            loading="lazy"
+          ></iframe>
+        </div>
+      </section>
+    )}
+
+    <!-- Notes -->
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .back-link {
+    display: inline-block;
+    font-size: var(--font-size-0);
+    color: var(--text-2);
+    text-decoration: none;
+    margin-block-end: var(--size-6);
+    transition: color 0.2s;
+
+    &:hover { color: var(--color-brand); }
+  }
+
+  .talk-header {
+    margin-block-end: var(--size-8);
+    padding-block-end: var(--size-8);
+    border-block-end: 1px solid color-mix(in oklch, var(--text-1) 8%, transparent);
+  }
+
+  .talk-header__meta {
+    display: flex;
+    gap: var(--size-4);
+    flex-wrap: wrap;
+    align-items: center;
+    margin-block-end: var(--size-4);
+    font-size: var(--font-size-0);
+    color: var(--text-2);
+  }
+
+  .talk-header__title {
+    font-size: clamp(var(--font-size-4), 5vw, var(--font-size-6));
+    margin: 0 0 var(--size-5);
+    line-height: var(--font-lineheight-1);
+  }
+
+  .talk-header__actions {
+    display: flex;
+    gap: var(--size-3);
+    flex-wrap: wrap;
+    margin-block-end: var(--size-4);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--size-1);
+    padding: var(--size-2) var(--size-5);
+    border-radius: var(--radius-3);
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-6);
+    text-decoration: none;
+    transition: translate 0.2s, background 0.2s;
+
+    &:hover { translate: 0 -2px; }
+  }
+
+  .btn--primary {
+    background: var(--color-brand);
+    color: white;
+
+    &:hover { background: var(--color-brand-light); }
+  }
+
+  .btn--secondary {
+    background: var(--surface-2);
+    color: var(--text-1);
+    border: 1px solid color-mix(in oklch, var(--text-1) 15%, transparent);
+  }
+
+  .abstract {
+    font-size: var(--font-size-2);
+    color: var(--text-2);
+    line-height: var(--font-lineheight-4);
+    max-inline-size: 60ch;
+    margin-block-end: var(--size-8);
+  }
+
+  /* ── YouTube embed ─────────────────────────────────── */
+  .video-section {
+    margin-block-end: var(--size-10);
+  }
+
+  .video-wrapper {
+    position: relative;
+    aspect-ratio: 16/9;
+    border-radius: var(--radius-3);
+    overflow: hidden;
+    background: var(--surface-3);
+
+    & iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+  }
+
+  /* ── Prose ─────────────────────────────────────────── */
+  .prose {
+    max-inline-size: var(--content-max-width);
+
+    & :global(h2) { font-size: var(--font-size-4); margin-block: var(--size-8) var(--size-3); }
+    & :global(h3) { font-size: var(--font-size-3); margin-block: var(--size-6) var(--size-2); }
+    & :global(p)  { line-height: var(--font-lineheight-4); margin-block: var(--size-4); }
+    & :global(a)  { color: var(--color-brand); }
+    & :global(pre) {
+      padding: var(--size-4);
+      border-radius: var(--radius-3);
+      overflow-x: auto;
+      background: var(--surface-3);
+      font-size: var(--font-size-0);
+    }
+    & :global(code:not(pre code)) {
+      background: var(--surface-3);
+      padding: 2px 6px;
+      border-radius: var(--radius-2);
+      font-size: 0.9em;
+    }
+  }
+
+  .tag-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: var(--size-1);
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    font-size: var(--font-size-00);
+    padding: 2px var(--size-2);
+    background: color-mix(in oklch, var(--color-brand) 15%, transparent);
+    color: var(--color-brand);
+    border-radius: var(--radius-round);
+  }
+</style>
