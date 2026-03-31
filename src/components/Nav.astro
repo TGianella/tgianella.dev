@@ -40,13 +40,13 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
       ))}
     </ul>
 
-    <div class="lang-switch" role="group" aria-label={t.langSwitcher.label}>
-      {(['en', 'fr'] as const).map(l =>
-        l === lang
-          ? <span class="lang-switch__opt" aria-current="true">{l.toUpperCase()}</span>
-          : <a class="lang-switch__opt" href={alternatePath} lang={l} hreflang={l}>{l.toUpperCase()}</a>
-      )}
-    </div>
+    <a href={alternatePath} class="lang-switch" lang={alternateLang} hreflang={alternateLang} aria-label={t.langSwitcher.label}>
+      {(['en', 'fr'] as const).map(l => (
+        <span class="lang-switch__opt" aria-hidden="true" aria-current={l === lang ? 'true' : undefined}>
+          {l.toUpperCase()}
+        </span>
+      ))}
+    </a>
 
     <button
       class="nav__hamburger"
@@ -155,6 +155,8 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
     background: var(--surface-2);
     border: var(--border-size-1) solid var(--border);
     border-radius: var(--radius-round);
+    text-decoration: none;
+    color: inherit;
   }
 
   .lang-switch__opt {
