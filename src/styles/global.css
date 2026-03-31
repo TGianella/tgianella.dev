@@ -15,13 +15,6 @@
 
   --nav-height: 3.5rem;
 
-  /* Sane spacing scale — avoids Open Props' large --size-* values */
-  --space-xs:  0.5rem;
-  --space-sm:  1rem;
-  --space-md:  1.5rem;
-  --space-lg:  2.5rem;
-  --space-xl:  4rem;
-
   --content-width: 68ch;
   --layout-width: 64rem;
 
