@@ -27,12 +27,12 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
     </a>
 
     <!-- Desktop links -->
-    <ul class="nav__links" role="list">
+    <ul class="nav__links">
       {links.map(({ href, label }) => (
         <li>
           <a
             href={href}
-            class:list={['nav__link', { 'nav__link--active': currentPath === href }]}
+            class="nav__link"
             aria-current={currentPath === href ? 'page' : undefined}
           >
             {label}
@@ -48,20 +48,20 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
 
     <!-- Mobile hamburger (hidden on desktop via CSS) -->
     <button class="nav__hamburger" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu">
-      <span class="nav__bar"></span>
-      <span class="nav__bar"></span>
-      <span class="nav__bar"></span>
+      <span class="hamburger__bar"></span>
+      <span class="hamburger__bar"></span>
+      <span class="hamburger__bar"></span>
     </button>
   </div>
 
   <!-- Mobile menu: starts hidden via the `hidden` attribute -->
   <div id="mobile-menu" class="nav__mobile" hidden>
-    <ul role="list">
+    <ul>
       {links.map(({ href, label }) => (
         <li>
           <a
             href={href}
-            class:list={['nav__mobile-link', { 'nav__link--active': currentPath === href }]}
+            class="nav__mobile-link"
             aria-current={currentPath === href ? 'page' : undefined}
           >
             {label}
@@ -180,7 +180,7 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
     background: var(--surface-2);
   }
 
-  .nav__link--active {
+  .nav__link[aria-current="page"] {
     color: var(--text-1);
     font-weight: 600;
   }
@@ -208,7 +208,7 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
     background: var(--surface-2);
   }
 
-  .nav__bar {
+  .hamburger__bar {
     display: block;
     width: 20px;
     height: 2px;
@@ -217,13 +217,13 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
     transition: transform 0.2s, opacity 0.2s;
   }
 
-  .nav__hamburger[aria-expanded="true"] .nav__bar:nth-child(1) {
+  .nav__hamburger[aria-expanded="true"] .hamburger__bar:nth-child(1) {
     transform: translateY(7px) rotate(45deg);
   }
-  .nav__hamburger[aria-expanded="true"] .nav__bar:nth-child(2) {
+  .nav__hamburger[aria-expanded="true"] .hamburger__bar:nth-child(2) {
     opacity: 0;
   }
-  .nav__hamburger[aria-expanded="true"] .nav__bar:nth-child(3) {
+  .nav__hamburger[aria-expanded="true"] .hamburger__bar:nth-child(3) {
     transform: translateY(-7px) rotate(-45deg);
   }
 
@@ -261,7 +261,7 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
   }
 
   .nav__mobile-link:hover,
-  .nav__mobile-link.nav__link--active {
+  .nav__mobile-link[aria-current="page"] {
     color: var(--text-1);
   }
 
