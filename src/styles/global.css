@@ -47,8 +47,8 @@ html {
 
 body {
   font-family: var(--font-sans);
-  font-size: 1rem;
-  line-height: 1.6;
+  font-size: var(--font-size-2);
+  line-height: var(--font-lineheight-4);
   color: var(--text-1);
   background-color: var(--surface-1);
   min-block-size: 100dvh;
@@ -62,8 +62,8 @@ video {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  line-height: 1.2;
-  font-weight: 700;
+  line-height: var(--font-lineheight-2);
+  font-weight: var(--font-weight-7);
 }
 
 a {
@@ -93,11 +93,11 @@ a {
 }
 
 .tag {
-  font-size: 0.75rem;
-  padding: 2px 0.5rem;
+  font-size: var(--font-size-0);
+  padding: 2px var(--size-2);
   background: color-mix(in oklch, var(--color-brand) 12%, transparent);
   color: var(--color-brand);
-  border-radius: 999px;
+  border-radius: var(--radius-round);
 }
 
 /* ─── Prose (shared across blog/talks) ──────────────── */
@@ -105,37 +105,37 @@ a {
   max-inline-size: var(--content-width);
 }
 
-.prose h2 { font-size: 1.375rem; margin-block: 2rem 0.75rem; }
-.prose h3 { font-size: 1.125rem; margin-block: 1.5rem 0.5rem; }
+.prose h2 { font-size: var(--font-size-3); margin-block: var(--size-7) 0.75rem; }
+.prose h3 { font-size: var(--font-size-2); margin-block: var(--size-5) var(--size-2); }
 .prose p  { margin-block: 0.875rem; }
 .prose a  { color: var(--color-brand); }
 
 .prose pre {
-  padding: 1rem;
-  border-radius: 0.5rem;
+  padding: var(--size-3);
+  border-radius: var(--radius-2);
   overflow-x: auto;
   background: var(--surface-3);
-  font-size: 0.875rem;
+  font-size: var(--font-size-1);
 }
 
 .prose code:not(pre code) {
   background: var(--surface-3);
   padding: 1px 5px;
-  border-radius: 4px;
+  border-radius: var(--radius-1);
   font-size: 0.9em;
 }
 
 .prose blockquote {
-  border-inline-start: 3px solid var(--color-brand);
+  border-inline-start: var(--border-size-2) solid var(--color-brand);
   margin-inline-start: 0;
-  padding-inline-start: 1rem;
+  padding-inline-start: var(--size-3);
   color: var(--text-2);
   font-style: italic;
 }
 
-.prose img { border-radius: 0.5rem; }
+.prose img { border-radius: var(--radius-2); }
 
 .prose ul,
 .prose ol {
-  padding-inline-start: 1.5rem;
+  padding-inline-start: var(--size-5);
 }

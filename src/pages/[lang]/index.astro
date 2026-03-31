@@ -27,9 +27,8 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'medium' });
 const slugOf = (id: string) => id.replace(`${lang}/`, '');
 ---
 
-<BaseLayout lang={lang} title={lang === 'en' ? 'Home' : 'Accueil'} description={t.home.tagline} canonicalPath="/">
+<BaseLayout lang={lang} title={t.nav.home} description={t.home.tagline} canonicalPath="/">
 
-  <!-- ─── Hero ─────────────────────────────────────────────── -->
   <section class="hero">
     <p class="hero__greeting">{t.home.greeting}</p>
     <h1 class="hero__name">{t.seo.siteName}</h1>
@@ -37,13 +36,12 @@ const slugOf = (id: string) => id.replace(`${lang}/`, '');
     <a href={`/${lang}/blog`} class="hero__cta">{t.home.cta}</a>
   </section>
 
-  <!-- ─── Blog teaser ───────────────────────────────────────── -->
   <section class="section">
     <header class="section__header">
       <h2 class="section__title">{t.home.sections.blog}</h2>
       <a href={`/${lang}/blog`} class="section__see-all">{t.home.seeAll} →</a>
     </header>
-    <ul class="card-grid" role="list">
+    <ul class="card-grid">
       {posts.map(post => (
         <li>
           <a href={`/${lang}/blog/${slugOf(post.id)}`} class="card">
@@ -58,13 +56,12 @@ const slugOf = (id: string) => id.replace(`${lang}/`, '');
     </ul>
   </section>
 
-  <!-- ─── Talks teaser ──────────────────────────────────────── -->
   <section class="section">
     <header class="section__header">
       <h2 class="section__title">{t.home.sections.talks}</h2>
       <a href={`/${lang}/talks`} class="section__see-all">{t.home.seeAll} →</a>
     </header>
-    <ul class="card-grid" role="list">
+    <ul class="card-grid">
       {talks.map(talk => (
         <li>
           <a href={`/${lang}/talks/${slugOf(talk.id)}`} class="card">
@@ -79,13 +76,12 @@ const slugOf = (id: string) => id.replace(`${lang}/`, '');
     </ul>
   </section>
 
-  <!-- ─── Gallery teaser ────────────────────────────────────── -->
   <section class="section">
     <header class="section__header">
       <h2 class="section__title">{t.home.sections.gallery}</h2>
       <a href={`/${lang}/gallery`} class="section__see-all">{t.home.seeAll} →</a>
     </header>
-    <ul class="gallery-grid" role="list">
+    <ul class="gallery-grid">
       {albums.map(album => (
         <li>
           <a href={`/${lang}/gallery/${slugOf(album.id)}`} class="gallery-card">
@@ -109,17 +105,16 @@ const slugOf = (id: string) => id.replace(`${lang}/`, '');
 </BaseLayout>
 
 <style>
-  /* ── Hero ──────────────────────────────────────────── */
   .hero {
     padding-block: var(--size-9);
-    border-block-end: 1px solid var(--border);
+    border-block-end: var(--border-size-1) solid var(--border);
     margin-block-end: var(--size-8);
   }
 
   .hero__greeting {
     color: var(--text-2);
-    margin: 0 0 0.25rem;
-    font-size: 1rem;
+    margin: 0 0 var(--size-1);
+    font-size: var(--font-size-2);
   }
 
   .hero__name {
@@ -128,21 +123,21 @@ const slugOf = (id: string) => id.replace(`${lang}/`, '');
   }
 
   .hero__tagline {
-    font-size: 1.125rem;
+    font-size: var(--font-size-2);
     color: var(--text-2);
-    margin: 0 0 1.5rem;
+    margin: 0 0 var(--size-5);
     max-inline-size: 45ch;
   }
 
   .hero__cta {
     display: inline-block;
-    padding: 0.625rem 1.25rem;
+    padding: 0.625rem var(--size-4);
     background: var(--color-brand);
     color: white;
     text-decoration: none;
-    border-radius: 0.375rem;
-    font-weight: 600;
-    font-size: 0.9375rem;
+    border-radius: var(--radius-2);
+    font-weight: var(--font-weight-6);
+    font-size: var(--font-size-1);
     transition: opacity 0.15s;
 
     &:hover { opacity: 0.85; }
@@ -152,7 +147,7 @@ const slugOf = (id: string) => id.replace(`${lang}/`, '');
   .section {
     padding-block-end: var(--size-8);
     margin-block-end: var(--size-8);
-    border-block-end: 1px solid var(--border);
+    border-block-end: var(--border-size-1) solid var(--border);
 
     &:last-child {
       border-block-end: none;
@@ -164,17 +159,17 @@ const slugOf = (id: string) => id.replace(`${lang}/`, '');
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    gap: 1rem;
-    margin-block-end: 1.25rem;
+    gap: var(--size-3);
+    margin-block-end: var(--size-4);
   }
 
   .section__title {
-    font-size: 1.25rem;
+    font-size: var(--font-size-3);
     margin: 0;
   }
 
   .section__see-all {
-    font-size: 0.875rem;
+    font-size: var(--font-size-1);
     color: var(--text-2);
     text-decoration: none;
     white-space: nowrap;
@@ -189,7 +184,7 @@ const slugOf = (id: string) => id.replace(`${lang}/`, '');
     margin: 0;
     padding: 0;
     display: grid;
-    gap: 1rem;
+    gap: var(--size-3);
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
   }
 
@@ -197,10 +192,10 @@ const slugOf = (id: string) => id.replace(`${lang}/`, '');
     display: flex;
     flex-direction: column;
     gap: 0.375rem;
-    padding: 1rem;
+    padding: var(--size-3);
     background: var(--surface-2);
-    border: 1px solid var(--border);
-    border-radius: 0.5rem;
+    border: var(--border-size-1) solid var(--border);
+    border-radius: var(--radius-2);
     text-decoration: none;
     color: inherit;
     transition: border-color 0.15s;
@@ -212,19 +207,19 @@ const slugOf = (id: string) => id.replace(`${lang}/`, '');
   }
 
   .card__date {
-    font-size: 0.8125rem;
+    font-size: var(--font-size-0);
     color: var(--text-2);
   }
 
   .card__title {
-    font-size: 1rem;
-    font-weight: 600;
+    font-size: var(--font-size-2);
+    font-weight: var(--font-weight-6);
     margin: 0;
     color: var(--text-1);
   }
 
   .card__desc {
-    font-size: 0.875rem;
+    font-size: var(--font-size-1);
     color: var(--text-2);
     margin: 0;
   }
@@ -241,11 +236,11 @@ const slugOf = (id: string) => id.replace(`${lang}/`, '');
 
   .gallery-card {
     display: block;
-    border-radius: 0.5rem;
+    border-radius: var(--radius-2);
     overflow: hidden;
     text-decoration: none;
     color: var(--text-1);
-    border: 1px solid var(--border);
+    border: var(--border-size-1) solid var(--border);
     transition: border-color 0.15s;
 
     &:hover {
@@ -263,13 +258,13 @@ const slugOf = (id: string) => id.replace(`${lang}/`, '');
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--size-2);
     padding: 0.625rem 0.75rem;
-    font-size: 0.875rem;
+    font-size: var(--font-size-1);
   }
 
   .gallery-card__title {
-    font-weight: 600;
+    font-weight: var(--font-weight-6);
     color: var(--text-1);
   }
 
