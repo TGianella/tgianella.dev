@@ -29,38 +29,29 @@ const slugOf = (id: string) => id.replace(`${lang}/`, '');
 
 <BaseLayout lang={lang} title={lang === 'en' ? 'Home' : 'Accueil'} description={t.home.tagline} canonicalPath="/">
 
-  <!-- Scroll progress bar -->
-  <div class="progress-bar" aria-hidden="true"></div>
-
   <!-- ─── Hero ─────────────────────────────────────────────── -->
-  <section class="hero" aria-labelledby="hero-heading">
-    <div class="hero__content">
-      <p class="hero__greeting">{t.home.greeting}</p>
-      <h1 id="hero-heading" class="hero__name">{t.seo.siteName}</h1>
-      <p class="hero__tagline">{t.home.tagline}</p>
-      <a href={`/${lang}/blog`} class="hero__cta">{t.home.cta}</a>
-    </div>
-    <div class="hero__scroll-hint" aria-hidden="true">
-      <span class="hero__scroll-line"></span>
-    </div>
+  <section class="hero">
+    <p class="hero__greeting">{t.home.greeting}</p>
+    <h1 class="hero__name">{t.seo.siteName}</h1>
+    <p class="hero__tagline">{t.home.tagline}</p>
+    <a href={`/${lang}/blog`} class="hero__cta">{t.home.cta}</a>
   </section>
 
   <!-- ─── Blog teaser ───────────────────────────────────────── -->
-  <section class="section animate-on-scroll" aria-labelledby="blog-heading">
+  <section class="section">
     <header class="section__header">
-      <h2 id="blog-heading" class="section__title">{t.home.sections.blog}</h2>
+      <h2 class="section__title">{t.home.sections.blog}</h2>
       <a href={`/${lang}/blog`} class="section__see-all">{t.home.seeAll} →</a>
     </header>
-    <ul class="card-list" role="list">
+    <ul class="card-grid" role="list">
       {posts.map(post => (
-        <li class="animate-on-scroll">
+        <li>
           <a href={`/${lang}/blog/${slugOf(post.id)}`} class="card">
             <time class="card__date" datetime={post.data.pubDate.toISOString()}>
               {dateFormatter.format(post.data.pubDate)}
             </time>
             <h3 class="card__title">{post.data.title}</h3>
             <p class="card__desc">{post.data.description}</p>
-            <span class="card__read-more">{t.home.readMore} →</span>
           </a>
         </li>
       ))}
@@ -68,21 +59,20 @@ const slugOf = (id: string) => id.replace(`${lang}/`, '');
   </section>
 
   <!-- ─── Talks teaser ──────────────────────────────────────── -->
-  <section class="section animate-on-scroll" aria-labelledby="talks-heading">
+  <section class="section">
     <header class="section__header">
-      <h2 id="talks-heading" class="section__title">{t.home.sections.talks}</h2>
+      <h2 class="section__title">{t.home.sections.talks}</h2>
       <a href={`/${lang}/talks`} class="section__see-all">{t.home.seeAll} →</a>
     </header>
-    <ul class="card-list" role="list">
+    <ul class="card-grid" role="list">
       {talks.map(talk => (
-        <li class="animate-on-scroll">
+        <li>
           <a href={`/${lang}/talks/${slugOf(talk.id)}`} class="card">
             <time class="card__date" datetime={talk.data.date.toISOString()}>
               {dateFormatter.format(talk.data.date)}
             </time>
             <h3 class="card__title">{talk.data.title}</h3>
             <p class="card__desc">{talk.data.event} — {talk.data.location}</p>
-            <span class="card__read-more">{t.home.readMore} →</span>
           </a>
         </li>
       ))}
@@ -90,14 +80,14 @@ const slugOf = (id: string) => id.replace(`${lang}/`, '');
   </section>
 
   <!-- ─── Gallery teaser ────────────────────────────────────── -->
-  <section class="section animate-on-scroll" aria-labelledby="gallery-heading">
+  <section class="section">
     <header class="section__header">
-      <h2 id="gallery-heading" class="section__title">{t.home.sections.gallery}</h2>
+      <h2 class="section__title">{t.home.sections.gallery}</h2>
       <a href={`/${lang}/gallery`} class="section__see-all">{t.home.seeAll} →</a>
     </header>
     <ul class="gallery-grid" role="list">
       {albums.map(album => (
-        <li class="animate-on-scroll">
+        <li>
           <a href={`/${lang}/gallery/${slugOf(album.id)}`} class="gallery-card">
             <img
               src={album.data.coverImage}
@@ -106,9 +96,9 @@ const slugOf = (id: string) => id.replace(`${lang}/`, '');
               loading="lazy"
               decoding="async"
             />
-            <div class="gallery-card__overlay">
-              <h3 class="gallery-card__title">{album.data.title}</h3>
-              <p class="gallery-card__count">{t.gallery.photos(album.data.photos.length)}</p>
+            <div class="gallery-card__caption">
+              <span class="gallery-card__title">{album.data.title}</span>
+              <span class="gallery-card__count">{t.gallery.photos(album.data.photos.length)}</span>
             </div>
           </a>
         </li>
@@ -119,214 +109,124 @@ const slugOf = (id: string) => id.replace(`${lang}/`, '');
 </BaseLayout>
 
 <style>
-  /* ── Scroll progress bar ───────────────────────────── */
-  .progress-bar {
-    position: fixed;
-    inset-block-start: 0;
-    inset-inline-start: 0;
-    block-size: 3px;
-    inline-size: 100%;
-    background: var(--color-brand);
-    transform-origin: left;
-    z-index: var(--layer-5);
-
-    animation: progress-grow linear;
-    animation-timeline: scroll(root);
-  }
-
-  @keyframes progress-grow {
-    from { transform: scaleX(0); }
-    to   { transform: scaleX(1); }
-  }
-
   /* ── Hero ──────────────────────────────────────────── */
   .hero {
-    min-block-size: calc(100dvh - var(--nav-height));
-    display: grid;
-    place-items: center;
-    text-align: center;
-    padding-block: var(--size-14);
-    position: relative;
-  }
-
-  .hero__content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--size-4);
+    padding-block: var(--space-xl);
+    border-block-end: 1px solid var(--border);
+    margin-block-end: var(--space-lg);
   }
 
   .hero__greeting {
-    font-size: var(--font-size-2);
     color: var(--text-2);
-    margin: 0;
-
-    @starting-style {
-      opacity: 0;
-      translate: 0 var(--size-4);
-    }
-    transition: opacity 0.6s, translate 0.6s;
-    opacity: 1;
-    translate: 0 0;
+    margin: 0 0 0.25rem;
+    font-size: 1rem;
   }
 
   .hero__name {
-    font-size: clamp(var(--font-size-6), 8vw, var(--font-size-8));
-    margin: 0;
-    line-height: 1;
-    background: linear-gradient(135deg, var(--text-1), var(--color-brand));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-
-    @starting-style {
-      opacity: 0;
-      scale: 0.95;
-    }
-    transition: opacity 0.7s 0.1s, scale 0.7s 0.1s;
-    opacity: 1;
-    scale: 1;
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    margin: 0 0 0.75rem;
   }
 
   .hero__tagline {
-    font-size: var(--font-size-3);
+    font-size: 1.125rem;
     color: var(--text-2);
-    margin: 0;
-    max-inline-size: 40ch;
-
-    @starting-style {
-      opacity: 0;
-      translate: 0 var(--size-4);
-    }
-    transition: opacity 0.6s 0.2s, translate 0.6s 0.2s;
-    opacity: 1;
-    translate: 0 0;
+    margin: 0 0 1.5rem;
+    max-inline-size: 45ch;
   }
 
   .hero__cta {
     display: inline-block;
-    margin-block-start: var(--size-4);
-    padding: var(--size-3) var(--size-6);
+    padding: 0.625rem 1.25rem;
     background: var(--color-brand);
     color: white;
     text-decoration: none;
-    border-radius: var(--radius-3);
-    font-weight: var(--font-weight-6);
+    border-radius: 0.375rem;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    transition: opacity 0.15s;
 
-    @starting-style {
-      opacity: 0;
-      translate: 0 var(--size-4);
-    }
-    transition: opacity 0.6s 0.35s, translate 0.6s 0.35s, background 0.2s;
-    opacity: 1;
-    translate: 0 0;
-
-    &:hover {
-      background: var(--color-brand-light);
-      translate: 0 -2px;
-    }
-  }
-
-  .hero__scroll-hint {
-    position: absolute;
-    inset-block-end: var(--size-8);
-    inset-inline-start: 50%;
-    translate: -50% 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .hero__scroll-line {
-    display: block;
-    inline-size: 1px;
-    block-size: var(--size-10);
-    background: linear-gradient(to bottom, var(--color-brand), transparent);
-    animation: scroll-hint-pulse 2s ease-in-out infinite;
-  }
-
-  @keyframes scroll-hint-pulse {
-    0%, 100% { opacity: 0.3; transform: scaleY(0.6) translateY(-20%); }
-    50%       { opacity: 1;   transform: scaleY(1)   translateY(0); }
+    &:hover { opacity: 0.85; }
   }
 
   /* ── Sections ──────────────────────────────────────── */
   .section {
-    padding-block: var(--size-14);
-    border-block-start: 1px solid color-mix(in oklch, var(--text-1) 8%, transparent);
+    padding-block-end: var(--space-lg);
+    margin-block-end: var(--space-lg);
+    border-block-end: 1px solid var(--border);
+
+    &:last-child {
+      border-block-end: none;
+      margin-block-end: 0;
+    }
   }
 
   .section__header {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    margin-block-end: var(--size-8);
+    gap: 1rem;
+    margin-block-end: 1.25rem;
   }
 
   .section__title {
-    font-size: var(--font-size-4);
+    font-size: 1.25rem;
     margin: 0;
   }
 
   .section__see-all {
-    font-size: var(--font-size-0);
+    font-size: 0.875rem;
     color: var(--text-2);
     text-decoration: none;
-    transition: color 0.2s;
+    white-space: nowrap;
+    transition: color 0.15s;
 
     &:hover { color: var(--color-brand); }
   }
 
-  /* ── Blog / Talks cards ────────────────────────────── */
-  .card-list {
+  /* ── Content cards ─────────────────────────────────── */
+  .card-grid {
     list-style: none;
     margin: 0;
     padding: 0;
     display: grid;
-    gap: var(--size-4);
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
   }
 
   .card {
     display: flex;
     flex-direction: column;
-    gap: var(--size-2);
-    padding: var(--size-5);
+    gap: 0.375rem;
+    padding: 1rem;
     background: var(--surface-2);
-    border-radius: var(--radius-3);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
     text-decoration: none;
     color: inherit;
-    border: 1px solid color-mix(in oklch, var(--text-1) 8%, transparent);
-    transition: translate 0.2s, box-shadow 0.2s;
+    transition: border-color 0.15s;
+    block-size: 100%;
 
     &:hover {
-      translate: 0 -3px;
-      box-shadow: var(--shadow-3);
+      border-color: var(--color-brand);
     }
   }
 
   .card__date {
-    font-size: var(--font-size-00);
+    font-size: 0.8125rem;
     color: var(--text-2);
   }
 
   .card__title {
-    font-size: var(--font-size-1);
+    font-size: 1rem;
+    font-weight: 600;
     margin: 0;
     color: var(--text-1);
   }
 
   .card__desc {
-    font-size: var(--font-size-0);
+    font-size: 0.875rem;
     color: var(--text-2);
     margin: 0;
-    flex: 1;
-  }
-
-  .card__read-more {
-    font-size: var(--font-size-0);
-    color: var(--color-brand);
-    margin-block-start: var(--size-2);
   }
 
   /* ── Gallery grid ──────────────────────────────────── */
@@ -335,55 +235,46 @@ const slugOf = (id: string) => id.replace(`${lang}/`, '');
     margin: 0;
     padding: 0;
     display: grid;
-    gap: var(--size-3);
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));
   }
 
   .gallery-card {
-    position: relative;
     display: block;
-    aspect-ratio: 4/3;
-    border-radius: var(--radius-3);
+    border-radius: 0.5rem;
     overflow: hidden;
     text-decoration: none;
-    color: white;
+    color: var(--text-1);
+    border: 1px solid var(--border);
+    transition: border-color 0.15s;
 
-    &:hover .gallery-card__img {
-      transform: scale(1.05);
-    }
-
-    &:hover .gallery-card__overlay {
-      opacity: 1;
+    &:hover {
+      border-color: var(--color-brand);
     }
   }
 
   .gallery-card__img {
     width: 100%;
-    height: 100%;
+    aspect-ratio: 4/3;
     object-fit: cover;
-    transition: transform 0.4s ease;
   }
 
-  .gallery-card__overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, color-mix(in oklch, black 70%, transparent), transparent);
+  .gallery-card__caption {
     display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding: var(--size-4);
-    opacity: 0.8;
-    transition: opacity 0.3s;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 0.75rem;
+    font-size: 0.875rem;
   }
 
   .gallery-card__title {
-    margin: 0;
-    font-size: var(--font-size-1);
+    font-weight: 600;
+    color: var(--text-1);
   }
 
   .gallery-card__count {
-    margin: 0;
-    font-size: var(--font-size-00);
-    opacity: 0.8;
+    color: var(--text-2);
+    white-space: nowrap;
   }
 </style>

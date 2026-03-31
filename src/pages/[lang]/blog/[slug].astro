@@ -21,8 +21,6 @@ const t = useTranslations(lang);
 const { Content } = await render(post);
 
 const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'long' });
-
-// Estimate reading time (~200 wpm)
 const wordCount = post.body?.split(/\s+/).length ?? 0;
 const readingTime = Math.max(1, Math.ceil(wordCount / 200));
 ---
@@ -34,19 +32,20 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 200));
   canonicalPath={`/blog/${slug}`}
   ogImage={post.data.cover}
 >
-  <article class="article">
-    <header class="article__header">
-      <a href={`/${lang}/blog`} class="back-link">{t.blog.backToList}</a>
+  <article>
+    <a href={`/${lang}/blog`} class="back-link">{t.blog.backToList}</a>
 
-      <div class="article__meta">
-        <time datetime={post.data.pubDate.toISOString()} class="article__date">
+    <header class="post-header">
+      <div class="post-header__meta">
+        <time datetime={post.data.pubDate.toISOString()}>
           {t.blog.publishedOn} {dateFormatter.format(post.data.pubDate)}
         </time>
-        <span class="article__reading-time">{t.blog.readingTime(readingTime)}</span>
+        <span>·</span>
+        <span>{t.blog.readingTime(readingTime)}</span>
       </div>
 
-      <h1 class="article__title">{post.data.title}</h1>
-      <p class="article__desc">{post.data.description}</p>
+      <h1 class="post-header__title">{post.data.title}</h1>
+      <p class="post-header__desc">{post.data.description}</p>
 
       {post.data.tags.length > 0 && (
         <ul class="tag-list" role="list" aria-label={t.blog.tags}>
@@ -55,20 +54,14 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 200));
       )}
 
       {post.data.updatedDate && (
-        <p class="article__updated">
+        <p class="post-header__updated">
           {t.blog.updatedOn} {dateFormatter.format(post.data.updatedDate)}
         </p>
       )}
     </header>
 
     {post.data.cover && (
-      <img
-        src={post.data.cover}
-        alt={post.data.coverAlt ?? post.data.title}
-        class="article__cover"
-        loading="eager"
-        decoding="async"
-      />
+      <img src={post.data.cover} alt={post.data.coverAlt ?? post.data.title} class="post-cover" loading="eager" />
     )}
 
     <div class="prose">
@@ -80,133 +73,55 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 200));
 <style>
   .back-link {
     display: inline-block;
-    font-size: var(--font-size-0);
+    font-size: 0.875rem;
     color: var(--text-2);
     text-decoration: none;
-    margin-block-end: var(--size-6);
-    transition: color 0.2s;
+    margin-block-end: var(--space-md);
+    transition: color 0.15s;
 
     &:hover { color: var(--color-brand); }
   }
 
-  .article__header {
-    margin-block-end: var(--size-8);
+  .post-header {
+    margin-block-end: var(--space-md);
+    padding-block-end: var(--space-md);
+    border-block-end: 1px solid var(--border);
   }
 
-  .article__meta {
+  .post-header__meta {
     display: flex;
-    gap: var(--size-4);
+    gap: 0.5rem;
     align-items: center;
-    margin-block-end: var(--size-4);
-  }
-
-  .article__date,
-  .article__reading-time {
-    font-size: var(--font-size-0);
+    flex-wrap: wrap;
+    font-size: 0.875rem;
     color: var(--text-2);
+    margin-block-end: 0.75rem;
   }
 
-  .article__title {
-    font-size: clamp(var(--font-size-4), 5vw, var(--font-size-6));
-    margin: 0 0 var(--size-3);
-    line-height: var(--font-lineheight-1);
+  .post-header__title {
+    font-size: clamp(1.5rem, 4vw, 2.25rem);
+    margin: 0 0 0.75rem;
   }
 
-  .article__desc {
-    font-size: var(--font-size-2);
+  .post-header__desc {
+    font-size: 1.0625rem;
     color: var(--text-2);
-    margin: 0 0 var(--size-4);
+    margin: 0 0 0.875rem;
     max-inline-size: 55ch;
   }
 
-  .article__updated {
-    font-size: var(--font-size-0);
+  .post-header__updated {
+    font-size: 0.8125rem;
     color: var(--text-2);
-    margin: var(--size-3) 0 0;
+    margin: 0.75rem 0 0;
     font-style: italic;
   }
 
-  .article__cover {
+  .post-cover {
     inline-size: 100%;
-    max-block-size: 480px;
+    max-block-size: 420px;
     object-fit: cover;
-    border-radius: var(--radius-3);
-    margin-block-end: var(--size-8);
-  }
-
-  /* ── Prose styles ──────────────────────────────────── */
-  .prose {
-    max-inline-size: var(--content-max-width);
-
-    & :global(h2) {
-      font-size: var(--font-size-4);
-      margin-block: var(--size-8) var(--size-3);
-    }
-
-    & :global(h3) {
-      font-size: var(--font-size-3);
-      margin-block: var(--size-6) var(--size-2);
-    }
-
-    & :global(p) {
-      line-height: var(--font-lineheight-4);
-      margin-block: var(--size-4);
-    }
-
-    & :global(a) {
-      color: var(--color-brand);
-      text-underline-offset: 3px;
-    }
-
-    & :global(pre) {
-      padding: var(--size-4);
-      border-radius: var(--radius-3);
-      overflow-x: auto;
-      background: var(--surface-3);
-      font-size: var(--font-size-0);
-    }
-
-    & :global(code:not(pre code)) {
-      background: var(--surface-3);
-      padding: 2px 6px;
-      border-radius: var(--radius-2);
-      font-size: 0.9em;
-    }
-
-    & :global(blockquote) {
-      border-inline-start: 3px solid var(--color-brand);
-      margin-inline-start: 0;
-      padding-inline-start: var(--size-4);
-      color: var(--text-2);
-      font-style: italic;
-    }
-
-    & :global(img) {
-      border-radius: var(--radius-3);
-    }
-
-    & :global(ul),
-    & :global(ol) {
-      padding-inline-start: var(--size-6);
-      line-height: var(--font-lineheight-4);
-    }
-  }
-
-  /* ── Tags ──────────────────────────────────────────── */
-  .tag-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    gap: var(--size-1);
-    flex-wrap: wrap;
-  }
-
-  .tag {
-    font-size: var(--font-size-00);
-    padding: 2px var(--size-2);
-    background: color-mix(in oklch, var(--color-brand) 15%, transparent);
-    color: var(--color-brand);
-    border-radius: var(--radius-round);
+    border-radius: 0.5rem;
+    margin-block-end: var(--space-md);
   }
 </style>

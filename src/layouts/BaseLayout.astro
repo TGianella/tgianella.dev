@@ -53,7 +53,6 @@ const pageTitle = `${title} — ${t.seo.siteName}`;
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content={t.seo.twitterHandle} />
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
@@ -91,27 +90,27 @@ const pageTitle = `${title} — ${t.seo.siteName}`;
 
 <style>
   #main-content {
-    max-inline-size: var(--layout-max-width);
+    max-inline-size: var(--layout-width);
     margin-inline: auto;
-    padding-inline: var(--size-4);
-    padding-block-start: var(--size-8);
-    padding-block-end: var(--size-14);
+    padding-inline: var(--page-padding);
+    padding-block-start: var(--space-lg);
+    padding-block-end: var(--space-xl);
   }
 
   .footer {
-    border-block-start: 1px solid color-mix(in oklch, var(--text-1) 10%, transparent);
-    padding-block: var(--size-6);
+    border-block-start: 1px solid var(--border);
+    padding-block: var(--space-md);
   }
 
   .footer__inner {
-    max-inline-size: var(--layout-max-width);
+    max-inline-size: var(--layout-width);
     margin-inline: auto;
-    padding-inline: var(--size-4);
+    padding-inline: var(--page-padding);
   }
 
   .footer__copy {
     color: var(--text-2);
-    font-size: var(--font-size-0);
+    font-size: 0.875rem;
     margin: 0;
   }
 </style>

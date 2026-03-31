@@ -50,8 +50,7 @@ const fr: Translations = {
     next: 'Photo suivante',
   },
   seo: {
-    siteName: 'Your Name',
-    twitterHandle: '@yourhandle',
+    siteName: 'Théo Gianella',
   },
   footer: {
     rights: 'Tous droits réservés.',

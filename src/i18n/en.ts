@@ -48,13 +48,12 @@ const en = {
     next: 'Next photo',
   },
   seo: {
-    siteName: 'Your Name',
-    twitterHandle: '@yourhandle',
+    siteName: 'Théo Gianella',
   },
   footer: {
     rights: 'All rights reserved.',
   },
-} as const;
+};
 
 export default en;
 export type Translations = typeof en;

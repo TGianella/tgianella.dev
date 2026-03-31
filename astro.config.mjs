@@ -7,7 +7,7 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://example.com', // replace with your domain
+  site: 'https://tgianella.dev', // replace with your domain
   integrations: [
     react(),
     mdx(),
