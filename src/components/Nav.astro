@@ -227,10 +227,15 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
     transform: translateY(-7px) rotate(-45deg);
   }
 
-  /* ── Mobile menu (styled when visible) ─────────────── */
+  /* ── Mobile menu (absolutely positioned, no layout shift) */
   .nav__mobile {
-    border-block-end: 1px solid var(--border);
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
     background: var(--surface-1);
+    border-block-end: 1px solid var(--border);
+    box-shadow: 0 4px 8px -2px color-mix(in oklch, black 12%, transparent);
   }
 
   .nav__mobile ul {
