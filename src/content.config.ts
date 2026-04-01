@@ -34,6 +34,7 @@ const talks = defineCollection({
       url: z.string().url().optional(),
       location: z.string(),
       videoId: z.string().optional(),
+      duration: z.number().optional(),
     })).min(1),
   }),
 });

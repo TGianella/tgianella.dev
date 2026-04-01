@@ -85,7 +85,9 @@ const eventsSorted = [...talk.data.events].sort((a, b) => b.date.valueOf() - a.d
                   : event.name
                 }
               </span>
-              <span class="event-item__location">{event.location}</span>
+              <span class="event-item__location">
+            {event.location}{event.duration && ` · ${event.duration} min`}
+          </span>
             </div>
             {event.videoId && (
               <a href={`https://www.youtube.com/watch?v=${event.videoId}`} target="_blank" rel="noopener noreferrer" class="event-item__video-badge" aria-label="Watch video">
