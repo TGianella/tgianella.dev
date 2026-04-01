@@ -21,13 +21,20 @@ const talks = defineCollection({
     title: z.string(),
     description: z.string(),
     abstract: z.string(),
-    event: z.string(),
-    eventUrl: z.string().url().optional(),
-    date: z.coerce.date(),
-    location: z.string(),
-    videoId: z.string().optional(), // YouTube video ID
-    slides: z.string().url().optional(),
     tags: z.array(z.string()).default([]),
+    coSpeakers: z.array(z.object({
+      name: z.string(),
+      url: z.string().url().optional(),
+    })).default([]),
+    slides: z.string().url().optional(),
+    featuredVideo: z.string().optional(), // YouTube ID — manually chosen
+    events: z.array(z.object({
+      date: z.coerce.date(),
+      name: z.string(),
+      url: z.string().url().optional(),
+      location: z.string(),
+      videoId: z.string().optional(),
+    })).min(1),
   }),
 });
 

@@ -36,7 +36,8 @@ const en = {
     watchTalk: 'Watch talk',
     viewSlides: 'View slides',
     backToList: '← Back to talks',
-    at: 'at',
+    events: 'Events',
+    with: 'with',
   },
   gallery: {
     title: 'Gallery',

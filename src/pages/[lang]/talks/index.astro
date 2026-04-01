@@ -11,7 +11,11 @@ const { lang } = Astro.params as { lang: Locale };
 const t = useTranslations(lang);
 
 const talks = (await getCollection('talks', ({ id }) => id.startsWith(`${lang}/`)))
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+  .sort((a, b) => {
+    const aMin = Math.min(...a.data.events.map(e => e.date.valueOf()));
+    const bMin = Math.min(...b.data.events.map(e => e.date.valueOf()));
+    return bMin - aMin;
+  });
 
 const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'long' });
 const slugOf = (id: string) => id.replace(`${lang}/`, '');
@@ -24,30 +28,37 @@ const slugOf = (id: string) => id.replace(`${lang}/`, '');
   </header>
 
   <ul class="talk-list" role="list">
-    {talks.map(talk => (
-      <li>
-        <a href={`/${lang}/talks/${slugOf(talk.id)}`} class="talk-item">
-          <div class="talk-item__side">
-            <time datetime={talk.data.date.toISOString()}>
-              {dateFormatter.format(talk.data.date)}
-            </time>
-            {talk.data.videoId && (
-              <span class="talk-item__video-badge" aria-label="Video available">▶ video</span>
-            )}
-          </div>
-          <div class="talk-item__body">
-            <h2 class="talk-item__title">{talk.data.title}</h2>
-            <p class="talk-item__event">{talk.data.event} — {talk.data.location}</p>
-            <p class="talk-item__desc">{talk.data.description}</p>
-            {talk.data.tags.length > 0 && (
-              <ul class="tag-list" role="list">
-                {talk.data.tags.map(tag => <li class="tag">{tag}</li>)}
-              </ul>
-            )}
-          </div>
-        </a>
-      </li>
-    ))}
+    {talks.map(talk => {
+      const latestEvent = talk.data.events.reduce((a, b) => b.date > a.date ? b : a);
+      const hasVideo = talk.data.featuredVideo ?? talk.data.events.some(e => e.videoId);
+      return (
+        <li>
+          <a href={`/${lang}/talks/${slugOf(talk.id)}`} class="talk-item">
+            <div class="talk-item__side">
+              <time datetime={latestEvent.date.toISOString()}>
+                {dateFormatter.format(latestEvent.date)}
+              </time>
+              {hasVideo && (
+                <span class="talk-item__video-badge" aria-label="Video available">▶ video</span>
+              )}
+            </div>
+            <div class="talk-item__body">
+              <h2 class="talk-item__title">{talk.data.title}</h2>
+              <p class="talk-item__event">{latestEvent.name} — {latestEvent.location}</p>
+              {talk.data.events.length > 1 && (
+                <p class="talk-item__count">+{talk.data.events.length - 1} more event{talk.data.events.length > 2 ? 's' : ''}</p>
+              )}
+              <p class="talk-item__desc">{talk.data.description}</p>
+              {talk.data.tags.length > 0 && (
+                <ul class="tag-list" role="list">
+                  {talk.data.tags.map(tag => <li class="tag">{tag}</li>)}
+                </ul>
+              )}
+            </div>
+          </a>
+        </li>
+      );
+    })}
   </ul>
 </BaseLayout>
 
@@ -118,6 +129,12 @@ const slugOf = (id: string) => id.replace(`${lang}/`, '');
 
   .talk-item__event {
     font-size: var(--font-size-1);
+    color: var(--text-2);
+    margin: 0 0 0.25rem;
+  }
+
+  .talk-item__count {
+    font-size: var(--font-size-0);
     color: var(--text-2);
     margin: 0 0 0.375rem;
   }

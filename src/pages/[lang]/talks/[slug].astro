@@ -21,6 +21,9 @@ const t = useTranslations(lang);
 const { Content } = await render(talk);
 
 const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'long' });
+
+const videoId = talk.data.featuredVideo ?? talk.data.events.find(e => e.videoId)?.videoId;
+const eventsSorted = [...talk.data.events].sort((a, b) => b.date.valueOf() - a.date.valueOf());
 ---
 
 <BaseLayout lang={lang} title={talk.data.title} description={talk.data.description} canonicalPath={`/talks/${slug}`}>
@@ -28,25 +31,25 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'long' });
     <a href={`/${lang}/talks`} class="back-link">{t.talks.backToList}</a>
 
     <header class="talk-header">
-      <div class="talk-header__meta">
-        <time datetime={talk.data.date.toISOString()}>
-          {dateFormatter.format(talk.data.date)}
-        </time>
-        <span>·</span>
-        <span>
-          {t.talks.at} {talk.data.event}
-          {talk.data.eventUrl && (
-            <a href={talk.data.eventUrl} target="_blank" rel="noopener noreferrer">↗</a>
-          )}
-        </span>
-        <span>·</span>
-        <span>{talk.data.location}</span>
-      </div>
-
       <h1 class="talk-header__title">{talk.data.title}</h1>
 
+      {talk.data.coSpeakers.length > 0 && (
+        <p class="talk-header__cospeakers">
+          {t.talks.with}{' '}
+          {talk.data.coSpeakers.map((s, i) => (
+            <>
+              {s.url
+                ? <a href={s.url} target="_blank" rel="noopener noreferrer">{s.name}</a>
+                : <span>{s.name}</span>
+              }
+              {i < talk.data.coSpeakers.length - 1 && ', '}
+            </>
+          ))}
+        </p>
+      )}
+
       <div class="talk-header__actions">
-        {talk.data.videoId && (
+        {videoId && (
           <a href="#video" class="btn btn--primary">{t.talks.watchTalk} ↓</a>
         )}
         {talk.data.slides && (
@@ -67,11 +70,38 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'long' });
       <p>{talk.data.abstract}</p>
     </section>
 
-    {talk.data.videoId && (
+    <section class="events-section">
+      <h2 class="events-section__heading">{t.talks.events}</h2>
+      <ul class="event-list" role="list">
+        {eventsSorted.map(event => (
+          <li class="event-item">
+            <time class="event-item__date" datetime={event.date.toISOString()}>
+              {dateFormatter.format(event.date)}
+            </time>
+            <div class="event-item__body">
+              <span class="event-item__name">
+                {event.url
+                  ? <a href={event.url} target="_blank" rel="noopener noreferrer">{event.name} ↗</a>
+                  : event.name
+                }
+              </span>
+              <span class="event-item__location">{event.location}</span>
+            </div>
+            {event.videoId && (
+              <a href={`https://www.youtube.com/watch?v=${event.videoId}`} target="_blank" rel="noopener noreferrer" class="event-item__video-badge" aria-label="Watch video">
+                ▶ video
+              </a>
+            )}
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    {videoId && (
       <section id="video" class="video-section">
         <div class="video-wrapper">
           <iframe
-            src={`https://www.youtube.com/embed/${talk.data.videoId}`}
+            src={`https://www.youtube.com/embed/${videoId}`}
             title={talk.data.title}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowfullscreen
@@ -105,19 +135,17 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'long' });
     border-block-end: var(--border-size-1) solid var(--border);
   }
 
-  .talk-header__meta {
-    display: flex;
-    gap: var(--size-2);
-    align-items: center;
-    flex-wrap: wrap;
-    font-size: var(--font-size-1);
-    color: var(--text-2);
-    margin-block-end: 0.75rem;
-  }
-
   .talk-header__title {
     font-size: clamp(1.5rem, 4vw, 2.25rem);
+    margin: 0 0 var(--size-2);
+  }
+
+  .talk-header__cospeakers {
+    font-size: var(--font-size-1);
+    color: var(--text-2);
     margin: 0 0 var(--size-3);
+
+    & a { color: var(--color-brand); }
   }
 
   .talk-header__actions {
@@ -158,6 +186,76 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'long' });
     line-height: 1.7;
     max-inline-size: 60ch;
     margin-block-end: var(--size-8);
+  }
+
+  .events-section {
+    margin-block-end: var(--size-8);
+  }
+
+  .events-section__heading {
+    font-size: var(--font-size-2);
+    margin: 0 0 var(--size-3);
+  }
+
+  .event-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-2);
+  }
+
+  .event-item {
+    display: flex;
+    align-items: center;
+    gap: var(--size-3);
+    padding: var(--size-3);
+    background: var(--surface-2);
+    border-radius: var(--radius-2);
+    flex-wrap: wrap;
+  }
+
+  .event-item__date {
+    font-size: var(--font-size-0);
+    color: var(--text-2);
+    white-space: nowrap;
+    min-inline-size: 8rem;
+  }
+
+  .event-item__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    flex: 1;
+  }
+
+  .event-item__name {
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-6);
+
+    & a {
+      color: inherit;
+      text-decoration: none;
+      &:hover { color: var(--color-brand); }
+    }
+  }
+
+  .event-item__location {
+    font-size: var(--font-size-0);
+    color: var(--text-2);
+  }
+
+  .event-item__video-badge {
+    font-size: var(--font-size-0);
+    color: var(--color-brand);
+    border: var(--border-size-1) solid var(--color-brand);
+    border-radius: var(--radius-round);
+    padding: var(--border-size-1) var(--size-2);
+    text-decoration: none;
+    white-space: nowrap;
+
+    &:hover { opacity: 0.8; }
   }
 
   .video-section {

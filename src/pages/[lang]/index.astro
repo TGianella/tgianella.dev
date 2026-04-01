@@ -16,7 +16,11 @@ const posts = (await getCollection('blog', ({ id }) => id.startsWith(`${lang}/`)
   .slice(0, 3);
 
 const talks = (await getCollection('talks', ({ id }) => id.startsWith(`${lang}/`)))
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .sort((a, b) => {
+    const aMin = Math.min(...a.data.events.map(e => e.date.valueOf()));
+    const bMin = Math.min(...b.data.events.map(e => e.date.valueOf()));
+    return bMin - aMin;
+  })
   .slice(0, 3);
 
 const albums = (await getCollection('gallery', ({ id }) => id.startsWith(`${lang}/`)))
@@ -62,17 +66,20 @@ const slugOf = (id: string) => id.replace(`${lang}/`, '');
       <a href={`/${lang}/talks`} class="section__see-all">{t.home.seeAll} →</a>
     </header>
     <ul class="card-grid">
-      {talks.map(talk => (
-        <li>
-          <a href={`/${lang}/talks/${slugOf(talk.id)}`} class="card">
-            <time class="card__date" datetime={talk.data.date.toISOString()}>
-              {dateFormatter.format(talk.data.date)}
-            </time>
-            <h3 class="card__title">{talk.data.title}</h3>
-            <p class="card__desc">{talk.data.event} — {talk.data.location}</p>
-          </a>
-        </li>
-      ))}
+      {talks.map(talk => {
+        const latest = talk.data.events.reduce((a, b) => b.date > a.date ? b : a);
+        return (
+          <li>
+            <a href={`/${lang}/talks/${slugOf(talk.id)}`} class="card">
+              <time class="card__date" datetime={latest.date.toISOString()}>
+                {dateFormatter.format(latest.date)}
+              </time>
+              <h3 class="card__title">{talk.data.title}</h3>
+              <p class="card__desc">{latest.name} — {latest.location}</p>
+            </a>
+          </li>
+        );
+      })}
     </ul>
   </section>
 

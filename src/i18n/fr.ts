@@ -38,7 +38,8 @@ const fr: Translations = {
     watchTalk: 'Voir la conférence',
     viewSlides: 'Voir les slides',
     backToList: '← Retour aux conférences',
-    at: 'à',
+    events: 'Événements',
+    with: 'avec',
   },
   gallery: {
     title: 'Galerie',
