@@ -26,6 +26,7 @@ const talks = defineCollection({
     coSpeakers: z.array(z.object({
       name: z.string(),
       url: z.string().url().optional(),
+      picture: z.string().optional(), // image URL
     })).default([]),
     slides: z.string().url(),
     featuredVideo: z.string().optional(), // YouTube ID — manually chosen
