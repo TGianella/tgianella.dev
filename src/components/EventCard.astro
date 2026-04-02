@@ -9,6 +9,7 @@ interface Props {
     location: string;
     scope: 'internal' | 'regional' | 'national';
     videoId?: string;
+    timestamp?: number;
     duration?: number;
   };
   lang: Locale;
@@ -42,7 +43,7 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'long' });
 
   {event.videoId && (
     <a
-      href={`https://www.youtube.com/watch?v=${event.videoId}`}
+      href={`https://www.youtube.com/watch?v=${event.videoId}${event.timestamp ? `&t=${event.timestamp}` : ''}`}
       target="_blank"
       rel="noopener noreferrer"
       class="event-card__video-btn"

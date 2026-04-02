@@ -22,6 +22,7 @@ const t = useTranslations(lang);
 const { Content } = await render(talk);
 
 const videoId = talk.data.featuredVideo ?? talk.data.events.find(e => e.videoId)?.videoId;
+const videoTimestamp = talk.data.events.find(e => e.videoId === videoId)?.timestamp;
 const eventsSorted = [...talk.data.events].sort((a, b) => b.date.valueOf() - a.date.valueOf());
 ---
 
@@ -77,7 +78,7 @@ const eventsSorted = [...talk.data.events].sort((a, b) => b.date.valueOf() - a.d
           <section id="video" class="video-section">
             <div class="video-wrapper">
               <iframe
-                src={`https://www.youtube.com/embed/${videoId}`}
+                src={`https://www.youtube.com/embed/${videoId}${videoTimestamp ? `?start=${videoTimestamp}` : ''}`}
                 title={talk.data.title}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowfullscreen

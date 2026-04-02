@@ -36,6 +36,7 @@ const talks = defineCollection({
       location: z.string(),
       scope: z.enum(['internal', 'regional', 'national']).default('national'),
       videoId: z.string().optional(),
+      timestamp: z.number().optional(), // seconds
       duration: z.number(),
     })).min(1),
   }),
