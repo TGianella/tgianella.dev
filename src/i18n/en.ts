@@ -4,6 +4,9 @@ const en = {
     blog: 'Blog',
     talks: 'Talks',
     gallery: 'Gallery',
+    openMenu: 'Open menu',
+    closeMenu: 'Close menu',
+    mainNavLabel: 'Main navigation',
   },
   langSwitcher: {
     label: 'Français',
@@ -38,6 +41,11 @@ const en = {
     backToList: '← Back to talks',
     events: 'Events',
     with: 'with',
+    watchReplay: 'Watch replay',
+    video: 'video',
+    videoAvailable: 'Video available',
+    internalEvent: 'Internal',
+    moreEvents: (count: number) => `+${count} more event${count > 1 ? 's' : ''}`,
   },
   gallery: {
     title: 'Gallery',

@@ -34,6 +34,15 @@
   }
 }
 
+/* ─── Open Props overrides ───────────────────────────── */
+p {
+  margin-block: var(--font-size-2);
+}
+
+:where(h1, h2, h3, h4, h5, h6, p, ul, ol, li) {
+  max-inline-size: unset;
+}
+
 /* ─── Base ───────────────────────────────────────────── */
 *,
 *::before,

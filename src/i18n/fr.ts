@@ -6,6 +6,9 @@ const fr: Translations = {
     blog: 'Blog',
     talks: 'Conférences',
     gallery: 'Galerie',
+    openMenu: 'Ouvrir le menu',
+    closeMenu: 'Fermer le menu',
+    mainNavLabel: 'Navigation principale',
   },
   langSwitcher: {
     label: 'English',
@@ -40,6 +43,11 @@ const fr: Translations = {
     backToList: '← Retour aux conférences',
     events: 'Événements',
     with: 'avec',
+    watchReplay: 'Voir le replay',
+    video: 'vidéo',
+    videoAvailable: 'Vidéo disponible',
+    internalEvent: 'Interne',
+    moreEvents: (count: number) => `+${count} autre${count > 1 ? 's' : ''} événement${count > 1 ? 's' : ''}`,
   },
   gallery: {
     title: 'Galerie',

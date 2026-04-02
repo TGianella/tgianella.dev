@@ -20,7 +20,7 @@ const alternateLang = t.langSwitcher.lang as Locale;
 const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || '/', alternateLang);
 ---
 
-<nav class="nav" aria-label="Main navigation">
+<nav class="nav" aria-label={t.nav.mainNavLabel}>
   <div class="nav__inner">
     <a href={getLocalizedPath('/', lang)} class="nav__logo">
       {t.seo.siteName}
@@ -53,7 +53,9 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
       popovertarget="mobile-menu"
       aria-expanded="false"
       aria-controls="mobile-menu"
-      aria-label="Open menu"
+      aria-label={t.nav.openMenu}
+      data-label-open={t.nav.openMenu}
+      data-label-close={t.nav.closeMenu}
     >
       <span class="hamburger__bar"></span>
       <span class="hamburger__bar"></span>
@@ -87,7 +89,7 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
     menu.addEventListener('toggle', (e) => {
       const open = (e as ToggleEvent).newState === 'open';
       btn.setAttribute('aria-expanded', String(open));
-      btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      btn.setAttribute('aria-label', open ? (btn.dataset.labelClose ?? '') : (btn.dataset.labelOpen ?? ''));
     });
   });
 </script>

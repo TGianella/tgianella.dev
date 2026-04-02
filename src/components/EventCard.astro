@@ -1,0 +1,153 @@
+---
+import { useTranslations, type Locale } from '../i18n/utils';
+
+interface Props {
+  event: {
+    date: Date;
+    name: string;
+    url?: string;
+    location: string;
+    scope: 'internal' | 'regional' | 'national';
+    videoId?: string;
+    duration?: number;
+  };
+  lang: Locale;
+}
+
+const { event, lang } = Astro.props;
+const t = useTranslations(lang);
+const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'long' });
+---
+
+<li class="event-card">
+  <div class="event-card__main">
+    <time class="event-card__date" datetime={event.date.toISOString()}>
+      {dateFormatter.format(event.date)}
+    </time>
+    <span class="event-card__name">
+      {event.url
+        ? <a href={event.url} target="_blank" rel="noopener noreferrer">{event.name}&nbsp;↗</a>
+        : event.name
+      }
+    </span>
+    <div class="event-card__location-row">
+      <span class="event-card__location">
+        {event.location}{event.duration && ` · ${event.duration} min`}
+      </span>
+      {event.scope === 'internal' && (
+        <span class="event-card__internal-pill">{t.talks.internalEvent}</span>
+      )}
+    </div>
+  </div>
+
+  {event.videoId && (
+    <a
+      href={`https://www.youtube.com/watch?v=${event.videoId}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="event-card__video-btn"
+      aria-label={t.talks.watchReplay}
+      data-tooltip={t.talks.watchReplay}
+    >
+      ▶
+    </a>
+  )}
+</li>
+
+<style>
+  .event-card {
+    display: flex;
+    align-items: center;
+    gap: var(--size-3);
+    padding: var(--size-3);
+    background: var(--surface-2);
+    border-radius: var(--radius-2);
+  }
+
+  .event-card__main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+  }
+
+  .event-card__date {
+    font-size: var(--font-size-0);
+    color: var(--text-2);
+  }
+
+  .event-card__location-row {
+    display: flex;
+    align-items: center;
+    gap: var(--size-2);
+    flex-wrap: wrap;
+  }
+
+  .event-card__internal-pill {
+    font-size: var(--font-size-0);
+    padding: 1px var(--size-2);
+    border-radius: var(--radius-round);
+    background: var(--surface-3);
+    color: var(--text-2);
+    white-space: nowrap;
+  }
+
+  .event-card__name {
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-6);
+    text-wrap: balance;
+
+    & a {
+      color: inherit;
+      text-decoration: none;
+      &:hover { color: var(--color-brand); }
+    }
+  }
+
+  .event-card__location {
+    font-size: var(--font-size-0);
+    color: var(--text-2);
+  }
+
+  .event-card__video-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    inline-size: 2.5rem;
+    block-size: 2.5rem;
+    border-radius: var(--radius-2);
+    background: var(--surface-3);
+    color: var(--color-brand);
+    border: var(--border-size-1) solid var(--border);
+    text-decoration: none;
+    font-size: var(--font-size-1);
+    transition: opacity 0.15s;
+
+    &:hover { opacity: 0.75; }
+
+    &::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: calc(100% + 0.75rem);
+      left: 50%;
+      translate: -50% 0.25rem;
+      background: var(--gray-9);
+      color: var(--gray-0);
+      font-size: var(--font-size-0);
+      white-space: nowrap;
+      padding: 0.25rem var(--size-2);
+      border-radius: var(--radius-1);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s, translate 0.15s;
+    }
+
+    &:hover::after,
+    &:focus-visible::after {
+      opacity: 1;
+      translate: -50% 0;
+    }
+  }
+</style>
