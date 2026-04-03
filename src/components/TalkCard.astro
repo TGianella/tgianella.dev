@@ -22,6 +22,9 @@ const { talk, lang, slug } = Astro.props;
 const t = useTranslations(lang);
 const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'long' });
 
+const now = new Date();
+const upcoming = talk.events.every(e => e.date > now);
+
 const earliest = (scope: 'national' | 'regional' | 'internal') =>
   talk.events.filter(e => e.scope === scope).sort((a, b) => a.date.valueOf() - b.date.valueOf())[0];
 const debutEvent = earliest('national') ?? earliest('regional') ?? earliest('internal');
@@ -43,11 +46,16 @@ const thumbnail = talk.thumbnail ?? `https://picsum.photos/seed/${slug}/320/180`
         width="320"
         height="180"
       />
+      {upcoming && (
+        <span class="talk-card__upcoming-pill">{t.talks.upcoming}</span>
+      )}
     </div>
   </div>
 
   <div class="talk-card__body">
-    <h2 class="talk-card__title">{talk.title}</h2>
+    <div class="talk-card__title-row">
+      <h2 class="talk-card__title">{talk.title}</h2>
+    </div>
     <p class="talk-card__event">{debutEvent.name} — {debutEvent.location}</p>
     {talk.events.length > 1 && (
       <p class="talk-card__count">{t.talks.moreEvents(talk.events.length - 1)}</p>
@@ -85,15 +93,28 @@ const thumbnail = talk.thumbnail ?? `https://picsum.photos/seed/${slug}/320/180`
   .talk-card__side {
     display: flex;
     flex-direction: column;
-    gap: var(--size-4);
+    gap: var(--size-3);
+  }
+
+  @media (width >= 560px) {
+    .talk-card__side {
+      gap: var(--size-4);
+    }
   }
 
   .talk-card__date {
-    font-size: var(--font-size-0);
+    font-size: var(--font-size-1);
     color: var(--text-2);
   }
 
+  @media (width >= 560px) {
+    .talk-card__date {
+      font-size: var(--font-size-0);
+    }
+  }
+
   .talk-card__thumb-wrap {
+    position: relative;
     aspect-ratio: 16 / 9;
     border-radius: var(--radius-2);
     overflow: hidden;
@@ -111,9 +132,34 @@ const thumbnail = talk.thumbnail ?? `https://picsum.photos/seed/${slug}/320/180`
     }
   }
 
+  .talk-card__title-row {
+    margin: 0 0 var(--size-1);
+  }
+
+  .talk-card__upcoming-pill {
+    position: absolute;
+    top: var(--size-2);
+    left: var(--size-2);
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-5);
+    padding: var(--size-1) var(--size-3);
+    border-radius: var(--radius-round);
+    background: color-mix(in oklch, var(--color-brand) 18%, var(--surface-1));
+    color: var(--color-brand);
+    white-space: nowrap;
+    backdrop-filter: blur(4px);
+  }
+
+  @media (width >= 560px) {
+    .talk-card__upcoming-pill {
+      font-size: var(--font-size-0);
+      padding: 1px var(--size-2);
+    }
+  }
+
   .talk-card__title {
     font-size: var(--font-size-2);
-    margin: 0 0 var(--size-1);
+    margin: 0;
     transition: color 0.15s;
   }
 

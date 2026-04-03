@@ -36,6 +36,7 @@ const en = {
   talks: {
     title: 'Talks',
     description: 'Conferences and presentations.',
+    upcoming: 'Coming soon',
     watchTalk: 'Watch talk',
     viewSlides: 'View slides',
     backToList: '← Back to talks',

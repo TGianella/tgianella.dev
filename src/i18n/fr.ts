@@ -38,6 +38,7 @@ const fr: Translations = {
   talks: {
     title: 'Conférences',
     description: 'Conférences et présentations.',
+    upcoming: 'À venir',
     watchTalk: 'Voir la conférence',
     viewSlides: 'Voir les slides',
     backToList: '← Retour aux conférences',

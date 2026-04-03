@@ -28,7 +28,7 @@ const talks = defineCollection({
       url: z.string().url().optional(),
       picture: z.string().optional(), // image URL
     })).default([]),
-    slides: z.string().url(),
+    slides: z.string().url().optional(),
     featuredVideo: z.string().optional(), // YouTube ID — manually chosen
     events: z.array(z.object({
       date: z.coerce.date(),
@@ -39,7 +39,7 @@ const talks = defineCollection({
       videoId: z.string().optional(),
       timestamp: z.number().optional(), // seconds
       duration: z.number(),
-    })).min(1),
+    })).default([]),
   }),
 });
 

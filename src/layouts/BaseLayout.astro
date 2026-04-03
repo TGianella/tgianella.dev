@@ -11,9 +11,10 @@ interface Props {
   /** Canonical path without locale prefix, e.g. "/blog/my-post" */
   canonicalPath?: string;
   ogImage?: string;
+  noindex?: boolean;
 }
 
-const { lang, title, description, canonicalPath = '/', ogImage } = Astro.props;
+const { lang, title, description, canonicalPath = '/', ogImage, noindex } = Astro.props;
 const t = useTranslations(lang);
 const currentPath = Astro.url.pathname;
 
@@ -35,6 +36,7 @@ const pageTitle = `${title} — ${t.seo.siteName}`;
     <!-- Primary -->
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="canonical" href={canonicalUrl} />
 
     <!-- Alternate locale -->

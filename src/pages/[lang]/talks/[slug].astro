@@ -21,12 +21,15 @@ const { talk } = Astro.props;
 const t = useTranslations(lang);
 const { Content } = await render(talk);
 
+const now = new Date();
+const upcoming = talk.data.events.length === 0 || talk.data.events.every(e => e.date > now);
+
 const videoId = talk.data.featuredVideo ?? talk.data.events.find(e => e.videoId)?.videoId;
 const videoTimestamp = talk.data.events.find(e => e.videoId === videoId)?.timestamp;
 const eventsSorted = [...talk.data.events].sort((a, b) => b.date.valueOf() - a.date.valueOf());
 ---
 
-<BaseLayout lang={lang} title={talk.data.title} description={talk.data.description} canonicalPath={`/talks/${slug}`}>
+<BaseLayout lang={lang} title={talk.data.title} description={talk.data.description} canonicalPath={`/talks/${slug}`} noindex={talk.data.events.length === 0}>
   <article>
     <a href={`/${lang}/talks`} class="back-link">{t.talks.backToList}</a>
 
@@ -51,16 +54,18 @@ const eventsSorted = [...talk.data.events].sort((a, b) => b.date.valueOf() - a.d
         </div>
       )}
 
-      <div class="talk-header__actions">
-        {videoId && (
-          <a href="#video" class="btn btn--primary">{t.talks.watchTalk} ↓</a>
-        )}
-        {talk.data.slides && (
-          <a href={talk.data.slides} target="_blank" rel="noopener noreferrer" class="btn btn--secondary">
-            {t.talks.viewSlides} ↗
-          </a>
-        )}
-      </div>
+      {!upcoming && (
+        <div class="talk-header__actions">
+          {videoId && (
+            <a href="#video" class="btn btn--primary">{t.talks.watchTalk} ↓</a>
+          )}
+          {talk.data.slides && (
+            <a href={talk.data.slides} target="_blank" rel="noopener noreferrer" class="btn btn--secondary">
+              {t.talks.viewSlides} ↗
+            </a>
+          )}
+        </div>
+      )}
 
       {talk.data.tags.length > 0 && (
         <ul class="tag-list" role="list">
@@ -77,7 +82,7 @@ const eventsSorted = [...talk.data.events].sort((a, b) => b.date.valueOf() - a.d
           ))}
         </section>
 
-        {videoId && (
+        {videoId && !upcoming && (
           <section id="video" class="video-section">
             <div class="video-wrapper">
               <iframe
@@ -135,7 +140,7 @@ const eventsSorted = [...talk.data.events].sort((a, b) => b.date.valueOf() - a.d
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: var(--size-3);
+    gap: var(--size-2);
     margin: 0 0 var(--size-5);
   }
 
@@ -196,7 +201,8 @@ const eventsSorted = [...talk.data.events].sort((a, b) => b.date.valueOf() - a.d
   .talk-layout {
     display: grid;
     grid-template-columns: 1fr;
-    gap: var(--size-8);
+    row-gap: var(--size-5);
+    column-gap: var(--size-8);
     align-items: start;
   }
 

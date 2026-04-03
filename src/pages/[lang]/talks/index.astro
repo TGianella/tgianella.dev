@@ -11,8 +11,17 @@ export function getStaticPaths() {
 const { lang } = Astro.params as { lang: Locale };
 const t = useTranslations(lang);
 
-const talks = (await getCollection('talks', ({ id }) => id.startsWith(`${lang}/`)))
+const now = new Date();
+const isUpcoming = (events: { date: Date }[]) => events.every(e => e.date > now);
+
+const talks = (await getCollection('talks', ({ id, data }) =>
+  id.startsWith(`${lang}/`) && data.events.length > 0
+))
   .sort((a, b) => {
+    // Upcoming talks first, then past talks sorted by most recent debut
+    const aUp = isUpcoming(a.data.events);
+    const bUp = isUpcoming(b.data.events);
+    if (aUp !== bUp) return aUp ? -1 : 1;
     const aMin = Math.min(...a.data.events.map(e => e.date.valueOf()));
     const bMin = Math.min(...b.data.events.map(e => e.date.valueOf()));
     return bMin - aMin;
