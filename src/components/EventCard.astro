@@ -1,5 +1,5 @@
 ---
-import { useTranslations, type Locale } from '../i18n/utils';
+import { useTranslations, isUpcoming, type Locale } from '../i18n/utils';
 
 interface Props {
   event: {
@@ -18,7 +18,7 @@ interface Props {
 const { event, lang } = Astro.props;
 const t = useTranslations(lang);
 const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'long' });
-const isUpcoming = event.date > new Date();
+const upcoming = isUpcoming([event]);
 ---
 
 <li class="event-card">
@@ -36,8 +36,8 @@ const isUpcoming = event.date > new Date();
       <span class="event-card__location">
         {event.location}{event.duration && ` · ${event.duration} min`}
       </span>
-      {isUpcoming && (
-        <span class="event-card__upcoming-pill">{t.talks.upcoming}</span>
+      {upcoming && (
+        <span class="upcoming-pill">{t.talks.upcoming}</span>
       )}
       {event.scope === 'internal' && (
         <span class="event-card__internal-pill">{t.talks.internalEvent}</span>
@@ -94,16 +94,6 @@ const isUpcoming = event.date > new Date();
     border-radius: var(--radius-round);
     background: var(--surface-3);
     color: var(--text-2);
-    white-space: nowrap;
-  }
-
-  .event-card__upcoming-pill {
-    font-size: var(--font-size-0);
-    font-weight: var(--font-weight-5);
-    padding: 1px var(--size-2);
-    border-radius: var(--radius-round);
-    background: color-mix(in oklch, var(--color-brand) 12%, transparent);
-    color: var(--color-brand);
     white-space: nowrap;
   }
 

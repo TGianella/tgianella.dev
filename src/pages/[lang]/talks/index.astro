@@ -1,18 +1,14 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import { useTranslations, locales, type Locale } from '../../../i18n/utils';
+import PageHeader from '../../../components/PageHeader.astro';
+import { useTranslations, getLocaleStaticPaths, slugOf, isUpcoming, type Locale } from '../../../i18n/utils';
 import { getCollection } from 'astro:content';
 import TalkCard from '../../../components/TalkCard.astro';
 
-export function getStaticPaths() {
-  return locales.map(lang => ({ params: { lang } }));
-}
+export const getStaticPaths = getLocaleStaticPaths;
 
 const { lang } = Astro.params as { lang: Locale };
 const t = useTranslations(lang);
-
-const now = new Date();
-const isUpcoming = (events: { date: Date }[]) => events.every(e => e.date > now);
 
 const talks = (await getCollection('talks', ({ id, data }) =>
   id.startsWith(`${lang}/`) && data.events.length > 0
@@ -27,41 +23,21 @@ const talks = (await getCollection('talks', ({ id, data }) =>
     return bMin - aMin;
   });
 
-const slugOf = (id: string) => id.replace(`${lang}/`, '');
 ---
 
 <BaseLayout lang={lang} title={t.talks.title} description={t.talks.description} canonicalPath="/talks">
-  <header class="page-header">
-    <h1>{t.talks.title}</h1>
-    <p class="page-desc">{t.talks.description}</p>
-  </header>
+  <PageHeader title={t.talks.title} description={t.talks.description} />
 
   <ul class="talk-list" role="list">
     {talks.map(talk => (
       <li>
-        <TalkCard talk={talk.data} lang={lang} slug={slugOf(talk.id)} />
+        <TalkCard talk={talk.data} lang={lang} slug={slugOf(talk.id, lang)} />
       </li>
     ))}
   </ul>
 </BaseLayout>
 
 <style>
-  .page-header {
-    margin-block-end: var(--size-8);
-    padding-block-end: var(--size-5);
-    border-block-end: var(--border-size-1) solid var(--border);
-  }
-
-  .page-header h1 {
-    font-size: clamp(1.75rem, 4vw, 2.5rem);
-    margin: 0 0 var(--size-2);
-  }
-
-  .page-desc {
-    color: var(--text-2);
-    margin: 0;
-  }
-
   .talk-list {
     list-style: none;
     margin: 0;

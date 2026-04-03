@@ -28,5 +28,9 @@
       "esbuild",
       "sharp"
     ]
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.8",
+    "typescript": "^6.0.2"
   }
 }

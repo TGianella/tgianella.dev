@@ -1,11 +1,9 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { useTranslations, locales, type Locale } from '../../i18n/utils';
+import { useTranslations, getLocaleStaticPaths, slugOf, isUpcoming, type Locale } from '../../i18n/utils';
 import { getCollection } from 'astro:content';
 
-export function getStaticPaths() {
-  return locales.map(lang => ({ params: { lang } }));
-}
+export const getStaticPaths = getLocaleStaticPaths;
 
 const { lang } = Astro.params as { lang: Locale };
 const t = useTranslations(lang);
@@ -27,9 +25,7 @@ const albums = (await getCollection('gallery', ({ id }) => id.startsWith(`${lang
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, 3);
 
-const now = new Date();
 const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'medium' });
-const slugOf = (id: string) => id.replace(`${lang}/`, '');
 ---
 
 <BaseLayout lang={lang} title={t.nav.home} description={t.home.tagline} canonicalPath="/">
@@ -49,7 +45,7 @@ const slugOf = (id: string) => id.replace(`${lang}/`, '');
     <ul class="card-grid">
       {posts.map(post => (
         <li>
-          <a href={`/${lang}/blog/${slugOf(post.id)}`} class="card">
+          <a href={`/${lang}/blog/${slugOf(post.id, lang)}`} class="card">
             <time class="card__date" datetime={post.data.pubDate.toISOString()}>
               {dateFormatter.format(post.data.pubDate)}
             </time>
@@ -69,15 +65,15 @@ const slugOf = (id: string) => id.replace(`${lang}/`, '');
     <ul class="card-grid">
       {talks.map(talk => {
         const latest = talk.data.events.reduce((a, b) => b.date > a.date ? b : a);
-        const upcoming = talk.data.events.every(e => e.date > now);
+        const upcoming = isUpcoming(talk.data.events);
         return (
           <li>
-            <a href={`/${lang}/talks/${slugOf(talk.id)}`} class="card">
+            <a href={`/${lang}/talks/${slugOf(talk.id, lang)}`} class="card">
               <div class="card__meta">
                 <time class="card__date" datetime={latest.date.toISOString()}>
                   {dateFormatter.format(latest.date)}
                 </time>
-                {upcoming && <span class="card__upcoming-pill">{t.talks.upcoming}</span>}
+                {upcoming && <span class="upcoming-pill">{t.talks.upcoming}</span>}
               </div>
               <h3 class="card__title">{talk.data.title}</h3>
               <p class="card__desc">{latest.name} — {latest.location}</p>
@@ -96,7 +92,7 @@ const slugOf = (id: string) => id.replace(`${lang}/`, '');
     <ul class="gallery-grid">
       {albums.map(album => (
         <li>
-          <a href={`/${lang}/gallery/${slugOf(album.id)}`} class="gallery-card">
+          <a href={`/${lang}/gallery/${slugOf(album.id, lang)}`} class="gallery-card">
             <img
               src={album.data.coverImage}
               alt={album.data.coverImageAlt}
@@ -236,16 +232,6 @@ const slugOf = (id: string) => id.replace(`${lang}/`, '');
     font-weight: var(--font-weight-6);
     margin: 0;
     color: var(--text-1);
-  }
-
-  .card__upcoming-pill {
-    font-size: var(--font-size-0);
-    font-weight: var(--font-weight-5);
-    padding: 1px var(--size-2);
-    border-radius: var(--radius-round);
-    background: color-mix(in oklch, var(--color-brand) 12%, transparent);
-    color: var(--color-brand);
-    white-space: nowrap;
   }
 
   .card__desc {

@@ -1,11 +1,10 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import { useTranslations, locales, type Locale } from '../../../i18n/utils';
+import PageHeader from '../../../components/PageHeader.astro';
+import { useTranslations, getLocaleStaticPaths, slugOf, type Locale } from '../../../i18n/utils';
 import { getCollection } from 'astro:content';
 
-export function getStaticPaths() {
-  return locales.map(lang => ({ params: { lang } }));
-}
+export const getStaticPaths = getLocaleStaticPaths;
 
 const { lang } = Astro.params as { lang: Locale };
 const t = useTranslations(lang);
@@ -14,19 +13,15 @@ const albums = (await getCollection('gallery', ({ id }) => id.startsWith(`${lang
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'long' });
-const slugOf = (id: string) => id.replace(`${lang}/`, '');
 ---
 
 <BaseLayout lang={lang} title={t.gallery.title} description={t.gallery.description} canonicalPath="/gallery">
-  <header class="page-header">
-    <h1>{t.gallery.title}</h1>
-    <p class="page-desc">{t.gallery.description}</p>
-  </header>
+  <PageHeader title={t.gallery.title} description={t.gallery.description} />
 
   <ul class="album-grid" role="list">
     {albums.map(album => (
       <li>
-        <a href={`/${lang}/gallery/${slugOf(album.id)}`} class="album-card">
+        <a href={`/${lang}/gallery/${slugOf(album.id, lang)}`} class="album-card">
           <div class="album-card__img-wrap">
             <img
               src={album.data.coverImage}
@@ -54,22 +49,6 @@ const slugOf = (id: string) => id.replace(`${lang}/`, '');
 </BaseLayout>
 
 <style>
-  .page-header {
-    margin-block-end: var(--size-8);
-    padding-block-end: var(--size-5);
-    border-block-end: var(--border-size-1) solid var(--border);
-  }
-
-  .page-header h1 {
-    font-size: clamp(1.75rem, 4vw, 2.5rem);
-    margin: 0 0 var(--size-2);
-  }
-
-  .page-desc {
-    color: var(--text-2);
-    margin: 0;
-  }
-
   .album-grid {
     list-style: none;
     margin: 0;

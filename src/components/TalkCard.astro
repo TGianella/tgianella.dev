@@ -1,5 +1,5 @@
 ---
-import { useTranslations, type Locale } from '../i18n/utils';
+import { useTranslations, isUpcoming, type Locale } from '../i18n/utils';
 
 interface Props {
   talk: {
@@ -22,8 +22,7 @@ const { talk, lang, slug } = Astro.props;
 const t = useTranslations(lang);
 const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'long' });
 
-const now = new Date();
-const upcoming = talk.events.every(e => e.date > now);
+const upcoming = isUpcoming(talk.events);
 
 const earliest = (scope: 'national' | 'regional' | 'internal') =>
   talk.events.filter(e => e.scope === scope).sort((a, b) => a.date.valueOf() - b.date.valueOf())[0];
@@ -47,7 +46,7 @@ const thumbnail = talk.thumbnail ?? `https://picsum.photos/seed/${slug}/320/180`
         height="180"
       />
       {upcoming && (
-        <span class="talk-card__upcoming-pill">{t.talks.upcoming}</span>
+        <span class="upcoming-pill talk-card__upcoming-pill">{t.talks.upcoming}</span>
       )}
     </div>
   </div>
@@ -141,12 +140,8 @@ const thumbnail = talk.thumbnail ?? `https://picsum.photos/seed/${slug}/320/180`
     top: var(--size-2);
     left: var(--size-2);
     font-size: var(--font-size-1);
-    font-weight: var(--font-weight-5);
     padding: var(--size-1) var(--size-3);
-    border-radius: var(--radius-round);
     background: color-mix(in oklch, var(--color-brand) 18%, var(--surface-1));
-    color: var(--color-brand);
-    white-space: nowrap;
     backdrop-filter: blur(4px);
   }
 

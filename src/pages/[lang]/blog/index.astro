@@ -1,11 +1,10 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import { useTranslations, locales, type Locale } from '../../../i18n/utils';
+import PageHeader from '../../../components/PageHeader.astro';
+import { useTranslations, getLocaleStaticPaths, slugOf, type Locale } from '../../../i18n/utils';
 import { getCollection } from 'astro:content';
 
-export function getStaticPaths() {
-  return locales.map(lang => ({ params: { lang } }));
-}
+export const getStaticPaths = getLocaleStaticPaths;
 
 const { lang } = Astro.params as { lang: Locale };
 const t = useTranslations(lang);
@@ -15,19 +14,15 @@ const posts = (await getCollection('blog', ({ id }) => id.startsWith(`${lang}/`)
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
 const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'long' });
-const slugOf = (id: string) => id.replace(`${lang}/`, '');
 ---
 
 <BaseLayout lang={lang} title={t.blog.title} description={t.blog.description} canonicalPath="/blog">
-  <header class="page-header">
-    <h1>{t.blog.title}</h1>
-    <p class="page-desc">{t.blog.description}</p>
-  </header>
+  <PageHeader title={t.blog.title} description={t.blog.description} />
 
   <ul class="post-list" role="list">
     {posts.map(post => (
       <li>
-        <a href={`/${lang}/blog/${slugOf(post.id)}`} class="post-item">
+        <a href={`/${lang}/blog/${slugOf(post.id, lang)}`} class="post-item">
           <div class="post-item__meta">
             <time datetime={post.data.pubDate.toISOString()}>
               {dateFormatter.format(post.data.pubDate)}
@@ -47,22 +42,6 @@ const slugOf = (id: string) => id.replace(`${lang}/`, '');
 </BaseLayout>
 
 <style>
-  .page-header {
-    margin-block-end: var(--size-8);
-    padding-block-end: var(--size-5);
-    border-block-end: var(--border-size-1) solid var(--border);
-  }
-
-  .page-header h1 {
-    font-size: clamp(1.75rem, 4vw, 2.5rem);
-    margin: 0 0 var(--size-2);
-  }
-
-  .page-desc {
-    color: var(--text-2);
-    margin: 0;
-  }
-
   .post-list {
     list-style: none;
     margin: 0;

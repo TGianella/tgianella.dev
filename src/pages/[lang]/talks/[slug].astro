@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import { useTranslations, locales, type Locale } from '../../../i18n/utils';
+import { useTranslations, isUpcoming, locales, type Locale } from '../../../i18n/utils';
 import { getCollection, render } from 'astro:content';
 import EventCard from '../../../components/EventCard.astro';
 
@@ -21,8 +21,7 @@ const { talk } = Astro.props;
 const t = useTranslations(lang);
 const { Content } = await render(talk);
 
-const now = new Date();
-const upcoming = talk.data.events.length === 0 || talk.data.events.every(e => e.date > now);
+const upcoming = isUpcoming(talk.data.events);
 
 const videoId = talk.data.featuredVideo ?? talk.data.events.find(e => e.videoId)?.videoId;
 const videoTimestamp = talk.data.events.find(e => e.videoId === videoId)?.timestamp;

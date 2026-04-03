@@ -20,3 +20,18 @@ export function getLocalizedPath(path: string, lang: Locale): string {
 export function getAlternateLocale(lang: Locale): Locale {
   return lang === 'en' ? 'fr' : 'en';
 }
+
+/** Strips the language prefix from a content collection ID to get the slug */
+export function slugOf(id: string, lang: Locale): string {
+  return id.replace(`${lang}/`, '');
+}
+
+/** Static paths for top-level [lang] routes */
+export function getLocaleStaticPaths() {
+  return locales.map(lang => ({ params: { lang } }));
+}
+
+/** Returns true if all events are in the future, or if there are no events */
+export function isUpcoming(events: { date: Date }[]): boolean {
+  return events.length === 0 || events.every(e => e.date > new Date());
+}
