@@ -107,6 +107,7 @@ a {
   background: color-mix(in oklch, var(--color-brand) 12%, transparent);
   color: var(--color-brand);
   border-radius: var(--radius-round);
+  white-space: nowrap;
 }
 
 /* ─── Upcoming pill (shared across cards) ───────────── */

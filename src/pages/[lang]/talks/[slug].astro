@@ -3,6 +3,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { useTranslations, isUpcoming, locales, type Locale } from '../../../i18n/utils';
 import { getCollection, render } from 'astro:content';
 import EventCard from '../../../components/EventCard.astro';
+import PersonCard from '../../../components/PersonCard.astro';
 
 export async function getStaticPaths() {
   const talks = await getCollection('talks');
@@ -33,43 +34,37 @@ const eventsSorted = [...talk.data.events].sort((a, b) => b.date.valueOf() - a.d
     <a href={`/${lang}/talks`} class="back-link">{t.talks.backToList}</a>
 
     <header class="talk-header">
-      <h1 class="talk-header__title">{talk.data.title}</h1>
+      <div class="talk-header__top">
+        <h1 class="talk-header__title">{talk.data.title}</h1>
+
+        {!upcoming && (
+          <div class="talk-header__actions">
+            {videoId && (
+              <a href="#video" class="btn btn--primary">{t.talks.watchTalk} ↓</a>
+            )}
+            {talk.data.slides && (
+              <a href={talk.data.slides} target="_blank" rel="noopener noreferrer" class="btn btn--secondary">
+                {t.talks.viewSlides} ↗
+              </a>
+            )}
+          </div>
+        )}
+      </div>
+
+      {talk.data.tags.length > 0 && (
+        <div class="talk-header__tags">
+          <ul class="tag-list" role="list">
+            {talk.data.tags.map(tag => <li class="tag">{tag}</li>)}
+          </ul>
+        </div>
+      )}
 
       {talk.data.coSpeakers.length > 0 && (
         <div class="talk-header__cospeakers">
-          <span class="talk-header__cospeakers-label">{t.talks.with}</span>
-          {talk.data.coSpeakers.map(s => {
-            const picture = s.picture ?? `https://picsum.photos/seed/${encodeURIComponent(s.name)}/64/64`;
-            return (
-              <span class="cospeaker">
-                <img class="cospeaker__avatar" src={picture} alt={s.name} width="24" height="24" />
-                {s.url
-                  ? <a href={s.url} target="_blank" rel="noopener noreferrer">{s.name}</a>
-                  : <span>{s.name}</span>
-                }
-              </span>
-            );
-          })}
+          {talk.data.coSpeakers.map(s => (
+            <PersonCard name={s.name} picture={s.picture} url={s.url} label={t.talks.with} />
+          ))}
         </div>
-      )}
-
-      {!upcoming && (
-        <div class="talk-header__actions">
-          {videoId && (
-            <a href="#video" class="btn btn--primary">{t.talks.watchTalk} ↓</a>
-          )}
-          {talk.data.slides && (
-            <a href={talk.data.slides} target="_blank" rel="noopener noreferrer" class="btn btn--secondary">
-              {t.talks.viewSlides} ↗
-            </a>
-          )}
-        </div>
-      )}
-
-      {talk.data.tags.length > 0 && (
-        <ul class="tag-list" role="list">
-          {talk.data.tags.map(tag => <li class="tag">{tag}</li>)}
-        </ul>
       )}
     </header>
 
@@ -125,51 +120,60 @@ const eventsSorted = [...talk.data.events].sort((a, b) => b.date.valueOf() - a.d
   }
 
   .talk-header {
+    display: grid;
+    grid-template-columns: minmax(min-content, 1fr) auto;
+    grid-template-areas:
+      "top top"
+      "tags cospeakers";
+    column-gap: var(--size-5);
+    row-gap: var(--size-4);
     margin-block-end: var(--size-5);
     padding-block-end: var(--size-5);
     border-block-end: var(--border-size-1) solid var(--border);
   }
 
+  @media (width >= 36rem) {
+    .talk-header {
+      grid-template-columns: 1fr auto;
+      grid-template-areas:
+        "top cospeakers"
+        "tags cospeakers";
+    }
+
+    .talk-header__cospeakers {
+      align-self: end;
+    }
+  }
+
+  .talk-header__top {
+    grid-area: top;
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-4);
+  }
+
   .talk-header__title {
     font-size: clamp(1.5rem, 4vw, 2.25rem);
-    margin: 0 0 var(--size-4);
+    margin: 0;
+  }
+
+  .talk-header__tags {
+    grid-area: tags;
+    align-self: center;
   }
 
   .talk-header__cospeakers {
+    grid-area: cospeakers;
     display: flex;
-    align-items: center;
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: end;
     gap: var(--size-2);
-    margin: 0 0 var(--size-5);
-  }
-
-  .talk-header__cospeakers-label {
-    font-size: var(--font-size-1);
-    color: var(--text-2);
-  }
-
-  .cospeaker {
-    display: flex;
-    align-items: center;
-    gap: var(--size-1);
-    font-size: var(--font-size-1);
-
-    & a { color: var(--color-brand); text-decoration: none; }
-    & a:hover { text-decoration: underline; }
-  }
-
-  .cospeaker__avatar {
-    border-radius: var(--radius-round);
-    object-fit: cover;
-    block-size: 1.5rem;
-    inline-size: 1.5rem;
   }
 
   .talk-header__actions {
     display: flex;
     gap: 0.75rem;
     flex-wrap: wrap;
-    margin-block-end: var(--size-4);
   }
 
   .btn {

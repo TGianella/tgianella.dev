@@ -13,9 +13,9 @@ const en = {
     lang: 'fr',
   },
   home: {
-    greeting: "Hi, I'm",
-    tagline: 'Web developer & photographer',
-    cta: 'Read the blog',
+    tagline: 'Frontend Engineer',
+    github: 'GitHub profile',
+    linkedin: 'LinkedIn profile',
     sections: {
       blog: 'Latest posts',
       talks: 'Recent talks',
@@ -35,6 +35,10 @@ const en = {
   },
   talks: {
     title: 'Talks',
+    intro: [
+      "From my first career in higher education I kept a taste for sharing and I've had the chance to pass on my knowledge about the topics I hold dear on numerous occasions, be it at internal, local, or national conferences.",
+      "Find here the abstracts, slides and video replays for all my talks."
+    ],
     description: 'Conferences and presentations.',
     upcoming: 'Coming soon',
     watchTalk: 'Watch talk',

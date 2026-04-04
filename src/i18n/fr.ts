@@ -15,9 +15,9 @@ const fr: Translations = {
     lang: 'en',
   },
   home: {
-    greeting: 'Bonjour, je suis',
-    tagline: 'Développeur web & photographe',
-    cta: 'Lire le blog',
+    tagline: 'Développeur Front-end',
+    github: 'Profil GitHub',
+    linkedin: 'Profil LinkedIn',
     sections: {
       blog: 'Derniers articles',
       talks: 'Conférences récentes',
@@ -37,6 +37,10 @@ const fr: Translations = {
   },
   talks: {
     title: 'Conférences',
+    intro: [
+        "J'ai gardé de ma première carrière dans l'enseignement supérieur le goût du partage et j'ai eu l'occasion de transmettre mes connaissances sur les sujets qui me passionnent à de nombreuses reprises lors de conférences internes, locales ou nationales.",
+        "Retrouvez ici les résumés, slides et captations vidéos de toutes mes conférences."
+    ],
     description: 'Conférences et présentations.',
     upcoming: 'À venir',
     watchTalk: 'Voir la conférence',

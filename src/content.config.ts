@@ -17,11 +17,11 @@ const blog = defineCollection({
 
 const talks = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/talks' }),
-  schema: z.object({
+  schema: ({ image }) => z.object({
     title: z.string(),
     description: z.string(),
     abstract: z.string(),
-    thumbnail: z.string().optional(), // image URL
+    thumbnail: image().optional(),
     tags: z.array(z.string()).default([]),
     coSpeakers: z.array(z.object({
       name: z.string(),
