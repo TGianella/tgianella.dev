@@ -1,0 +1,202 @@
+---
+title: "Migration de Babel à SWC : comment concilier la performance des nouveaux outils et le code legacy"
+description: "Un compte-rendu de notre migration d'un transpileur vieux de plus de 10 ans à un compilateur de nouvelle génération, des obstacles que nous avons rencontrés, et des résultats obtenus."
+tags: ["SWC", "Babel", "JavaScript", "React", "Web", "Frontend", "Performance", "Bundler"]
+pubDate: 2025-12-22
+firstPublishedIn:
+    name: "le blog technique de BedrockStreaming"
+    url: "https://tech.bedrockstreaming.com/2025/12/22/switching-from-babel-to-swc.html"
+coAuthors:
+  - name: "Mickaël Alves"
+    url: "https://mickaelalvs.dev/"
+    picture: "https://avatars.githubusercontent.com/u/60877626?v=4"
+  - name: "Jean-François Farge"
+    url: "https://github.com/slumbering"
+    picture: "https://avatars.githubusercontent.com/u/1186424?v=4"
+thumbnail: "../../../assets/posts/thumbnails/babel-swc-migration.webp"
+---
+
+import { Image } from 'astro:assets'
+import Callout from '../../../components/Callout.astro'
+import ImagePair from '../../../components/ImagePair.astro'
+import babelProcess from '../../../assets/posts/babel-swc-migration/babel-process.png'
+import finalProcess from '../../../assets/posts/babel-swc-migration/final-process.png'
+import buildPerformance from '../../../assets/posts/babel-swc-migration/build-performance.png'
+import devBuildPerformance from '../../../assets/posts/babel-swc-migration/dev-build-performance.png'
+import bundleSize from '../../../assets/posts/babel-swc-migration/bundle-size.png'
+import bundleAnalysis from '../../../assets/posts/babel-swc-migration/bundle-analysis.png'
+
+Depuis que les sites web sont écrits principalement en JavaScript (et non plus simplement en HTML/CSS), la transpilation de ce code afin qu'il puisse être exécuté dans le plus grand nombre d'environnements différents est une étape essentielle du processus de _build_. Dès sa création il y a plus de dix ans, l'application web de **BedrockStreaming** a utilisé [Babel](https://babeljs.io/) dans ce but. Cette année, nous avons migré de Babel vers son remplaçant de nouvelle génération : [SWC](https://swc.rs/). Ça n'a pas été un long fleuve tranquille, donc examinons ensemble les défis que nous avons dû relever et si le jeu en valait la chandelle !
+
+## ⚙️ Transpilation !? Kézako ?
+
+Généralement, la transpilation désigne le processus par lequel du code source est transformé en une autre version de code source (par opposition à la compilation qui émet du code de plus bas niveau que le code source).
+
+Dans le context de JavaScript et du Web, cela signifie que le code source est transformé en du JavaScript. Mais pourquoi donc transformer du JavaScript en JavaScript ?
+
+Le code JavaScript moderne que l'on écrit utilise souvent des fonctionnalités qui ne sont pas toujours supportées dans tous les environnements. Par exemple les anciennes versions des navigateurs n'implémentent pas les syntaxes plus récentes que l'on utilise. Un autre cas d'usage se présente pour le code exécuté côté serveur : en Node.js il arrive d'utiliser des ES Modules ou du JSX que l'environnement ne comprend pas forcément. En somme, la transpilation permet de transformer de la syntaxe incompatible en une syntaxe plus ancienne/standard qui sera supportées dans plus d'environnements.
+
+La plupart des transpileurs utilisent une **architecture à base de plugins** : la bibliothèque centrale n'est responsable que d'analyser le code source pour produire un ASA (arbre de syntaxe abstraite), effectuer les transformations les plus basiques (assurer la rétrocompatibilité avec les navigateurs plus anciens par exemple) et générer le code transformé. Toutes les autres transformations (plus spécifiques) sont gérées par des plugins individuels, qui sont installés manuellement et ajoutés à la configuration. Cette séparation des responsabilités rend la personalisation plus simple et permet à la communauté de contribuer de nouveaux plugins sans modifier le code de la bibliothèque centrale. En d'autres termes, dans les transpileurs modernes, **la plupart des transformations de code sont effectuées par les plugins**.
+
+Au fil des années, avec l'évolution des technologies du web, de nombreuses transformations ont été ajoutées lors de l'étape de transpilation. Chez BedrockStreaming, le transpileur gère toute la syntaxe moderne, convertit les modules ESM en CJS, transforme le TypeScript en JavaScript, le JSX en JavaScript, et bien plus encore, ce qui en fait la clé de voûte de notre processus de _build_.
+
+**La question n'est donc pas est-ce que l'on transpile ou pas, mais bien comment.**
+
+## 📦 Le point de départ : Babel
+
+**Babel est le premier transpileur JavaScript** à avoir été largement adopté par la communauté. Il a été créé pour permettre aux dévelopeurs d'écrire du JavaScript moderne tout en ne sacrifiant pas les utilisateurs ayant des versions anciennes de navigateurs. **Notre projet web, maintenant âgé de plus de 10 ans, repose sur Babel depuis le début**, un choix fiable basé sur la robustesse la flexibilité de cet outil. Pour un outil comme Babel, exister depuis aussi longtemps est à double tranchant ! Grâce à sa large communauté, Babel peut presque tout faire : pour tous les besoins ou presque, il existe un plugin maintenu et documenté, et s'il est nécessaire de sortir des sentiers battus, l'API de Babel permet d'effectuer des transformations personnalisées très spécifiques. Pendant longtemps, cette brique de notre application a été un vrai pilier : fiable, extensible et quasi-indispensable pour assurer la transpilation d'un projet complexe.
+
+Dans Babel, toutes les transformations sont effectuées au moyen de **plugins** et de **presets**.
+
+<Callout>
+Les **plugins** sont des fonctions qui effectuent une seule et unique transformation sur un morceau de code. Un pipeline Babel typique consiste en plusieurs plugins qui transforment le code source d'entrée de manière séquentielle.
+</Callout>
+
+<Callout>
+Les **presets** sont des groupements de plugins rassemblés pour être plus pratiques à utiliser pour certains cas d'usages spécifiques. Par exemple, `@babel/preset-env` transpile le JavaScript moderne vers une version compatible avec les navigateurs ciblés, `@babel/preset-react` gère le JSX et `@babel/preset-typescript` transpile le TypeScript en JavaScript. Chacun de ces presets n'est qu'une liste pré-définie de plugins individuels appliqués en séquence sur le code d'entrée.
+</Callout>
+
+L'architecture de Babel nous permet d'activer différents ensembles de plugins en fonction de l'environnement afin d'atteindre un compromis parfait entre la taille du bundle, le temps de build et l'expérience développeur. Par exemple, en plus des transformations classiques (Typescript, JSX, preset-env...), voici quelques plugins que nous n'activons que dans certains environnements :
+
+**En développement:**
+- `react-refresh/babel` pour supporter le HMR (Hot Module Replacement) et améliorer l'expérience développeur.
+
+**En production:**
+- Découpage du code avec `@loadable/babel-plugin`
+- Suppression des attributs `data-testid` avec `react-remove-properties`
+- Suppression des prop types avec `transform-react-remove-prop-types`
+
+<Image src={babelProcess} alt="Processus de build avec babel" />
+
+En revanche, lorsque nous avons commencé à inspecter les temps de compilation de notre bundler, Webpack, les limitations de Babel sont immédiatement apparues. Une rapide analyse a montré que le seul `babel-loader` comptait pour plus de 50% du temps de build total (35 secondes pour une minute de build). En d'autres termes, même en ayant optimisé tout le reste, l'étape de transpilation reste le maillon faible.
+
+<Callout>
+Avec Webpack, **la plupart des opérations de transpilation sont effectuées au moyen de loaders**. Webpack lui-même est responsable de construire le graphe des dépendances, mais chaque fichier passe à travers un ou plusieurs loaders afin d'être transformé avant d'être bundlé.
+</Callout>
+
+Dans notre cas, `babel-loader` est incontournable dans notre processus de build : chaque fichier JavaScript doit y passer (au moment de l'écriture de l'article, notre projet compte environ **5000** fichiers JavaScript/TypeScript). Cela en fait l'un des composants les plus critiques en termes de performance. Optimiser cette étape ou la remplacer par une alternative plus performante est ce qui aurait le plus d'impact dans notre situation.
+
+La lenteur du build a beaucoup de conséquences négatives : c'est plus coûteux en temps de CI, mais surtout, cela signifie que le serveur de développement local met plus longtemps à démarrer. Ce point commençait à devenir un irritant majeur pour les équipes au fur et à mesure que l'application grossissait, avec des temps de démarrage au-delà de la minute. Étant donné que les opérations de build sont extrêmement fréquentes (chaque fois qu'un développeur lance un serveur de développement local, chaque fois que la CI se lance, et lors des déploiements), même de petites améliorations peuvent aboutir à des gains de temps significatifs à l'échelle des équipes et de notre infrastructure.
+
+Nous étions confrontés à un dilemme : continuer à bénéficier de l'écosystème établi de Babel, ou se mettre en quête d'une solution plus rapide afin d'améliorer le temps de transpilation. Comme notre but était clair (une meilleure DX) et une meilleure performance, la question s'est posée naturellement.
+
+C'est ici que **SWC (Speedy Web Compiler)** entre en scène. SWC est une plateforme extensible écrite en Rust qui a pour ambition de représenter une nouvelle génération d'outils de développements plus rapides. De nombreux frameworks et entreprises l'ont déjà adopté. SWC se positionne comme une alternative bien plus rapide à Babel, avec une promesse simple : "SWC est 20 fois plus rapide que Babel sur un seul thread et 70 fois plus rapides sur quatre cœurs". C'est bien assez pour que nous remettions sérieusement en question l'existant et que nous explorions la possibilité de migrer vers un compilateur conçu pour la performance.
+
+## ⚠️ Le problème des PropTypes et le manque de support de missing-prop-types
+
+Le premier obstacle sur notre chemin a été le manque de support pour supprimer les `PropTypes` avec SWC. Même si les `PropTypes` sont dépréciés depuis longtemps dans les applications React modernes, le problème est devenu crucial puisque de nombreux `PropTypes` étaient encore présents dans notre code le plus ancien. Sans pouvoir les enlever, notre code de production aurait été inutilement alourdi par ces éléments et les temps de build s'en seraient ressentis.
+
+<Callout>
+`prop-types` est une ancienne bibliothèque React créée pour aider à typer les `props` des composants React. La bibliothèque a été dépréciée en 2017 au profit de TypeScript.
+La bibliothèque permet de déclarer les `propTypes` d'un composant de la façon suivante :
+    ```jsx
+    MyComponent.propTypes = {
+    propA: PropTypes.string,
+    propB: PropTypes.number.isRequired,
+}
+    ```
+</Callout>
+
+C'est ce genre de code (utile seulement durant le développement) que nous voulons retirer du code de production.
+
+Le cœur de SWC est écrit en Rust et compilé en un fichier binaire natif exécuté par Node.js. Les plugins sont aussi écrits en Rust, mais ils sont compilés en WebAssembly (WASM), afin de produire un fichier portable unique qui peut tourner dans n'importe quel environnement. Cette architecture rend SWC extrêmement rapide et portable, mais cela signifie aussi que des fonctionnalités disponibles pour des transpileurs plus anciens (comme Babel) n'existent pas nécessairement pour SWC.
+
+Notre problème est qu'**il n'existe pas de plugin WASM pour SWC qui retire les `propTypes`**. Comme la fonctionnalité a été dépréciée en 2017, un transpileur moderne comme SWC n'inclut pas cette fonctionnalité. Nous étions en fait dans un cas très marginal : essayer transpiler une application legacy avec des outils bien plus récents. Après quelques recherches, il est tout de même apparu que nous n'étions pas les seuls dans ce cas, puisque l'auteur du plugin Babel qui retire les `propTypes` a ouvert une issue en 2021 pour cet exact problème : [support SWC](https://github.com/oliviertassinari/babel-plugin-transform-react-remove-prop-types/issues/201#top)
+
+Arrivés à ce point, nous étions confrontés à un nouveau dilemme : renoncer temporairement et attendre que notre base de code soit prête pour la migration vers SWC, ou essayer de contourner le problème afin d'apporter l'amélioration d'expérience développeur le plus vite possible. Voici les solutions que nous avons essayées.
+
+## 💡 Les solutions envisagées
+
+### 🗑️ Option 1 — Supprimer tous les PropTypes du code
+
+Au début, nous avons simplement envisagé de retirer la bibliothèque `prop-types` de notre base de code en supprimant tous ses usages d'un seul coup. Même si cela peut paraître ambitieux pour un projet de cette taille, la pull request aurait été simple à relire. Comme nous avions déjà commencé à convertir des parties de notre base de code en TypeScript, nous étions déjà en train de réduire la surface d'usage de la bibliothèque de toute façon, mais à notre propre rhythme.
+
+Cette approche constitue le moyen le plus "simple" d'un point de vue technique de parvenir à effectuer la migration. Il se serait simplement agi d'un effort à fournir en une seule fois sans nécessiter de maintenance _a posteriori_. Par ailleurs, nous en aurions tiré un bénéfice collatéral puisque retirer la bibliothèque était déjà un de nos objectifs de long-terme.
+
+Cependant, même si cette approche aurait demandé un niveau raisonnable d'effort, **retirer les `propTypes` sans ajouter un typage TypeScript aurait été très risqué**, puisque l'expérience développeur aurait été dégradée et la probabilité d'introduire des bugs aurait augmenté. La grande surface des changements impliquait aussi des risques de régression ce qui aurait rendu la revue de code plus difficile.
+
+#### ❌ Pourquoi nous n'avons pas choisi cette solution
+
+Après avoir réfléchi et discuté avec les équipes, nous avons abandonné cette piste au vu de la taille de notre base de code. Bien que les changements fussent simples à relire en théorie, la taille de la pull request aurait pu introduire des régressions difficiles dont il aurait été difficile de retracer l'origine.
+
+### 🔌 Option 2 — ModernJS : plugins WASM versus re-implémentations en JS
+
+Comme il n'y a pas de plugin `prop-types` officiel pour SWC, nous nous sommes mis à la recherche de plugins communautaires. Nous en avons trouvé un dans [swc-plugins](https://github.com/web-infra-dev/swc-plugins), une bibliothèque de plugins pour `Modern.js`, un framework web open-source créé par ByteDance.
+
+Cette bibliothèque dispose d'un système d'extensions qui sont des plugins portés depuis babel, et l'un d'entre eux se nomme `reactUtils` et comporte une option `removePropTypes`, exactement ce dont nous avions besoin !
+
+Nous avons donc essayé de trouver comment implémenter ce plugin dans notre nouvelle architecture SWC mais nous avons rencontré des difficultés. C'est parce que `swc-plugins` est en fait **une ré-implémentation de SWC** : il s'agit d'un wrapper JS autour du cœur SWC avec un ensemble pré-défini de plugins disponibles. Nous n'étions pas les seuls à vouloir simplement un plugin sans devoir embarquer toute la réimplémentation, une [issue](https://github.com/web-infra-dev/swc-plugins/issues/214) est ouverte en ce sens depuis un an, sans réponse malheureusement.
+
+Nous avons tout de même tenté d'implémenter le transpileur de `Modern.js` comme indiqué dans la documentation, mais il nous est vite apparu qu'il s'agissait d'une solution complètement différente et non plus d'un simple plugin. Nous étions en fait en train d'ajouter un autre transpilateur, en plus de SWC, à notre application !
+
+Malgré cela, nous avons quand même essayé de faire fonctionner cette solution pour voir si les performances finales étaient acceptables, mais nous avons rapidement rencontré un nouveau problème : **il est impossible d'utiliser les plugins SWC officiels avec ce nouveau transpiler**. Il s'agissait d'un problème bloquant pour nous, puisque nous avons besoin de plusieurs plugins officiels qui ne sont pas disponibles dans `swc-plugins`, comme `plugin-react-remove-properties` pour enlever les attributs `data-testid` de notre build de production. Par ailleurs, nous n'avions que faiblement confiance en ce transpilateur et sa future évolution : nous étions en somme en train de nous priver de tous les plugins officiels et communautaires pour utiliser un transpiler venu d'un dépôt Github avec 64 étoiles et aucune activité depuis septembere 2024.
+
+En résumé, nous avons perdu un peu de temps à essayer de faire fonctionner cette solution parce que le dépôt `swc-plugins` est très bien référencé sur les moteurs de recherche et ressemble parfaitement à un ensemble de plugins disponibles pour les utilisateurs de SWC (même s'il a été créé pour `Modern.js`). Il s'avère en fait qu'il s'agit d'un outil hyper-spécifique, utilisé presque uniquement pour `Modern.js`, qui n'est clairement pas fait pour les gens qui utilisent SWC de manière normale.
+
+### 🦀 Option 3 — Écrire le plugin manquant en Rust
+
+Une autre solution que nous avons exploré était d'écrire un plugin Rust compatible avec SWC pour retirer les `propTypes`.
+
+Cela s'est avéré assez difficile car **nous ne sommes pas des développeurs Rust** 😅. Nous avons essayé de réaliser une preuve de concept aussi vite que possible avec Cursor. La première étapt a été d'analyser ce que `babel-plugin-transform-remove-prop-types` faisait. Toute la logique était contenue dans quelques fichiers de code source que nous avons utilisé pour prompter l'agent afin qu'il les traduise en Rust.
+
+Après avoir lu la documentation de SWC sur [comment écrire un plugin](https://swc.rs/docs/plugin/ecmascript/getting-started), mis en place l'environnement de travail et initialisé le nouveau projet avec Cargo, nous avons commencé à itérer avec Cursor. Nous sommes parvenus à produire un POC qui reproduit assez fidèlement le fonctionnement du plugin Babel en très peu de temps.
+
+Cependant, le plus difficile avec cette approche est l'investissement continu qu'il aurait fallu apporter avec le temps, et surtout, la charge de travail nécessaire pour produire un plugin propre et correctement testé. Comme nous ne développons pas habituellemen en Rust, réaliser et maintenir le code nécessaire aurait pu devenir assez coûteux, même avec l'assistance d'un agent IA. Nous aurions aussi nécessité le retour des mainteneurs de SWC sur le [dépôt swc-project](https://github.com/swc-project/swc)
+
+À terme, nous comptons contribuer ce plugin dans le dépôt communautaire afin qu'il puisse être revu, ajouté au code et (nous espérons) maintenu par des développeurs avec une réelle compétence en Rust. Nous avons pour ambition d'atteindre ce but dans les mois à venir.
+
+En attendant, nous avions besoin d'une alternative afin de contourner le problème.
+
+### 🤝 Option 4 (choisie) — Utiliser une architecture hybride avec Babel et SWC
+
+Après tout cela, nous avons pris un peu de recul et nous avons abordé le problème sous un autre angle : nous avions essayé trois solutions alternatives pour contourner le problème de la suppression des `propTypes` de notre build de production. Cela s'avérait très couteux sinon impossible. Nous devions donc trouver un compromis : prise individuellement, la transformation qui consiste à retirer les `propTypes` est une transformation assez minime comparée aux plus de 50 autres transformations appliquées sur nos fichiers JavaScript. Et si nous gardions Babel uniquement pour cette transformation et migrions quand même toutes les autres tranformations vers SWC ?
+
+L'implémentation de cette architecture hybride a été rendue assez simple en utilisant les loaders Webpack. Dans notre configuration pour la transformation des fichiers JavaScript, il suffit de déclarer deux loaders différents. `Babel-loader` passe en premier et retire uniquement les `propTypes` (il est crucial que Babel ne fasse aucune autre transformation et ressorte les fichiers identiques à l'exception des `propTypes`). Ensuite le loader SWC prend la sortie du loader Babel et effectue toutes les autres transformations.
+
+**Babel-loader** n'est activé que pour les builds de production afin de conserver une expérience de développement aussi fluide que possible.
+
+Bien sûr, cette approche a un coût, puisqu'il y a une complexité supplémentaire à faire passer tous les fichiers à la fois dans Babel et SWC, mais dans l'ensemble, nous prévoyions une amélioration globale de la performance, simplement un peu moindre que celle attendue en utilisant seulement SWC.
+
+Par ailleurs, **cette architecture hybride est une solution temporaire** en attendant que la migration manuelle de `prop-types` vers TypeScript soit effectuée, donc nous étions à la recherche d'une solution qui nous permettait de livrer l'amélioration du temps de build le plus tôt possible, même si la configuration exacte n'est pas définitive et va changer à l'avenir.
+
+<Image src={finalProcess} alt="Processus de build final avec babel et SWC" />
+
+## 📊 Résultats du comparatif
+
+<Callout>
+Pour la partie SWC, nous avons mesuré sans la suppression des `propTypes`
+</Callout>
+
+### 🏗️ Temps de build (sans cache)
+
+<ImagePair>
+  <Image src={buildPerformance} alt="Comparatif de performance de build en production" />
+  <Image src={devBuildPerformance} alt="Comparatif de performance de build en développement" />
+</ImagePair>
+
+Le temps du build de production s'est largement amoindri : **77.4s (Babel) → 55s (SWC + Babel) → 40.4s (SWC seul)**. Les gains ont été encore plus drastiques pour les builds de développement : **dev serveur 54.5s → 14.1s** et **dev client 27.4s → 15s**. Malgré notre solution hybride, SWC apporte des gains de performance substantiels.
+
+### 📦 Taille de bundle
+
+<ImagePair>
+  <Image src={bundleSize} alt="Comparaison de taille de bundle" />
+  <Image src={bundleAnalysis} alt="Analyse du bundle" />
+</ImagePair>
+
+Sur les graphiques de taille du bundle, la différence est plutôt réduite (1MiB) : utiliser SWC sans retirer les `propTypes` donne un bundle légèrement plus lourd qu'avec notre approche hybride combinant Babel et SWC. En théorie, cela pourrait indiquer que la complexité supplémentaire de notre solution n'est pas vraiment nécessaire.
+
+Cependant, nous avons fait le choix délibéré de privilégier la taille du bundle plutôt que la simplicité de l'architecture. Le bundle de production est ce que nos utilisateurs finaux doivent télécharger, et avoir une taille la plus réduite possible est un enjeu de performance comme d'hygiène du code. Les `propTypes` sont un filet de sécurité utilisé pour le développement. Ils n'ont aucune valeur en production et ne devraient pas être présents dans le code délivré aux utilisateurs. Les laisser, même si l'impact sur la taille du bundle est marginal, revient à livrer du code mort en production.
+
+De notre point de vue, il s'agit moins de faire la chasse à quelques kilooctets de trop, mais plutôt de s'assurer de l'état de santé de notre pipeline de production. Même si les gains sont minimes aujourd'hui, mettre en place cette séparation rend le processus de build explicite, prévisible et cohérent avec l'utilité du code.
+
+## 🚀 Et après ?
+
+À l'avenir, il y a quelques actions claires à mener pour améliorer notre infrastructure.
+
+L'une des premières améliorations au programme est d'utiliser `@swc/jest`. En remplaçant le runner de test Jest (écrit en JavaScript) par ce remplacement écrit en Rust, nos tests pourraient tourner beaucoup plus vite. L'architecture en Rust/WASM de SWC permet de réaliser les mêmes transformations de manière beaucoup plus efficace, ce qui permettrait de réduire le temps de CI et d'augmenter la vitesse de développement.
+
+Dans un futur plus lointain, nous prévoyons aussi de supprimer les usages restants de `propTypes`. La migration de Babel à SWC a été réalisée de manière à ce qu'il soit simple de retirer Babel une fois que le code source sera débarrassé des `propTypes`. Malgré notre solution hybride pour le moment, les gains de performance sont significatifs.
+
+Nous souhaitons aussi signaler que la documentation de SWC peut se montrer plus que limitée sur des cas d'usages spécifiques ou avancés. La plus grande part de cette migration aura été d'expérimenter, de lire du code source et de valider nos hypothèses à travers des tests de performance. Nous espérons que cet article peut aider d'autres développeurs confrontés aux mêmes contraintes et à rendre les problèmes que nous avons rencontrés plus simples à résoudre.
+
+Tout au long de ce processus, notre objectif était clair : améliorer l'expérience développeur autant que possible sans faire de compromis sur la qualité du code livré en production. Et tandis que cette migration apporte déjà des gains significatifs, elle prend tout son sens combinée à d'autres améliorations que nous avons apportées, comme la mise en place de stratégies de caches plus poussées.

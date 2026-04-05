@@ -123,12 +123,20 @@ a {
 
 /* ─── Prose (shared across blog/talks) ──────────────── */
 .prose {
-  max-inline-size: var(--content-width);
+  overflow-wrap: break-word;
+  display: grid;
+  & > * + * { margin-block-start: var(--size-5); }
+  grid-template-columns:
+    [full-start prose-start] minmax(0, min(100%, var(--content-width)))
+    [prose-end] 1fr
+    [full-end];
+
+  & > * { grid-column: prose; }
 }
 
-.prose h2 { font-size: var(--font-size-3); margin-block: var(--size-7) 0.75rem; }
-.prose h3 { font-size: var(--font-size-2); margin-block: var(--size-5) var(--size-2); }
-.prose p  { margin-block: 0.875rem; }
+.prose h2 { font-size: var(--font-size-3); margin-block-start: var(--size-7); }
+.prose h3 { font-size: var(--font-size-2); margin-block-start: var(--size-5); }
+.prose p  { margin-block-start: 0.875rem; }
 .prose a  { color: var(--color-brand); }
 
 .prose pre {
@@ -144,6 +152,7 @@ a {
   padding: 1px 5px;
   border-radius: var(--radius-1);
   font-size: 0.9em;
+  white-space: normal;
 }
 
 .prose blockquote {

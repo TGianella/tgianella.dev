@@ -3,7 +3,7 @@ interface Props {
   name: string;
   picture?: string;
   url?: string;
-  label: string;
+  label?: string;
 }
 
 const { name, picture, url, label } = Astro.props;
@@ -12,7 +12,7 @@ const Tag = url ? 'a' : 'div';
 ---
 
 <div class="person-card-wrap">
-  <span class="person-card__label">{label}</span>
+  {label && <span class="person-card__label">{label}</span>}
   <Tag
     class="person-card"
     {...url ? { href: url, target: '_blank', rel: 'noopener noreferrer' } : {}}

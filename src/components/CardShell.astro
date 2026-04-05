@@ -1,0 +1,142 @@
+---
+interface Props {
+  href: string;
+  title: string;
+  description: string;
+  thumb: string;
+  thumbAlt?: string;
+  tags?: string[];
+}
+
+const { href, title, description, thumb, thumbAlt = '', tags = [] } = Astro.props;
+---
+
+<a href={href} class="card">
+  <div class="card__side">
+    <div class="card__thumb-wrap">
+      <img src={thumb} alt={thumbAlt} class="card__thumb" loading="lazy" decoding="async" />
+      <slot name="thumb-overlay" />
+    </div>
+  </div>
+
+  <div class="card__body">
+    <slot name="meta" />
+    <h2 class="card__title">{title}</h2>
+    <p class="card__desc">{description}</p>
+    <slot />
+    {tags.length > 0 && (
+      <ul class="tag-list" role="list">
+        {tags.map(tag => <li class="tag">{tag}</li>)}
+      </ul>
+    )}
+  </div>
+</a>
+
+<style>
+  .card {
+    display: grid;
+    grid-template-columns: minmax(auto, 16rem) 1fr;
+    gap: var(--size-5);
+    align-items: center;
+    padding: var(--size-4);
+    border-block-end: var(--border-size-1) solid var(--border);
+    border-radius: var(--radius-2);
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.15s;
+
+    &:last-of-type { border-block-end: none; }
+    &:hover { background: var(--surface-2); }
+    &:hover .card__title { color: var(--color-brand); }
+  }
+
+  @media (width < 560px) {
+    .card {
+      grid-template-columns: 1fr;
+      gap: var(--size-3);
+    }
+  }
+
+  .card__thumb-wrap {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-2);
+    overflow: hidden;
+    background: var(--surface-3);
+    max-inline-size: 16rem;
+    max-block-size: 9rem;
+  }
+
+  @media (width < 560px) {
+    .card__thumb-wrap {
+      max-inline-size: unset;
+      max-block-size: unset;
+    }
+  }
+
+  .card__thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+
+    .card:hover & { transform: scale(1.04); }
+  }
+
+  .card__title {
+    font-size: var(--font-size-2);
+    margin: 0 0 0.25rem;
+    transition: color 0.15s;
+  }
+
+  .card__desc {
+    font-size: var(--font-size-1);
+    color: var(--text-2);
+    margin: 0 0 0.625rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* ── Slotted content ─────────────────────────── */
+  .card :global(.card__meta) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.2em 0.9em;
+    font-size: var(--font-size-1);
+    color: var(--text-2);
+    margin: 0 0 0.25rem;
+  }
+
+  .card :global(.card__meta-item) {
+    display: flex;
+    align-items: center;
+    gap: 0.3em;
+  }
+
+  .card :global(.card__meta-item svg) {
+    width: 1em;
+    height: 1em;
+    flex-shrink: 0;
+    opacity: 0.7;
+  }
+
+  .card :global(.card__upcoming-pill) {
+    position: absolute;
+    top: var(--size-2);
+    left: var(--size-2);
+    font-size: var(--font-size-0);
+    padding: 1px var(--size-2);
+    background: color-mix(in oklch, var(--color-brand) 18%, var(--surface-1));
+    backdrop-filter: blur(4px);
+  }
+
+  @media (width < 560px) {
+    .card :global(.card__upcoming-pill) {
+      font-size: var(--font-size-1);
+      padding: var(--size-1) var(--size-3);
+    }
+  }
+</style>

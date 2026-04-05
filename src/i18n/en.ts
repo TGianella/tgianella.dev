@@ -32,6 +32,8 @@ const en = {
     updatedOn: 'Updated on',
     tags: 'Tags',
     backToList: '← Back to blog',
+    firstPublishedIn: 'First published in',
+    writtenWith: 'Written with',
   },
   talks: {
     title: 'Talks',

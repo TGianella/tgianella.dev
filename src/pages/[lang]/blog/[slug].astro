@@ -1,5 +1,7 @@
 ---
+import { getImage } from 'astro:assets';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PersonCard from '../../../components/PersonCard.astro';
 import { useTranslations, locales, type Locale } from '../../../i18n/utils';
 import { getCollection, render } from 'astro:content';
 
@@ -21,8 +23,11 @@ const t = useTranslations(lang);
 const { Content } = await render(post);
 
 const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'long' });
+const ogImage = post.data.thumbnail
+  ? (await getImage({ src: post.data.thumbnail })).src
+  : undefined;
 const wordCount = post.body?.split(/\s+/).length ?? 0;
-const readingTime = Math.max(1, Math.ceil(wordCount / 200));
+const readingTime = Math.max(1, Math.ceil(wordCount / 300));
 ---
 
 <BaseLayout
@@ -30,7 +35,7 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 200));
   title={post.data.title}
   description={post.data.description}
   canonicalPath={`/blog/${slug}`}
-  ogImage={post.data.cover}
+  ogImage={ogImage}
 >
   <article>
     <a href={`/${lang}/blog`} class="back-link">{t.blog.backToList}</a>
@@ -58,17 +63,78 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 200));
           {t.blog.updatedOn} {dateFormatter.format(post.data.updatedDate)}
         </p>
       )}
+
     </header>
 
-    {post.data.cover && (
-      <img src={post.data.cover} alt={post.data.coverAlt ?? post.data.title} class="post-cover" loading="eager" />
-    )}
 
-    <div class="prose">
-      <Content />
+    <div class="post-body">
+      {post.data.coAuthors.length > 0 && (
+        <aside class="coauthors-sidebar">
+          <p class="coauthors-sidebar__label">{t.blog.writtenWith}</p>
+          <div class="coauthors-sidebar__list">
+            {post.data.coAuthors.map(a => (
+              <PersonCard name={a.name} picture={a.picture} url={a.url} />
+            ))}
+          </div>
+        </aside>
+      )}
+
+      <div class="prose">
+        {post.data.firstPublishedIn && (
+          <p class="origin-notice">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="16" x2="12" y2="12"/>
+              <line x1="12" y1="8" x2="12.01" y2="8"/>
+            </svg>
+            <span>
+              {t.blog.firstPublishedIn}{' '}
+              {post.data.firstPublishedIn.url
+                ? <a href={post.data.firstPublishedIn.url} target="_blank" rel="noopener noreferrer">{post.data.firstPublishedIn.name}</a>
+                : post.data.firstPublishedIn.name}
+            </span>
+          </p>
+        )}
+        <Content />
+      </div>
+
     </div>
   </article>
 </BaseLayout>
+
+<dialog class="lbx" aria-label="Image preview">
+  <button class="lbx__close" aria-label="Close">✕</button>
+  <img class="lbx__img" src="" alt="" />
+</dialog>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    const dialog = document.querySelector<HTMLDialogElement>('.lbx');
+    if (!dialog) return;
+
+    const lbxImg = dialog.querySelector<HTMLImageElement>('.lbx__img');
+    const closeBtn = dialog.querySelector<HTMLButtonElement>('.lbx__close');
+    if (!lbxImg || !closeBtn) return;
+
+    document.querySelectorAll<HTMLImageElement>('.prose img').forEach(img => {
+      img.tabIndex = 0;
+      const open = () => {
+        lbxImg.src = img.src;
+        lbxImg.alt = img.alt;
+        dialog.showModal();
+      };
+      img.addEventListener('click', open);
+      img.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+      });
+    });
+
+    closeBtn.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('click', e => {
+      if (e.target === dialog) dialog.close();
+    });
+  });
+</script>
 
 <style>
   .back-link {
@@ -117,11 +183,129 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 200));
     font-style: italic;
   }
 
-  .post-cover {
-    inline-size: 100%;
-    max-block-size: 420px;
-    object-fit: cover;
+  .post-body {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: start;
+    column-gap: var(--size-8);
+    row-gap: var(--size-4);
+  }
+
+  @media (width >= 48rem) {
+    .post-body {
+      grid-template-columns: 1fr auto;
+    }
+
+    .prose { order: -1; }
+  }
+
+  .coauthors-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-3);
+  }
+
+  .coauthors-sidebar__list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--size-3);
+  }
+
+  @media (width >= 48rem) {
+    .coauthors-sidebar__list {
+      flex-direction: column;
+
+      & :global(.person-card) { width: 100%; }
+    }
+  }
+
+  .coauthors-sidebar__label {
+    font-size: var(--font-size-1);
+    color: var(--text-2);
+    font-weight: var(--font-weight-6);
+    margin: 0;
+  }
+
+  .origin-notice {
+    display: flex;
+    align-items: center;
+    gap: var(--size-4);
+    font-size: var(--font-size-1);
+    color: var(--text-2);
+    background: var(--surface-2);
     border-radius: var(--radius-2);
-    margin-block-end: var(--size-5);
+    padding: var(--size-3) var(--size-4);
+    margin: 0;
+
+    & svg { flex-shrink: 0; }
+  }
+
+
+  :global(.prose img) {
+    cursor: zoom-in;
+    &:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 3px; }
+  }
+
+  /* ── Lightbox ──────────────────────────────── */
+  .lbx {
+    border: none;
+    padding: 0;
+    background: transparent;
+    max-inline-size: 100%;
+    max-block-size: 100%;
+    position: fixed;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    display: grid;
+    place-items: center;
+    padding: var(--size-4);
+  }
+
+  .lbx:not([open]) { display: none; }
+
+  .lbx::backdrop {
+    background: oklch(0% 0 0 / 0.88);
+    animation: lbx-backdrop-in 0.15s ease;
+  }
+
+  @keyframes lbx-backdrop-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  .lbx__img {
+    max-inline-size: min(90vw, 960px);
+    max-block-size: 85dvh;
+    object-fit: contain;
+    border-radius: var(--radius-2);
+    animation: lbx-img-in 0.2s ease;
+    display: block;
+  }
+
+  @keyframes lbx-img-in {
+    from { opacity: 0; scale: 0.97; }
+    to   { opacity: 1; scale: 1; }
+  }
+
+  .lbx__close {
+    position: absolute;
+    inset-block-start: var(--size-4);
+    inset-inline-end: var(--size-4);
+    background: oklch(100% 0 0 / 0.15);
+    border: 1px solid oklch(100% 0 0 / 0.25);
+    color: white;
+    border-radius: var(--radius-round);
+    inline-size: 2.25rem;
+    block-size: 2.25rem;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    font-size: var(--font-size-2);
+    line-height: 1;
+    transition: background 0.15s;
+
+    &:hover { background: oklch(100% 0 0 / 0.28); }
   }
 </style>

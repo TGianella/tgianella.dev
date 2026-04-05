@@ -1,6 +1,7 @@
 ---
 import { ClientRouter } from 'astro:transitions';
 import Nav from '../components/Nav.astro';
+import SocialLinks from '../components/SocialLinks.astro';
 import { useTranslations, getLocalizedPath, getAlternateLocale, type Locale } from '../i18n/utils';
 import '../styles/global.css';
 
@@ -85,6 +86,7 @@ const pageTitle = `${title} — ${t.seo.siteName}`;
         <p class="footer__copy">
           &copy; {new Date().getFullYear()} {t.seo.siteName}. {t.footer.rights}
         </p>
+        <SocialLinks lang={lang} />
       </div>
     </footer>
   </body>
@@ -121,6 +123,9 @@ const pageTitle = `${title} — ${t.seo.siteName}`;
     max-inline-size: var(--layout-width);
     margin-inline: auto;
     padding-inline: var(--page-padding);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
   .footer__copy {

@@ -29,11 +29,13 @@ const fr: Translations = {
   blog: {
     title: 'Blog',
     description: 'Articles sur le développement web et plus.',
-    readingTime: (minutes: number) => `${minutes} min de lecture`,
+    readingTime: (minutes: number) => `${minutes} min`,
     publishedOn: 'Publié le',
     updatedOn: 'Mis à jour le',
     tags: 'Tags',
     backToList: '← Retour au blog',
+    firstPublishedIn: 'Publié initialement dans',
+    writtenWith: 'Écrit avec',
   },
   talks: {
     title: 'Conférences',
