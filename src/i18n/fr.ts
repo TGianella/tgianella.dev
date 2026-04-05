@@ -51,8 +51,6 @@ const fr: Translations = {
     events: 'Événements',
     with: 'avec',
     watchReplay: 'Voir le replay',
-    video: 'vidéo',
-    videoAvailable: 'Vidéo disponible',
     internalEvent: 'Interne',
     moreEvents: (count: number) => `+${count} autre${count > 1 ? 's' : ''} événement${count > 1 ? 's' : ''}`,
   },

@@ -18,7 +18,7 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'long' });
 <BaseLayout lang={lang} title={t.gallery.title} description={t.gallery.description} canonicalPath="/gallery">
   <PageHeader title={t.gallery.title} description={t.gallery.description} />
 
-  <ul class="album-grid" role="list">
+  <ul class="album-grid">
     {albums.map(album => (
       <li>
         <a href={`/${lang}/gallery/${slugOf(album.id, lang)}`} class="album-card">

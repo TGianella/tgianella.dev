@@ -70,7 +70,8 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'long' });
     margin-block-end: var(--size-5);
     transition: color 0.15s;
 
-    &:hover { color: var(--color-brand); }
+    &:hover,
+    &:focus-visible { color: var(--color-brand); }
   }
 
   .album-header {

@@ -55,14 +55,12 @@ export default function GalleryLightbox({ photos, labels }: Props) {
 
   return (
     <>
-      <ul className={styles.grid} role="list">
+      <ul className={styles.grid}>
         {photos.map((photo, i) => (
           <li key={photo.src} className={styles.gridItem}>
             <button
-              className={styles.gridItem}
               onClick={() => setActiveIndex(i)}
               aria-label={photo.alt}
-              style={{ all: 'unset', display: 'block', width: '100%', height: '100%', cursor: 'pointer' }}
             >
               <img
                 src={photo.src}

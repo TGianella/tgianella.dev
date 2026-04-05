@@ -120,7 +120,8 @@
   line-height: 1;
 }
 
-.btn:hover {
+.btn:hover,
+.btn:focus-visible {
   background: rgba(255, 255, 255, 0.28);
 }
 

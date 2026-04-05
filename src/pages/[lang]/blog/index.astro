@@ -19,7 +19,7 @@ const posts = (await getCollection('blog', ({ id }) => id.startsWith(`${lang}/`)
 <BaseLayout lang={lang} title={t.blog.title} description={t.blog.description} canonicalPath="/blog">
   <PageHeader title={t.blog.title} description={t.blog.description} />
 
-  <ul class="post-list" role="list">
+  <ul class="post-list">
     {posts.map(post => (
       <li>
         <BlogCard post={{ ...post.data, body: post.body }} lang={lang} slug={slugOf(post.id, lang)} />

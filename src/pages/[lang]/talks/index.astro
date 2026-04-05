@@ -30,7 +30,7 @@ const talks = (await getCollection('talks', ({ id, data }) =>
     {t.talks.intro.map(p => <p>{p}</p>)}
   </PageHeader>
 
-  <ul class="talk-list" role="list">
+  <ul class="talk-list">
     {talks.map(talk => (
       <li>
         <TalkCard talk={talk.data} lang={lang} slug={slugOf(talk.id, lang)} />

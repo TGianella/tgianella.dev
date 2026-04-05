@@ -25,7 +25,7 @@ const { href, title, description, thumb, thumbAlt = '', tags = [] } = Astro.prop
     <p class="card__desc">{description}</p>
     <slot />
     {tags.length > 0 && (
-      <ul class="tag-list" role="list">
+      <ul class="tag-list">
         {tags.map(tag => <li class="tag">{tag}</li>)}
       </ul>
     )}
@@ -46,8 +46,10 @@ const { href, title, description, thumb, thumbAlt = '', tags = [] } = Astro.prop
     transition: background 0.15s;
 
     &:last-of-type { border-block-end: none; }
-    &:hover { background: var(--surface-2); }
-    &:hover .card__title { color: var(--color-brand); }
+    &:hover,
+    &:focus-visible { background: var(--surface-2); outline: 2px solid var(--color-brand); outline-offset: 2px; }
+    &:hover .card__title,
+    &:focus-visible .card__title { color: var(--color-brand); }
   }
 
   @media (width < 560px) {

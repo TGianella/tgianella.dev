@@ -53,7 +53,7 @@ const eventsSorted = [...talk.data.events].sort((a, b) => b.date.valueOf() - a.d
 
       {talk.data.tags.length > 0 && (
         <div class="talk-header__tags">
-          <ul class="tag-list" role="list">
+          <ul class="tag-list">
             {talk.data.tags.map(tag => <li class="tag">{tag}</li>)}
           </ul>
         </div>
@@ -97,7 +97,7 @@ const eventsSorted = [...talk.data.events].sort((a, b) => b.date.valueOf() - a.d
 
       <aside class="events-sidebar">
         <h2 class="events-sidebar__heading">{t.talks.events}</h2>
-        <ul class="event-list" role="list">
+        <ul class="event-list">
           {eventsSorted.map(event => (
             <EventCard event={event} lang={lang} />
           ))}
@@ -116,7 +116,8 @@ const eventsSorted = [...talk.data.events].sort((a, b) => b.date.valueOf() - a.d
     margin-block-end: var(--size-5);
     transition: color 0.15s;
 
-    &:hover { color: var(--color-brand); }
+    &:hover,
+    &:focus-visible { color: var(--color-brand); }
   }
 
   .talk-header {
@@ -187,7 +188,8 @@ const eventsSorted = [...talk.data.events].sort((a, b) => b.date.valueOf() - a.d
     text-decoration: none;
     transition: opacity 0.15s;
 
-    &:hover { opacity: 0.85; }
+    &:hover,
+    &:focus-visible { opacity: 0.85; }
   }
 
   .btn--primary {

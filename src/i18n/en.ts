@@ -49,8 +49,6 @@ const en = {
     events: 'Events',
     with: 'with',
     watchReplay: 'Watch replay',
-    video: 'video',
-    videoAvailable: 'Video available',
     internalEvent: 'Internal',
     moreEvents: (count: number) => `+${count} more event${count > 1 ? 's' : ''}`,
   },

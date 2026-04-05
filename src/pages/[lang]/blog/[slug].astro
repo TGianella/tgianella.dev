@@ -53,7 +53,7 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 300));
       <p class="post-header__desc">{post.data.description}</p>
 
       {post.data.tags.length > 0 && (
-        <ul class="tag-list" role="list" aria-label={t.blog.tags}>
+        <ul class="tag-list" aria-label={t.blog.tags}>
           {post.data.tags.map(tag => <li class="tag">{tag}</li>)}
         </ul>
       )}
@@ -108,7 +108,13 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 300));
 </dialog>
 
 <script>
+  let lbxController: AbortController | null = null;
+
   document.addEventListener('astro:page-load', () => {
+    lbxController?.abort();
+    lbxController = new AbortController();
+    const { signal } = lbxController;
+
     const dialog = document.querySelector<HTMLDialogElement>('.lbx');
     if (!dialog) return;
 
@@ -123,16 +129,16 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 300));
         lbxImg.alt = img.alt;
         dialog.showModal();
       };
-      img.addEventListener('click', open);
+      img.addEventListener('click', open, { signal });
       img.addEventListener('keydown', e => {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
-      });
+      }, { signal });
     });
 
-    closeBtn.addEventListener('click', () => dialog.close());
+    closeBtn.addEventListener('click', () => dialog.close(), { signal });
     dialog.addEventListener('click', e => {
       if (e.target === dialog) dialog.close();
-    });
+    }, { signal });
   });
 </script>
 
@@ -145,7 +151,8 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 300));
     margin-block-end: var(--size-5);
     transition: color 0.15s;
 
-    &:hover { color: var(--color-brand); }
+    &:hover,
+    &:focus-visible { color: var(--color-brand); }
   }
 
   .post-header {
@@ -306,6 +313,7 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 300));
     line-height: 1;
     transition: background 0.15s;
 
-    &:hover { background: oklch(100% 0 0 / 0.28); }
+    &:hover,
+    &:focus-visible { background: oklch(100% 0 0 / 0.28); }
   }
 </style>

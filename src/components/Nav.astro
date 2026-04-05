@@ -42,7 +42,7 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
 
     <a href={alternatePath} class="lang-switch" lang={alternateLang} hreflang={alternateLang} aria-label={t.langSwitcher.label}>
       {(['en', 'fr'] as const).map(l => (
-        <span class="lang-switch__opt" aria-hidden="true" aria-current={l === lang ? 'true' : undefined}>
+        <span class="lang-switch__opt" aria-hidden="true" data-current={l === lang ? 'true' : undefined}>
           {l.toUpperCase()}
         </span>
       ))}
@@ -139,9 +139,11 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
     transition: color 0.15s, background 0.15s;
   }
 
-  .nav__link:hover {
+  .nav__link:hover,
+  .nav__link:focus-visible {
     color: var(--text-1);
     background: var(--surface-2);
+    outline: none;
   }
 
   .nav__link[aria-current="page"] {
@@ -159,6 +161,11 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
     border-radius: var(--radius-round);
     text-decoration: none;
     color: inherit;
+
+    &:focus-visible {
+      outline: 2px solid var(--color-brand);
+      outline-offset: 2px;
+    }
   }
 
   .lang-switch__opt {
@@ -174,7 +181,7 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
       color: var(--text-1);
     }
 
-    &[aria-current="true"] {
+    &[data-current="true"] {
       background: var(--surface-1);
       color: var(--text-1);
       box-shadow: var(--shadow-1);
@@ -195,7 +202,8 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
     color: var(--text-1);
   }
 
-  .nav__hamburger:hover {
+  .nav__hamburger:hover,
+  .nav__hamburger:focus-visible {
     background: var(--surface-2);
   }
 
@@ -278,6 +286,7 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
   }
 
   .nav__mobile-link:hover,
+  .nav__mobile-link:focus-visible,
   .nav__mobile-link[aria-current="page"] {
     color: var(--text-1);
   }
