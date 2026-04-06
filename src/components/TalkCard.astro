@@ -37,7 +37,7 @@ const thumbSrc = talk.thumbnail
   : fallbackSrc;
 ---
 
-<CardShell href={`/${lang}/talks/${slug}`} title={talk.title} description={talk.description} thumb={thumbSrc} tags={talk.tags}>
+<CardShell href={`/${lang}/talks/${slug}`} title={talk.title} description={talk.description} thumb={thumbSrc} tags={talk.tags} thumbTransitionName={`talk-thumb-${slug}`}>
   {upcoming && (
     <span slot="thumb-overlay" class="upcoming-pill card__upcoming-pill">{t.talks.upcoming}</span>
   )}

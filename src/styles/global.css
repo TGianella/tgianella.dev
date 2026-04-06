@@ -169,3 +169,27 @@ a {
 .prose ol {
   padding-inline-start: var(--size-5);
 }
+
+
+/* ─── View transitions ───────────────────────────────── */
+::view-transition-group(site-nav) {
+  z-index: var(--layer-2);
+}
+
+::view-transition-group(.text-transition),
+::view-transition-group(lang-thumb) {
+  z-index: calc(var(--layer-2) + 1);
+}
+
+::view-transition-old(site-nav),
+::view-transition-new(site-nav) {
+  animation: none;
+}
+
+::view-transition-old(.text-transition),
+::view-transition-new(.text-transition) {
+  height: 100%;
+  object-fit: none;
+  object-position: left;
+  overflow: clip;
+}

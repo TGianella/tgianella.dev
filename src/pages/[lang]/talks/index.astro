@@ -26,7 +26,7 @@ const talks = (await getCollection('talks', ({ id, data }) =>
 ---
 
 <BaseLayout lang={lang} title={t.talks.title} description={t.talks.description} canonicalPath="/talks">
-  <PageHeader title={t.talks.title}>
+  <PageHeader title={t.talks.title} transitionName="talks-title">
     {t.talks.intro.map(p => <p>{p}</p>)}
   </PageHeader>
 

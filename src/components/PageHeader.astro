@@ -2,13 +2,14 @@
 interface Props {
   title: string;
   description?: string;
+  transitionName?: string;
 }
 
-const { title, description } = Astro.props;
+const { title, description, transitionName } = Astro.props;
 ---
 
 <header class="page-header">
-  <h1>{title}</h1>
+  <h1 style={transitionName ? `view-transition-name: ${transitionName}` : undefined}>{title}</h1>
   {description && <p class="page-desc">{description}</p>}
   <slot />
 </header>
@@ -22,6 +23,8 @@ const { title, description } = Astro.props;
   .page-header h1 {
     font-size: clamp(1.75rem, 4vw, 2.5rem);
     margin: 0 0 var(--size-4);
+    width: fit-content;
+    view-transition-class: text-transition;
   }
 
   .page-desc {

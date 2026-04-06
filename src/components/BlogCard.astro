@@ -30,7 +30,7 @@ const thumbSrc = post.thumbnail
   : `https://picsum.photos/seed/${slug}/320/180`;
 ---
 
-<CardShell href={`/${lang}/blog/${slug}`} title={post.title} description={post.description} thumb={thumbSrc} tags={post.tags}>
+<CardShell href={`/${lang}/blog/${slug}`} title={post.title} description={post.description} thumb={thumbSrc} tags={post.tags} thumbTransitionName={`blog-thumb-${slug}`}>
   <p slot="meta" class="card__meta">
     <span class="card__meta-item">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">

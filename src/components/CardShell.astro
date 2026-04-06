@@ -6,12 +6,13 @@ interface Props {
   thumb: string;
   thumbAlt?: string;
   tags?: string[];
+  thumbTransitionName?: string;
 }
 
-const { href, title, description, thumb, thumbAlt = '', tags = [] } = Astro.props;
+const { href, title, description, thumb, thumbAlt = '', tags = [], thumbTransitionName } = Astro.props;
 ---
 
-<a href={href} class="card">
+<a href={href} class="card" style={thumbTransitionName ? `view-transition-name: ${thumbTransitionName}` : undefined}>
   <div class="card__side">
     <div class="card__thumb-wrap">
       <img src={thumb} alt={thumbAlt} class="card__thumb" loading="lazy" decoding="async" />
@@ -81,7 +82,6 @@ const { href, title, description, thumb, thumbAlt = '', tags = [] } = Astro.prop
     height: 100%;
     object-fit: cover;
     transition: transform 0.3s ease;
-
     .card:hover & { transform: scale(1.04); }
   }
 

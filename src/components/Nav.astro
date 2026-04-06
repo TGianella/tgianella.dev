@@ -10,10 +10,10 @@ const { lang, currentPath } = Astro.props;
 const t = useTranslations(lang);
 
 const links = [
-  { href: getLocalizedPath('/', lang),        label: t.nav.home },
-  { href: getLocalizedPath('/blog', lang),    label: t.nav.blog },
-  { href: getLocalizedPath('/talks', lang),   label: t.nav.talks },
-  { href: getLocalizedPath('/gallery', lang), label: t.nav.gallery },
+  { href: getLocalizedPath('/', lang),        label: t.nav.home,    key: 'home' },
+  { href: getLocalizedPath('/blog', lang),    label: t.nav.blog,    key: 'blog' },
+  { href: getLocalizedPath('/talks', lang),   label: t.nav.talks,   key: 'talks' },
+  { href: getLocalizedPath('/gallery', lang), label: t.nav.gallery, key: 'gallery' },
 ];
 
 const alternateLang = t.langSwitcher.lang as Locale;
@@ -27,11 +27,12 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
     </a>
 
     <ul class="nav__links">
-      {links.map(({ href, label }) => (
+      {links.map(({ href, label, key }) => (
         <li>
           <a
             href={href}
             class="nav__link"
+            style={`view-transition-name: nav-${key}`}
             aria-current={currentPath === href ? 'page' : undefined}
           >
             {label}
@@ -92,6 +93,7 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
       btn.setAttribute('aria-label', open ? (btn.dataset.labelClose ?? '') : (btn.dataset.labelOpen ?? ''));
     });
   });
+
 </script>
 
 <style>
@@ -101,6 +103,7 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
     z-index: var(--layer-2);
     background: var(--surface-1);
     border-block-end: var(--border-size-1) solid var(--border);
+    view-transition-name: site-nav;
   }
 
   .nav__inner {
@@ -137,6 +140,7 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
     padding: var(--size-1) var(--size-2);
     border-radius: var(--radius-2);
     transition: color 0.15s, background 0.15s;
+    view-transition-class: text-transition;
   }
 
   .nav__link:hover,
@@ -300,4 +304,5 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
       display: flex;
     }
   }
+
 </style>
