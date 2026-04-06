@@ -170,8 +170,9 @@ a {
   padding-inline-start: var(--size-5);
 }
 
-
 /* ─── View transitions ───────────────────────────────── */
+
+/* Named element z-ordering */
 ::view-transition-group(site-nav) {
   z-index: var(--layer-2);
 }
@@ -181,11 +182,13 @@ a {
   z-index: calc(var(--layer-2) + 1);
 }
 
+/* Nav stays fixed during transitions */
 ::view-transition-old(site-nav),
 ::view-transition-new(site-nav) {
   animation: none;
 }
 
+/* Text clip effect for nav links and page title during lang switch */
 ::view-transition-old(.text-transition),
 ::view-transition-new(.text-transition) {
   height: 100%;
@@ -193,3 +196,30 @@ a {
   object-position: left;
   overflow: clip;
 }
+
+/* ── Directional slide for page navigation ───────────── */
+:root {
+  --vt-slide: 10%;
+}
+
+@media (width <= 560px) {
+  :root { --vt-slide: 40%; }
+}
+
+[data-astro-transition=forward]::view-transition-old(root) {
+  animation: vt-out-left 0.25s ease both;
+}
+[data-astro-transition=forward]::view-transition-new(root) {
+  animation: vt-in-right 0.25s ease both;
+}
+[data-astro-transition=back]::view-transition-old(root) {
+  animation: vt-out-right 0.25s ease both;
+}
+[data-astro-transition=back]::view-transition-new(root) {
+  animation: vt-in-left 0.25s ease both;
+}
+
+@keyframes vt-out-left  { to   { opacity: 0; translate: calc(-1 * var(--vt-slide)) 0; } }
+@keyframes vt-in-right  { from { opacity: 0; translate: var(--vt-slide) 0; } }
+@keyframes vt-out-right { to   { opacity: 0; translate: var(--vt-slide) 0; } }
+@keyframes vt-in-left   { from { opacity: 0; translate: calc(-1 * var(--vt-slide)) 0; } }

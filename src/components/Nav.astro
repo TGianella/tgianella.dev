@@ -32,7 +32,7 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
           <a
             href={href}
             class="nav__link"
-            style={`view-transition-name: nav-${key}`}
+            data-vt-name={`nav-${key}`}
             aria-current={currentPath === href ? 'page' : undefined}
           >
             {label}
@@ -43,7 +43,7 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
 
     <a href={alternatePath} class="lang-switch" lang={alternateLang} hreflang={alternateLang} aria-label={t.langSwitcher.label}>
       {(['en', 'fr'] as const).map(l => (
-        <span class="lang-switch__opt" aria-hidden="true" data-current={l === lang ? 'true' : undefined}>
+        <span class="lang-switch__opt" aria-hidden="true" data-current={l === lang ? 'true' : undefined} data-vt-name={l === lang ? 'lang-thumb' : undefined}>
           {l.toUpperCase()}
         </span>
       ))}
@@ -189,7 +189,6 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
       background: var(--surface-1);
       color: var(--text-1);
       box-shadow: var(--shadow-1);
-      view-transition-name: lang-thumb;
     }
   }
 

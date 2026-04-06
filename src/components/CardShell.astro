@@ -12,7 +12,7 @@ interface Props {
 const { href, title, description, thumb, thumbAlt = '', tags = [], thumbTransitionName } = Astro.props;
 ---
 
-<a href={href} class="card" style={thumbTransitionName ? `view-transition-name: ${thumbTransitionName}` : undefined}>
+<a href={href} class="card" data-vt-name={thumbTransitionName || undefined}>
   <div class="card__side">
     <div class="card__thumb-wrap">
       <img src={thumb} alt={thumbAlt} class="card__thumb" loading="lazy" decoding="async" />

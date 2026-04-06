@@ -9,7 +9,7 @@ const { title, description, transitionName } = Astro.props;
 ---
 
 <header class="page-header">
-  <h1 style={transitionName ? `view-transition-name: ${transitionName}` : undefined}>{title}</h1>
+  <h1 data-vt-name={transitionName || undefined}>{title}</h1>
   {description && <p class="page-desc">{description}</p>}
   <slot />
 </header>
