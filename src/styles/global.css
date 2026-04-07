@@ -2,9 +2,43 @@
 @import "open-props/style";
 @import "open-props/normalize";
 
+/* ─── Charter (self-hosted) ──────────────────────────── */
+@font-face {
+  font-family: Charter;
+  src: url('/fonts/Bitstream Charter.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: optional;
+}
+
+@font-face {
+  font-family: Charter;
+  src: url('/fonts/Bitstream Charter Italic OSF.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: optional;
+}
+
+@font-face {
+  font-family: Charter;
+  src: url('/fonts/Bitstream Charter Bold OSF.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: optional;
+}
+
+@font-face {
+  font-family: Charter;
+  src: url('/fonts/Bitstream Charter Bold Italic OSF.woff2') format('woff2');
+  font-weight: 700;
+  font-style: italic;
+  font-display: optional;
+}
+
 /* ─── Custom tokens ──────────────────────────────────── */
 :root {
   --color-brand: var(--gray-12);
+  --brand: var(--color-brand);
 
   --text-1: var(--indigo-12);
   --text-2: var(--indigo-9);
@@ -24,6 +58,7 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --color-brand: var(--yellow-7);
+    --brand: var(--color-brand);
 
     --text-1: var(--choco-0);
     --text-2: var(--choco-1);
@@ -184,6 +219,7 @@ a {
 }
 
 ::view-transition-group(.text-transition),
+::view-transition-group(.text-transition-right),
 ::view-transition-group(lang-thumb) {
   z-index: calc(var(--layer-2) + 1);
 }
@@ -200,6 +236,14 @@ a {
   height: 100%;
   object-fit: none;
   object-position: left;
+  overflow: clip;
+}
+
+::view-transition-old(.text-transition-right),
+::view-transition-new(.text-transition-right) {
+  height: 100%;
+  object-fit: none;
+  object-position: right;
   overflow: clip;
 }
 

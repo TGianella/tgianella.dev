@@ -3,7 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import SocialLinks from '../../components/SocialLinks.astro';
 import { useTranslations, getLocaleStaticPaths, slugOf, isUpcoming, type Locale } from '../../i18n/utils';
 import { getCollection } from 'astro:content';
-import Portrait from '../../assets/portrait-theo-gianella.jpg';
+import Portrait from '../../assets/portrait-theo-gianella-2.jpg';
 
 export const getStaticPaths = getLocaleStaticPaths;
 
@@ -33,16 +33,21 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'medium' });
 <BaseLayout lang={lang} title={t.nav.home} description={t.home.tagline} canonicalPath="/">
 
   <section class="hero">
-    <img
-      src={Portrait.src}
-      alt={t.seo.siteName}
-      class="hero__avatar"
-      width="128"
-      height="128"
-    />
-    <h1 class="hero__name">{t.seo.siteName}</h1>
-    <p class="hero__tagline">{t.home.tagline}</p>
-    <SocialLinks lang={lang} />
+    <div class="hero__name-container">
+      <h1 class="hero__name">{t.seo.siteName}</h1>
+      <img
+          src={Portrait.src}
+          alt={t.seo.siteName}
+          class="hero__avatar"
+          width="646"
+          height="363"
+      />
+    </div>
+
+    <div class="hero__bottom">
+      <p class="hero__tagline" data-vt-name="hero-tagline">{t.home.tagline}</p>
+      <span class="hero__scroll-hint" aria-hidden="true">↓</span>
+    </div>
   </section>
 
   <section class="section">
@@ -122,36 +127,102 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'medium' });
 
 <style>
   .hero {
+    position: relative;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: var(--size-1);
-    padding-block: var(--size-9);
+    padding-block: var(--size-7);
     border-block-end: var(--border-size-1) solid var(--border);
     margin-block-end: var(--size-8);
+    min-block-size: calc(100dvh - ((var(--size-7) * 2) + var(--size-5)));
   }
 
-  .hero__avatar {
-    width: 7rem;
-    height: 7rem;
-    border-radius: var(--radius-round);
-    object-fit: cover;
+  .hero__name-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-5);
+    margin-block-start: auto;
+    margin-block-end: var(--size-6);
   }
 
   .hero__name {
-    font-size: clamp(2rem, 6vw, 3.5rem);
+    font-size: clamp(2rem, 10vmax, 12rem);
     margin: 0;
+    line-height: 0.8;
+  }
+
+  .hero__avatar {
+    object-fit: cover;
+    max-width: 100%;
   }
 
   .hero__tagline {
-    font-size: var(--font-size-2);
+    font-size: clamp(1.5rem, 6vmax, 10rem);
+    line-height: 0.9;
     color: var(--text-2);
     margin: 0;
+    width: min-content;
+    font-family: var(--font-transitional);
+    view-transition-class: text-transition;
+    padding-block-end: 0.2em;
   }
 
-  .hero :global(.social-links) {
-    margin-block-start: var(--size-2);
+  .hero__scroll-hint {
+    display: block;
+    text-align: end;
+    font-size: clamp(3rem, 10vmax, 8rem);
+    color: var(--text-2);
+    line-height: 1;
+    font-family: var(--font-transitional);
+    margin-block-start: var(--size-4);
+  }
+
+  @media (width >= 48rem) {
+    .hero {
+      position: relative;
+      align-items: center;
+      gap: var(--size-1);
+      padding-block: var(--size-9);
+      min-block-size: calc(100dvh - ((var(--size-9) * 2) + var(--size-5)));
+    }
+
+    .hero__name-container {
+      position: absolute;
+      top: var(--size-1);
+      left: min(calc((100vw - var(--layout-width)) / -2 + var(--size-5)), var(--size-5));
+      max-width: min-content;
+      gap: 0;
+    }
+
+    .hero__name {
+      width: min-content;
+    }
+
+    .hero__avatar {
+      position: relative;
+      left: var(--size-2);
+      margin-block-start: var(--size-5);
+    }
+
+    .hero__bottom {
+      display: contents;
+    }
+
+    .hero__tagline {
+      position: absolute;
+      right: min(calc((100vw - var(--layout-width)) / -2 + var(--size-5)), var(--size-5));
+      bottom: calc(var(--size-7) - 0.2em);
+      width: min-content;
+      text-align: end;
+      font-size: clamp(2rem, 8vmax, 10rem);
+      view-transition-class: text-transition-right;
+    }
+
+    .hero__scroll-hint {
+      position: absolute;
+      bottom: var(--size-5);
+      left: min(calc((100vw - var(--layout-width)) / -2 + var(--size-5)), var(--size-5));
+      margin-block-start: 0;
+    }
   }
 
   /* ── Sections ──────────────────────────────────────── */

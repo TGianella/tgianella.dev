@@ -144,11 +144,16 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
     view-transition-class: text-transition;
   }
 
-  .nav__link:hover,
+  .nav__link:hover {
+    color: var(--text-1);
+    background: var(--surface-3);
+  }
+
   .nav__link:focus-visible {
     color: var(--text-1);
-    background: var(--surface-2);
-    outline: none;
+    background: var(--surface-3);
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
   }
 
   .nav__link[aria-current="page"] {
@@ -206,9 +211,14 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
     color: var(--text-1);
   }
 
-  .nav__hamburger:hover,
+  .nav__hamburger:hover {
+    background: var(--surface-2);
+  }
+
   .nav__hamburger:focus-visible {
     background: var(--surface-2);
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
   }
 
   .hamburger__bar {
@@ -290,9 +300,14 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
   }
 
   .nav__mobile-link:hover,
-  .nav__mobile-link:focus-visible,
   .nav__mobile-link[aria-current="page"] {
     color: var(--text-1);
+  }
+
+  .nav__mobile-link:focus-visible {
+    color: var(--text-1);
+    outline: 2px solid var(--color-brand);
+    outline-offset: -2px;
   }
 
   @media (width < 640px) {
