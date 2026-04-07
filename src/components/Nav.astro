@@ -23,7 +23,7 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
 <nav class="nav" aria-label={t.nav.mainNavLabel}>
   <div class="nav__inner">
     <a href={getLocalizedPath('/', lang)} class="nav__logo">
-      {t.seo.siteName}
+      {t.nav.title}
     </a>
 
     <ul class="nav__links">
@@ -117,6 +117,7 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
   }
 
   .nav__logo {
+    font-family: var(--font-transitional);
     font-weight: var(--font-weight-7);
     text-decoration: none;
     color: var(--text-1);
@@ -160,7 +161,7 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
     align-items: center;
     gap: 2px;
     padding: 2px;
-    background: var(--surface-2);
+    background: var(--surface-3);
     border: var(--border-size-1) solid var(--border);
     border-radius: var(--radius-round);
     text-decoration: none;

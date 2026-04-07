@@ -1,5 +1,6 @@
 const en = {
   nav: {
+    title: 'tgianella.dev',
     home: 'Home',
     blog: 'Blog',
     talks: 'Talks',

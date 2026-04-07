@@ -4,13 +4,13 @@
 
 /* ─── Custom tokens ──────────────────────────────────── */
 :root {
-  --color-brand: var(--indigo-6);
+  --color-brand: var(--gray-12);
 
-  --text-1: var(--gray-9);
-  --text-2: var(--gray-6);
-  --surface-1: var(--gray-0);
-  --surface-2: var(--gray-1);
-  --surface-3: var(--gray-2);
+  --text-1: var(--indigo-12);
+  --text-2: var(--indigo-9);
+  --surface-1: var(--yellow-6);
+  --surface-2: var(--yellow-7);
+  --surface-3: var(--yellow-9);
   --border: var(--gray-3);
 
   --nav-height: 3.5rem;
@@ -23,14 +23,14 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-brand: var(--indigo-4);
+    --color-brand: var(--yellow-7);
 
-    --text-1: var(--gray-0);
-    --text-2: var(--gray-4);
-    --surface-1: var(--gray-9);
-    --surface-2: var(--gray-8);
-    --surface-3: var(--gray-7);
-    --border: var(--gray-7);
+    --text-1: var(--choco-0);
+    --text-2: var(--choco-1);
+    --surface-1: color-mix(in oklch, var(--indigo-12) 25%, var(--gray-12));
+    --surface-2: color-mix(in oklch, var(--indigo-11) 35%, var(--gray-12));
+    --surface-3: color-mix(in oklch, var(--indigo-10) 45%, var(--gray-12));
+    --border: var(--gray-5);
   }
 }
 
@@ -60,6 +60,11 @@ body {
   line-height: var(--font-lineheight-4);
   color: var(--text-1);
   background-color: var(--surface-1);
+  background-size: 40px 40px;
+  background-image:
+    linear-gradient(to right, color-mix(var(--text-1) 10%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom,color-mix(var(--text-1) 12%, transparent), transparent 1px);
+  background-repeat: repeat;
   min-block-size: 100dvh;
 }
 
@@ -71,6 +76,7 @@ video {
 }
 
 h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-transitional);
   line-height: var(--font-lineheight-2);
   font-weight: var(--font-weight-7);
 }

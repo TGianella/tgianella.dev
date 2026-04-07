@@ -39,7 +39,7 @@ const thumbSrc = talk.thumbnail
 
 <CardShell href={`/${lang}/talks/${slug}`} title={talk.title} description={talk.description} thumb={thumbSrc} tags={talk.tags} thumbTransitionName={`talk-thumb-${slug}`}>
   {upcoming && (
-    <span slot="thumb-overlay" class="upcoming-pill card__upcoming-pill">{t.talks.upcoming}</span>
+    <span slot="thumb-overlay" class="upcoming-pill card__upcoming-pill" data-vt-name={`upcoming-${slug}`}>{t.talks.upcoming}</span>
   )}
 
   <p slot="meta" class="card__meta">

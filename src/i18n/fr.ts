@@ -2,6 +2,7 @@ import type { Translations } from './en';
 
 const fr: Translations = {
   nav: {
+    title: 'tgianella.dev',
     home: 'Accueil',
     blog: 'Blog',
     talks: 'Conférences',
