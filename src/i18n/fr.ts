@@ -15,6 +15,10 @@ const fr: Translations = {
     label: 'English',
     lang: 'en',
   },
+  themeSwitcher: {
+    toLight: 'Passer en mode clair',
+    toDark: 'Passer en mode sombre',
+  },
   home: {
     tagline: 'Développeur Front-end',
     github: 'Profil GitHub',

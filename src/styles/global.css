@@ -35,39 +35,57 @@
   font-display: optional;
 }
 
+/* ─── Animatable color tokens ────────────────────────── */
+@property --color-brand { syntax: '<color>'; inherits: true; initial-value: transparent; }
+@property --text-1      { syntax: '<color>'; inherits: true; initial-value: transparent; }
+@property --text-2      { syntax: '<color>'; inherits: true; initial-value: transparent; }
+@property --surface-1   { syntax: '<color>'; inherits: true; initial-value: transparent; }
+@property --surface-2   { syntax: '<color>'; inherits: true; initial-value: transparent; }
+@property --surface-3   { syntax: '<color>'; inherits: true; initial-value: transparent; }
+@property --border      { syntax: '<color>'; inherits: true; initial-value: transparent; }
+
 /* ─── Custom tokens ──────────────────────────────────── */
 :root {
-  --color-brand: var(--gray-12);
-  --brand: var(--color-brand);
-
-  --text-1: var(--indigo-12);
-  --text-2: var(--indigo-9);
-  --surface-1: var(--yellow-6);
-  --surface-2: var(--yellow-7);
-  --surface-3: var(--yellow-9);
-  --border: var(--gray-3);
-
+  transition:
+    --color-brand 0.3s,
+    --text-1      0.3s,
+    --text-2      0.3s,
+    --surface-1   0.3s,
+    --surface-2   0.3s,
+    --surface-3   0.3s,
+    --border      0.3s;
   --nav-height: 3.5rem;
-
   --content-width: 68ch;
   --layout-width: 64rem;
-
   --page-padding: clamp(1rem, 4vw, 2rem);
+
+  /* Color scheme switching */
+  color-scheme: light;
+
+  /* Tokens — declared once, light-dark() picks the right value */
+  --color-brand: light-dark(var(--indigo-8), var(--yellow-7));
+  --brand: var(--color-brand);
+
+  --text-1: light-dark(
+    color-mix(in oklch, var(--indigo-12) 25%, var(--gray-12)),
+    var(--choco-0)
+  );
+  --text-2: light-dark(
+    color-mix(in oklch, var(--indigo-11) 35%, var(--gray-12)),
+    var(--choco-1)
+  );
+  --surface-1: light-dark(var(--yellow-1), color-mix(in oklch, var(--indigo-12) 25%, var(--gray-12)));
+  --surface-2: light-dark(var(--yellow-2), color-mix(in oklch, var(--indigo-11) 35%, var(--gray-12)));
+  --surface-3: light-dark(var(--yellow-3), color-mix(in oklch, var(--indigo-10) 45%, var(--gray-12)));
+  --border: light-dark(var(--gray-7), var(--gray-5));
 }
 
+/* ─── Color scheme switching ─────────────────────────── */
 @media (prefers-color-scheme: dark) {
-  :root {
-    --color-brand: var(--yellow-7);
-    --brand: var(--color-brand);
-
-    --text-1: var(--choco-0);
-    --text-2: var(--choco-1);
-    --surface-1: color-mix(in oklch, var(--indigo-12) 25%, var(--gray-12));
-    --surface-2: color-mix(in oklch, var(--indigo-11) 35%, var(--gray-12));
-    --surface-3: color-mix(in oklch, var(--indigo-10) 45%, var(--gray-12));
-    --border: var(--gray-5);
-  }
+  :root:not([data-theme="light"]) { color-scheme: dark; }
 }
+:root[data-theme="dark"]  { color-scheme: dark; }
+:root[data-theme="light"] { color-scheme: light; }
 
 /* ─── Open Props overrides ───────────────────────────── */
 p {

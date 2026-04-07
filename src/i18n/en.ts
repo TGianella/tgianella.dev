@@ -13,6 +13,10 @@ const en = {
     label: 'Français',
     lang: 'fr',
   },
+  themeSwitcher: {
+    toLight: 'Switch to light mode',
+    toDark: 'Switch to dark mode',
+  },
   home: {
     tagline: 'Frontend Engineer',
     github: 'GitHub profile',
