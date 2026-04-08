@@ -122,6 +122,25 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
     } catch(e) {}
   }
 
+  function clearStoredTheme() {
+    try {
+      localStorage.removeItem('theme');
+      localStorage.removeItem('theme-expiry');
+    } catch(e) {}
+  }
+
+  // When the system theme changes, drop the stored preference and follow the system
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    clearStoredTheme();
+    document.documentElement.removeAttribute('data-theme');
+    const themeBtn = document.querySelector<HTMLButtonElement>('.theme-toggle');
+    if (themeBtn) {
+      const labelToLight = themeBtn.dataset.labelToLight!;
+      const labelToDark = themeBtn.dataset.labelToDark!;
+      themeBtn.setAttribute('aria-label', getCurrentTheme() === 'dark' ? labelToLight : labelToDark);
+    }
+  });
+
   document.addEventListener('astro:page-load', () => {
     const themeBtn = document.querySelector<HTMLButtonElement>('.theme-toggle');
     if (themeBtn) {

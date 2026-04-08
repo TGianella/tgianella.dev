@@ -143,6 +143,10 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 300));
 </script>
 
 <style>
+  article {
+    container-type: inline-size;
+  }
+
   .back-link {
     display: inline-block;
     font-size: var(--font-size-1);
@@ -172,7 +176,8 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 300));
   }
 
   .post-header__title {
-    font-size: clamp(1.5rem, 4vw, 2.25rem);
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.1;
     margin: 0 0 0.75rem;
   }
 
