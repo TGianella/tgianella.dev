@@ -37,16 +37,23 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 300));
   canonicalPath={`/blog/${slug}`}
   ogImage={ogImage}
 >
-  <article>
+  <article data-copy-link={t.prose.copyLink} data-link-copied={t.prose.linkCopied}>
     <a href={`/${lang}/blog`} class="back-link">{t.blog.backToList}</a>
 
     <header class="post-header">
       <div class="post-header__meta">
-        <time datetime={post.data.pubDate.toISOString()}>
-          {t.blog.publishedOn} {dateFormatter.format(post.data.pubDate)}
-        </time>
-        <span>·</span>
-        <span>{t.blog.readingTime(readingTime)}</span>
+        <span class="post-header__meta-item">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+          </svg>
+          <time datetime={post.data.pubDate.toISOString()}>{dateFormatter.format(post.data.pubDate)}</time>
+        </span>
+        <span class="post-header__meta-item">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+          </svg>
+          {t.blog.readingTime(readingTime)}
+        </span>
       </div>
 
       <h1 class="post-header__title">{post.data.title}</h1>
@@ -108,6 +115,11 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 300));
 </dialog>
 
 <script>
+  import '../../../scripts/heading-anchors';
+  import '../../../scripts/blog-scroll';
+</script>
+
+<script>
   let lbxController: AbortController | null = null;
 
   document.addEventListener('astro:page-load', () => {
@@ -167,12 +179,25 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 300));
 
   .post-header__meta {
     display: flex;
-    gap: var(--size-2);
+    gap: 0.9em;
     align-items: center;
     flex-wrap: wrap;
     font-size: var(--font-size-1);
     color: var(--text-2);
     margin-block-end: 0.75rem;
+  }
+
+  .post-header__meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.3em;
+
+    & svg {
+      width: 1em;
+      height: 1em;
+      flex-shrink: 0;
+      opacity: 0.7;
+    }
   }
 
   .post-header__title {

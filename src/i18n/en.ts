@@ -29,6 +29,10 @@ const en = {
     readMore: 'Read more',
     seeAll: 'See all',
   },
+  prose: {
+    copyLink: 'Copy link to section',
+    linkCopied: 'Copied!',
+  },
   blog: {
     title: 'Blog',
     description: 'Articles about web development and more.',

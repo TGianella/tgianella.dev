@@ -30,7 +30,7 @@ const eventsSorted = [...talk.data.events].sort((a, b) => b.date.valueOf() - a.d
 ---
 
 <BaseLayout lang={lang} title={talk.data.title} description={talk.data.description} canonicalPath={`/talks/${slug}`} noindex={talk.data.events.length === 0}>
-  <article>
+  <article data-copy-link={t.prose.copyLink} data-link-copied={t.prose.linkCopied}>
     <a href={`/${lang}/talks`} class="back-link">{t.talks.backToList}</a>
 
     <header class="talk-header">
@@ -106,6 +106,10 @@ const eventsSorted = [...talk.data.events].sort((a, b) => b.date.valueOf() - a.d
     </div>
   </article>
 </BaseLayout>
+
+<script>
+  import '../../../scripts/heading-anchors';
+</script>
 
 <style>
   article {

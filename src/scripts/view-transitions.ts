@@ -14,7 +14,6 @@ function getPageWeight(pathname: string): number {
   return -1;
 }
 
-let savedScroll: number | null = null;
 let pendingLangSwitch = false;
 
 function setVtNames(active: boolean) {
@@ -30,7 +29,6 @@ document.addEventListener('astro:before-preparation', (e) => {
   pendingLangSwitch = fromPath === toPath && event.from.pathname !== event.to.pathname;
 
   if (pendingLangSwitch) {
-    savedScroll = window.scrollY;
     event.direction = 'none';
     setVtNames(true); // old-state snapshot: named elements animate individually
   } else {
@@ -48,10 +46,6 @@ document.addEventListener('astro:before-preparation', (e) => {
 document.addEventListener('astro:after-swap', () => {
   if (pendingLangSwitch) {
     setVtNames(true); // new-state snapshot: activate names in swapped-in DOM
-  }
-  if (savedScroll !== null) {
-    window.scrollTo({ top: savedScroll, behavior: 'instant' });
-    savedScroll = null;
   }
 });
 

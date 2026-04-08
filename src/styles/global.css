@@ -196,6 +196,65 @@ a {
 .prose p  { margin-block-start: 0.875rem; }
 .prose a  { color: var(--color-brand); }
 
+.heading-anchor {
+  display: inline-flex;
+  align-items: center;
+  margin-inline-start: 0.4em;
+  vertical-align: middle;
+  padding: 0.1em 0.2em;
+  background: none;
+  border: none;
+  border-radius: var(--radius-1);
+  color: var(--color-brand);
+  cursor: pointer;
+  font: inherit;
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s;
+  position: relative;
+
+  &::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    translate: -50% 0;
+    background: var(--surface-3);
+    border: var(--border-size-1) solid var(--border);
+    border-radius: var(--radius-2);
+    padding: 0.2em 0.5em;
+    font-family: var(--font-sans);
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-4);
+    color: var(--text-2);
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.1s;
+    z-index: var(--layer-1);
+  }
+
+  &:hover::after,
+  &:focus-visible::after { opacity: 1; }
+
+  &:focus-visible {
+    opacity: 1;
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
+
+  &[data-copied] {
+    opacity: 1;
+
+    &::after {
+      background: var(--color-brand);
+      border-color: var(--color-brand);
+      color: var(--surface-1);
+    }
+  }
+}
+
+.prose :is(h2, h3, h4):hover .heading-anchor { opacity: 1; }
+
 .prose pre {
   padding: var(--size-3);
   border-radius: var(--radius-2);

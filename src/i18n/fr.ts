@@ -31,6 +31,10 @@ const fr: Translations = {
     readMore: 'Lire la suite',
     seeAll: 'Voir tout',
   },
+  prose: {
+    copyLink: 'Copier le lien de la section',
+    linkCopied: 'Copié !',
+  },
   blog: {
     title: 'Blog',
     description: 'Articles sur le développement web et plus.',
