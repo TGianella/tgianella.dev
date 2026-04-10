@@ -1,0 +1,80 @@
+---
+import en from '../i18n/en';
+import '../styles/global.css';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>404 — {en.seo.siteName}</title>
+    <meta name="robots" content="noindex, nofollow" />
+
+    <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
+    <link rel="icon" href="/favicon.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <script is:inline>
+      try {
+        const theme = localStorage.getItem('theme');
+        const expiry = localStorage.getItem('theme-expiry');
+        if (theme && expiry && Date.now() < Number(expiry)) {
+          document.documentElement.setAttribute('data-theme', theme);
+        }
+      } catch(e) {}
+    </script>
+  </head>
+  <body>
+    <main>
+      <p class="code">404</p>
+      <h1>{en.notFound.title}</h1>
+      <p>{en.notFound.description}</p>
+      <a href="/en/">{en.notFound.backHome}</a>
+    </main>
+  </body>
+</html>
+
+<style>
+  body {
+    min-block-size: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--size-3);
+    padding-inline: var(--page-padding);
+  }
+
+  .code {
+    font-size: clamp(5rem, 20vw, 10rem);
+    font-weight: var(--font-weight-7);
+    line-height: 1;
+    color: var(--color-brand);
+    margin: 0;
+  }
+
+  h1 {
+    font-size: var(--font-size-5);
+    margin: 0;
+  }
+
+  p {
+    color: var(--text-2);
+    margin: 0;
+  }
+
+  a {
+    margin-block-start: var(--size-3);
+    color: var(--color-brand);
+    text-underline-offset: 3px;
+
+    &:hover { text-decoration: none; }
+  }
+</style>

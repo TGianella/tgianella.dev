@@ -153,8 +153,10 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
       updateLabel();
 
       themeBtn.addEventListener('click', () => {
+        themeBtn.classList.add('is-switching');
         setTheme(getCurrentTheme() === 'dark' ? 'light' : 'dark');
         updateLabel();
+        themeBtn.addEventListener('transitionend', () => themeBtn.classList.remove('is-switching'), { once: true });
       });
     }
 
@@ -217,6 +219,7 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
     border-radius: var(--radius-2);
     transition: color 0.15s, background 0.15s;
     view-transition-class: text-transition;
+    white-space: nowrap;
   }
 
   .nav__link:hover {
@@ -264,11 +267,10 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
     inset: 0;
     width: 1.25rem;
     height: 1.25rem;
-    transition: opacity 0.15s, transform 0.15s;
+  }
 
-    :root[data-vt-swapping] & {
-      transition: none;
-    }
+  .theme-toggle.is-switching .theme-toggle__icon {
+    transition: opacity 0.15s, transform 0.15s;
   }
 
   /* Default: sun visible, moon rotated away */
@@ -433,7 +435,7 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
     outline-offset: -2px;
   }
 
-  @media (width < 640px) {
+  @media (width < 700px) {
     .nav__links {
       display: none;
     }

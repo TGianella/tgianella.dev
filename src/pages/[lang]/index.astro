@@ -51,7 +51,7 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'medium' });
 
     <div class="hero__bottom">
       <p class="hero__tagline" data-vt-name="hero-tagline">{t.home.tagline}</p>
-      <span class="hero__scroll-hint" aria-hidden="true">↓</span>
+<span class="hero__scroll-hint" aria-hidden="true">↓</span>
     </div>
   </section>
 
@@ -153,7 +153,8 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'medium' });
   }
 
   .hero__name {
-    font-size: clamp(2rem, 10vmax, 12rem);
+    width: min-content;
+    font-size: clamp(1.5rem, 10vmax, 12rem);
     margin: 0;
     line-height: 0.8;
   }
@@ -199,10 +200,6 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'medium' });
       left: min(calc((100vw - var(--layout-width)) / -2 + var(--size-5)), var(--size-5));
       max-width: min-content;
       gap: 0;
-    }
-
-    .hero__name {
-      width: min-content;
     }
 
     .hero__avatar {

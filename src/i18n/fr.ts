@@ -75,6 +75,11 @@ const fr: Translations = {
   footer: {
     rights: 'Tous droits réservés.',
   },
+  notFound: {
+    title: 'Page introuvable',
+    description: "La page que vous cherchez n'existe pas ou a été déplacée.",
+    backHome: "Retour à l'accueil",
+  },
 };
 
 export default fr;
