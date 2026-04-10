@@ -7,11 +7,31 @@ function getPageWeight(pathname: string): number {
   if (p === '/') return 0;
   if (p === '/blog')    return 10;
   if (p === '/talks')   return 20;
-  if (p === '/gallery') return 30;
+  if (p === '/blue-screens') return 30;
   if (p.startsWith('/blog/'))    return 15;
   if (p.startsWith('/talks/'))   return 25;
-  if (p.startsWith('/gallery/')) return 35;
+  if (p.startsWith('/blue-screens/')) return 35;
   return -1;
+}
+
+function resolveDirection(from: URL, to: URL): string {
+  const fromPath = stripLocale(from.pathname);
+  const toPath   = stripLocale(to.pathname);
+
+  if (fromPath.startsWith('/blue-screens/') && toPath.startsWith('/blue-screens/') && fromPath !== toPath) {
+    const prevHref = document.querySelector<HTMLAnchorElement>('.photo-arrow--prev')?.pathname;
+    const nextHref = document.querySelector<HTMLAnchorElement>('.photo-arrow--next')?.pathname;
+    if (to.pathname === nextHref)      return 'forward';
+    if (to.pathname === prevHref)      return 'back';
+    return 'none';
+  }
+
+  const fromW = getPageWeight(from.pathname);
+  const toW   = getPageWeight(to.pathname);
+  if (fromW !== -1 && toW !== -1 && fromW !== toW) {
+    return toW > fromW ? 'forward' : 'back';
+  }
+  return 'none';
 }
 
 let pendingLangSwitch = false;
@@ -21,6 +41,14 @@ function setVtNames(active: boolean) {
     el.style.viewTransitionName = active ? el.dataset.vtName! : '';
   });
 }
+
+document.addEventListener('astro:before-swap', () => {
+  document.documentElement.setAttribute('data-vt-swapping', '');
+});
+
+document.addEventListener('astro:page-load', () => {
+  document.documentElement.removeAttribute('data-vt-swapping');
+});
 
 document.addEventListener('astro:before-preparation', (e) => {
   const event = e as Event & { from: URL; to: URL; direction: string };
@@ -33,13 +61,7 @@ document.addEventListener('astro:before-preparation', (e) => {
     setVtNames(true); // old-state snapshot: named elements animate individually
   } else {
     setVtNames(false); // clear any names left from a previous lang switch
-    const fromW = getPageWeight(event.from.pathname);
-    const toW   = getPageWeight(event.to.pathname);
-    if (fromW !== -1 && toW !== -1 && fromW !== toW) {
-      event.direction = toW > fromW ? 'forward' : 'back';
-    } else {
-      event.direction = 'none';
-    }
+    event.direction = resolveDirection(event.from, event.to);
   }
 });
 

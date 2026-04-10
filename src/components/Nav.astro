@@ -13,7 +13,7 @@ const links = [
   { href: getLocalizedPath('/', lang),        label: t.nav.home,    key: 'home' },
   { href: getLocalizedPath('/blog', lang),    label: t.nav.blog,    key: 'blog' },
   { href: getLocalizedPath('/talks', lang),   label: t.nav.talks,   key: 'talks' },
-  { href: getLocalizedPath('/gallery', lang), label: t.nav.gallery, key: 'gallery' },
+  { href: getLocalizedPath('/blue-screens', lang), label: t.nav.gallery, key: 'blue-screens' },
 ];
 
 const alternateLang = t.langSwitcher.lang as Locale;
@@ -265,6 +265,10 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
     width: 1.25rem;
     height: 1.25rem;
     transition: opacity 0.15s, transform 0.15s;
+
+    :root[data-vt-swapping] & {
+      transition: none;
+    }
   }
 
   /* Default: sun visible, moon rotated away */

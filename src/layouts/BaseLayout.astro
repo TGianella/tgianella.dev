@@ -60,6 +60,9 @@ const pageTitle = `${title} — ${t.seo.siteName}`;
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
 
+    <!-- Preconnect to image CDN -->
+    <link rel="preconnect" href="https://images.tgianella.dev" />
+
     <!-- Fonts -->
     <link rel="preload" as="font" type="font/woff2" href="/fonts/Bitstream%20Charter.woff2" crossorigin />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/Bitstream%20Charter%20Italic%20OSF.woff2" crossorigin />

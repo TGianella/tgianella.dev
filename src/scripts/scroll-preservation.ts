@@ -28,7 +28,19 @@ export function registerScrollStrategy(strategy: ScrollStrategy) {
 let pendingRestore: (() => void) | null = null;
 
 document.addEventListener('astro:before-preparation', (e) => {
-  const event = e as Event & { from: URL; to: URL };
+  const event = e as Event & { from: URL; to: URL; navigationType: string };
+
+  // Browser back/forward: history.state is already the destination entry (the browser
+  // moves the history pointer before firing popstate). Astro would restore scroll via the
+  // two-argument scrollTo(x, y), which respects CSS scroll-behavior: smooth (set by Open
+  // Props normalize) and produces a visible animated scroll. Override with instant instead.
+  if (event.navigationType === 'traverse') {
+    const scrollX = (history.state?.scrollX as number) ?? 0;
+    const scrollY = (history.state?.scrollY as number) ?? 0;
+    pendingRestore = () => window.scrollTo({ left: scrollX, top: scrollY, behavior: 'instant' });
+    return;
+  }
+
   const fromPath = stripLocale(event.from.pathname);
   const toPath   = stripLocale(event.to.pathname);
   if (fromPath !== toPath || event.from.pathname === event.to.pathname) return;

@@ -1,0 +1,218 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PhotoMeta from '../../../components/PhotoMeta.astro';
+import { useTranslations, locales, slugOf, type Locale } from '../../../i18n/utils';
+import { sortByDate } from '../../../content/utils';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const allPhotos = await getCollection('gallery');
+
+  const byLang = new Map<Locale, typeof allPhotos>();
+  for (const photo of allPhotos) {
+    const [lang] = photo.id.split('/');
+    if (!locales.includes(lang as Locale)) continue;
+    const list = byLang.get(lang as Locale) ?? [];
+    list.push(photo);
+    byLang.set(lang as Locale, list);
+  }
+
+  const paths = [];
+  for (const [lang, langPhotos] of byLang) {
+    const sorted = sortByDate(langPhotos);
+    for (let i = 0; i < sorted.length; i++) {
+      const photo = sorted[i];
+      const slug = photo.id.split('/').slice(1).join('/');
+      paths.push({
+        params: { lang, slug },
+        props: {
+          photo,
+          prevPhoto: i > 0 ? sorted[i - 1] : null,
+          nextPhoto: i < sorted.length - 1 ? sorted[i + 1] : null,
+        },
+      });
+    }
+  }
+  return paths;
+}
+
+const { lang, slug } = Astro.params as { lang: Locale; slug: string };
+const { photo, prevPhoto, nextPhoto } = Astro.props;
+const t = useTranslations(lang);
+const { Content } = await render(photo);
+
+const hasContent = !!photo.body?.trim();
+---
+
+<BaseLayout
+  lang={lang}
+  title={photo.data.location ?? photo.data.alt}
+  description={photo.data.caption ?? photo.data.alt}
+  canonicalPath={`/blue-screens/${slug}`}
+  ogImage={photo.data.src}
+>
+  <article>
+    <header class="photo-header">
+      <a href={`/${lang}/blue-screens`} class="back-link">{t.gallery.backToList}</a>
+      <PhotoMeta date={photo.data.date} location={photo.data.location} lang={lang} />
+    </header>
+
+    <div class="photo-stage">
+      <div
+        class="photo-hero-wrap"
+        style={`--w: ${photo.data.width}; --h: ${photo.data.height};`}
+      >
+        <img
+          src={photo.data.src}
+          alt={photo.data.alt}
+          width={photo.data.width}
+          height={photo.data.height}
+          class="photo-hero"
+          loading="eager"
+          decoding="async"
+        />
+      </div>
+
+      {prevPhoto && (
+        <a href={`/${lang}/blue-screens/${slugOf(prevPhoto.id, lang)}`} class="photo-arrow photo-arrow--prev" aria-label={prevPhoto.data.alt} aria-keyshortcuts="ArrowLeft">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </a>
+      )}
+
+      {nextPhoto && (
+        <a href={`/${lang}/blue-screens/${slugOf(nextPhoto.id, lang)}`} class="photo-arrow photo-arrow--next" aria-label={nextPhoto.data.alt} aria-keyshortcuts="ArrowRight">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        </a>
+      )}
+    </div>
+
+    {hasContent && (
+      <div class="prose">
+        <Content />
+      </div>
+    )}
+  </article>
+</BaseLayout>
+
+<script>
+  import { navigate } from 'astro:transitions/client';
+
+  document.addEventListener('astro:page-load', () => {
+    const wrap = document.querySelector('.photo-hero-wrap');
+    if (!wrap) return;
+    const img = wrap.querySelector<HTMLImageElement>('.photo-hero');
+    if (!img) return;
+    const reveal = () => wrap.classList.add('loaded');
+    if (img.complete && img.naturalWidth > 0) {
+      reveal();
+    } else {
+      img.addEventListener('load', reveal, { once: true });
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    const active = document.activeElement;
+    if (active && active.matches('input, textarea, select, button, [contenteditable]')) return;
+
+    const selector = e.key === 'ArrowLeft' ? '.photo-arrow--prev' : '.photo-arrow--next';
+    const link = document.querySelector<HTMLAnchorElement>(selector);
+    if (link) navigate(link.href);
+  });
+</script>
+
+<style>
+  .photo-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--size-4);
+    margin-block-end: var(--size-4);
+  }
+
+  .back-link {
+    font-size: var(--font-size-1);
+    color: var(--text-2);
+    text-decoration: none;
+    flex-shrink: 0;
+    transition: color 0.15s;
+
+    &:hover,
+    &:focus-visible { color: var(--color-brand); }
+  }
+
+  .photo-stage {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .photo-hero-wrap {
+    aspect-ratio: var(--w) / var(--h);
+    inline-size: min(100%, calc(80dvh * var(--w) / var(--h)));
+    overflow: hidden;
+    border-radius: var(--radius-2);
+    background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface-3) 50%, var(--surface-2) 75%);
+    background-size: 200% 100%;
+    animation: photo-shimmer 1.5s infinite;
+
+    &.loaded {
+      background: none;
+      animation: none;
+    }
+  }
+
+  .photo-hero {
+    display: block;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+
+    .photo-hero-wrap.loaded & {
+      opacity: 1;
+    }
+  }
+
+  .photo-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--radius-round);
+    background: var(--surface-1);
+    border: var(--border-size-1) solid var(--border);
+    color: var(--text-1);
+    text-decoration: none;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+
+    & svg { width: 1.25rem; height: 1.25rem; }
+
+    &:hover,
+    &:focus-visible {
+      background: var(--color-brand);
+      color: white;
+      border-color: transparent;
+    }
+  }
+
+  .photo-arrow--prev { left: var(--size-2); }
+  .photo-arrow--next { right: var(--size-2); }
+
+  .prose {
+    margin-block-start: var(--size-6);
+    padding-block-start: var(--size-6);
+    border-block-start: var(--border-size-1) solid var(--border);
+  }
+</style>

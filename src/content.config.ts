@@ -54,20 +54,13 @@ const talks = defineCollection({
 const gallery = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/gallery' }),
   schema: z.object({
-    title: z.string(),
-    description: z.string(),
-    coverImage: z.string(), // R2 image URL
-    coverImageAlt: z.string(),
-    date: z.coerce.date(),
-    photos: z.array(
-      z.object({
-        src: z.string(), // R2 image URL
-        alt: z.string(),
-        caption: z.string().optional(),
-        width: z.number(),
-        height: z.number(),
-      })
-    ),
+    src: z.string(),
+    alt: z.string(),
+    width: z.number(),
+    height: z.number(),
+    date: z.coerce.date().optional(),
+    location: z.string().optional(),
+    caption: z.string().optional(),
   }),
 });
 

@@ -31,6 +31,11 @@ export function getLocaleStaticPaths() {
   return locales.map(lang => ({ params: { lang } }));
 }
 
+/** Returns a long-style date formatter for the given locale */
+export function getDateFormatter(lang: Locale): Intl.DateTimeFormat {
+  return new Intl.DateTimeFormat(lang, { dateStyle: 'long' });
+}
+
 /** Returns true if all events are in the future, or if there are no events */
 export function isUpcoming(events: { date: Date }[]): boolean {
   return events.length === 0 || events.every(e => e.date > new Date());

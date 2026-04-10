@@ -23,8 +23,13 @@ const talks = (await getCollection('talks', ({ id }) => id.startsWith(`${lang}/`
   })
   .slice(0, 3);
 
-const albums = (await getCollection('gallery', ({ id }) => id.startsWith(`${lang}/`)))
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+const recentPhotos = (await getCollection('gallery', ({ id }) => id.startsWith(`${lang}/`)))
+  .sort((a, b) => {
+    if (!a.data.date && !b.data.date) return 0;
+    if (!a.data.date) return 1;
+    if (!b.data.date) return -1;
+    return b.data.date.valueOf() - a.data.date.valueOf();
+  })
   .slice(0, 3);
 
 const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'medium' });
@@ -100,23 +105,26 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'medium' });
   <section class="section">
     <header class="section__header">
       <h2 class="section__title">{t.home.sections.gallery}</h2>
-      <a href={`/${lang}/gallery`} class="section__see-all">{t.home.seeAll} →</a>
+      <a href={`/${lang}/blue-screens`} class="section__see-all">{t.home.seeAll} →</a>
     </header>
     <ul class="gallery-grid">
-      {albums.map(album => (
+      {recentPhotos.map(photo => (
         <li>
-          <a href={`/${lang}/gallery/${slugOf(album.id, lang)}`} class="gallery-card">
+          <a href={`/${lang}/blue-screens/${slugOf(photo.id, lang)}`} class="gallery-card">
             <img
-              src={album.data.coverImage}
-              alt={album.data.coverImageAlt}
+              src={photo.data.src.replace(/\/([^/]+)\.[^.]+$/, '/thumbnails/$1.webp')}
+              alt={photo.data.alt}
+              width={400}
+              height={300}
               class="gallery-card__img"
               loading="lazy"
               decoding="async"
             />
-            <div class="gallery-card__caption">
-              <span class="gallery-card__title">{album.data.title}</span>
-              <span class="gallery-card__count">{t.gallery.photos(album.data.photos.length)}</span>
-            </div>
+            {photo.data.location && (
+              <div class="gallery-card__caption">
+                <span class="gallery-card__title">{photo.data.location}</span>
+              </div>
+            )}
           </a>
         </li>
       ))}
@@ -362,8 +370,4 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'medium' });
     color: var(--text-1);
   }
 
-  .gallery-card__count {
-    color: var(--text-2);
-    white-space: nowrap;
-  }
 </style>

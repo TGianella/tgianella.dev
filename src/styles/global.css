@@ -286,7 +286,18 @@ a {
   padding-inline-start: var(--size-5);
 }
 
+/* ─── Skeleton shimmer ───────────────────────────────── */
+@keyframes photo-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
 /* ─── View transitions ───────────────────────────────── */
+
+/* Suppress smooth scroll during transitions so Astro's scroll restoration is instant */
+html[data-vt-swapping] {
+  scroll-behavior: auto;
+}
 
 /* Named element z-ordering */
 ::view-transition-group(site-nav) {

@@ -6,7 +6,7 @@ const fr: Translations = {
     home: 'Accueil',
     blog: 'Blog',
     talks: 'Conférences',
-    gallery: 'Galerie',
+    gallery: 'Blue Screens',
     openMenu: 'Ouvrir le menu',
     closeMenu: 'Fermer le menu',
     mainNavLabel: 'Navigation principale',
@@ -26,7 +26,7 @@ const fr: Translations = {
     sections: {
       blog: 'Derniers articles',
       talks: 'Conférences récentes',
-      gallery: 'Photographie',
+      gallery: 'Blue Screens',
     },
     readMore: 'Lire la suite',
     seeAll: 'Voir tout',
@@ -64,13 +64,10 @@ const fr: Translations = {
     moreEvents: (count: number) => `+${count} autre${count > 1 ? 's' : ''} événement${count > 1 ? 's' : ''}`,
   },
   gallery: {
-    title: 'Galerie',
-    description: 'Une sélection de mes photographies.',
+    title: 'Blue Screens',
+    description: "Une de mes obsessions est de photographier les écrans d'affichages qui montrent des messages d'erreur. Je trouve ça fascinant et plus intéressant qu'il n'y paraît. Voici mes meilleures trouvailles !",
     photos: (count: number) => `${count} photo${count !== 1 ? 's' : ''}`,
     backToList: '← Retour à la galerie',
-    close: 'Fermer',
-    prev: 'Photo précédente',
-    next: 'Photo suivante',
   },
   seo: {
     siteName: 'Théo Gianella',

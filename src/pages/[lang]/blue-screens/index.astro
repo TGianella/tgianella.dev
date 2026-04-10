@@ -1,0 +1,138 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PageHeader from '../../../components/PageHeader.astro';
+import { useTranslations, getLocaleStaticPaths, getDateFormatter, slugOf, type Locale } from '../../../i18n/utils';
+import { sortByDate } from '../../../content/utils';
+import { getCollection } from 'astro:content';
+
+export const getStaticPaths = getLocaleStaticPaths;
+
+const { lang } = Astro.params as { lang: Locale };
+const t = useTranslations(lang);
+
+const photos = sortByDate(await getCollection('gallery', ({ id }) => id.startsWith(`${lang}/`)));
+
+const dateFormatter = getDateFormatter(lang);
+---
+
+<BaseLayout lang={lang} title={t.gallery.title} description={t.gallery.description} canonicalPath="/blue-screens">
+  <PageHeader title={t.gallery.title} description={t.gallery.description} />
+
+  <ul class="photo-grid">
+    {photos.map(photo => (
+      <li>
+        <a href={`/${lang}/blue-screens/${slugOf(photo.id, lang)}`} class="photo-card">
+          <img
+            src={photo.data.src.replace(/\/([^/]+)\.[^.]+$/, '/thumbnails/$1.webp')}
+            alt={photo.data.alt}
+            width={400}
+            height={400}
+            class="photo-card__img"
+            loading="lazy"
+            decoding="async"
+          />
+          {(photo.data.location || photo.data.date) && (
+            <div class="photo-card__overlay" aria-hidden="true">
+              <span class="photo-card__meta">
+                {photo.data.location && <span>{photo.data.location}</span>}
+                {photo.data.date && <span>{dateFormatter.format(photo.data.date)}</span>}
+              </span>
+            </div>
+          )}
+        </a>
+      </li>
+    ))}
+  </ul>
+</BaseLayout>
+
+<style>
+  .photo-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--size-2);
+    grid-template-columns: repeat(auto-fill, minmax(min(160px, calc((100% - 2 * var(--size-2)) / 3)), 1fr));
+  }
+
+  .photo-card {
+    display: block;
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: var(--radius-2);
+    background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface-3) 50%, var(--surface-2) 75%);
+    background-size: 200% 100%;
+    animation: photo-shimmer 1.5s infinite;
+  }
+
+  .photo-card:has(.photo-card__img.loaded) {
+    animation: none;
+    background: var(--surface-3);
+  }
+
+  .photo-card__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    display: block;
+  }
+
+  .photo-card__img.loaded {
+    opacity: 1;
+  }
+
+  .photo-card__overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 0.2em;
+    padding: var(--size-3);
+    background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 50%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+
+  .photo-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 0.5em;
+    row-gap: 0.1em;
+    color: white;
+    font-size: var(--font-size-0);
+    opacity: 0.75;
+  }
+
+  .photo-card:hover .photo-card__img,
+  .photo-card:focus-visible .photo-card__img {
+    transform: scale(1.05);
+  }
+
+  .photo-card:hover .photo-card__overlay,
+  .photo-card:focus-visible .photo-card__overlay {
+    opacity: 1;
+  }
+
+  .photo-card:focus-visible {
+    outline: var(--border-size-2) solid var(--color-brand);
+    outline-offset: var(--border-size-2);
+  }
+</style>
+
+<script>
+  function initSkeletons() {
+    document.querySelectorAll<HTMLImageElement>('.photo-card__img').forEach(img => {
+      if (img.complete) {
+        img.classList.add('loaded');
+      } else {
+        img.addEventListener('load', () => img.classList.add('loaded'), { once: true });
+      }
+    });
+  }
+
+  document.addEventListener('astro:page-load', initSkeletons);
+</script>
