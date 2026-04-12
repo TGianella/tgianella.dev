@@ -62,6 +62,8 @@ const fr: Translations = {
     watchReplay: 'Voir le replay',
     internalEvent: 'Interne',
     moreEvents: (count: number) => `+${count} autre${count > 1 ? 's' : ''} événement${count > 1 ? 's' : ''}`,
+    listTab: 'Conférences',
+    timelineTab: 'Chronologie',
   },
   gallery: {
     title: 'Blue Screens',

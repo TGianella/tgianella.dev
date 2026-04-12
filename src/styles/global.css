@@ -304,7 +304,7 @@ html[data-vt-swapping] {
   z-index: var(--layer-2);
 }
 
-::view-transition-group(.text-transition),
+::view-transition-group(.nav-elevated),
 ::view-transition-group(.text-transition-right),
 ::view-transition-group(lang-thumb) {
   z-index: calc(var(--layer-2) + 1);

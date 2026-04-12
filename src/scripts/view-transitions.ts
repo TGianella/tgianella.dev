@@ -55,6 +55,7 @@ document.addEventListener('astro:before-preparation', (e) => {
   const fromPath = stripLocale(event.from.pathname);
   const toPath   = stripLocale(event.to.pathname);
   pendingLangSwitch = fromPath === toPath && event.from.pathname !== event.to.pathname;
+  console.log("###", {pendingLangSwitch, fromPath, toPath, event});
 
   if (pendingLangSwitch) {
     event.direction = 'none';

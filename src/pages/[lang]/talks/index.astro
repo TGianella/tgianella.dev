@@ -4,6 +4,7 @@ import PageHeader from '../../../components/PageHeader.astro';
 import { useTranslations, getLocaleStaticPaths, slugOf, isUpcoming, type Locale } from '../../../i18n/utils';
 import { getCollection } from 'astro:content';
 import TalkCard from '../../../components/TalkCard.astro';
+import { buildTimeline } from '../../../content/utils';
 
 export const getStaticPaths = getLocaleStaticPaths;
 
@@ -23,6 +24,8 @@ const talks = (await getCollection('talks', ({ id, data }) =>
     return bMin - aMin;
   });
 
+const timeline = buildTimeline(talks, lang);
+const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'long' });
 ---
 
 <BaseLayout lang={lang} title={t.talks.title} description={t.talks.description} canonicalPath="/talks">
@@ -30,16 +33,201 @@ const talks = (await getCollection('talks', ({ id, data }) =>
     {t.talks.intro.map(p => <p>{p}</p>)}
   </PageHeader>
 
-  <ul class="talk-list">
-    {talks.map(talk => (
-      <li>
-        <TalkCard talk={talk.data} lang={lang} slug={slugOf(talk.id, lang)} />
-      </li>
-    ))}
-  </ul>
+  <div>
+    <div role="tablist" class="tab-list" aria-label={t.talks.title}>
+      <button role="tab" id="tab-list" aria-selected="true" aria-controls="panel-list" tabindex="-1">
+        {t.talks.listTab}
+      </button>
+      <button role="tab" id="tab-timeline" aria-selected="false" aria-controls="panel-timeline" tabindex="0">
+        {t.talks.timelineTab}
+      </button>
+    </div>
+
+    <div role="tabpanel" id="panel-list" aria-labelledby="tab-list">
+      <ul class="talk-list">
+        {talks.map(talk => (
+          <li>
+            <TalkCard talk={talk.data} lang={lang} slug={slugOf(talk.id, lang)} />
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <div role="tabpanel" id="panel-timeline" aria-labelledby="tab-timeline" hidden>
+      <div class="timeline">
+        {timeline.map(({ year, events }) => (
+          <section class="timeline__year">
+            <h2 class="timeline__year-heading">{year}</h2>
+            <ol class="timeline__events">
+              {events.map(item => (
+                <li class="timeline__event">
+                  <time class="timeline__date" datetime={item.date.toISOString()}>
+                    {dateFormatter.format(item.date)}
+                  </time>
+                  <div class="timeline__details">
+                    <div class="timeline__event-header">
+                      <span class="timeline__event-name">{item.name}</span>
+                      <span class="timeline__location">{item.location}</span>
+                      {item.upcoming && (
+                        <span class="upcoming-pill">{t.talks.upcoming}</span>
+                      )}
+                    </div>
+                    <ul class="timeline__talks">
+                      {item.talks.map(talk => (
+                        <li>
+                          <a href={`/${lang}/talks/${talk.slug}`} class="timeline__talk-link">
+                            {talk.title}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </section>
+        ))}
+      </div>
+    </div>
+  </div>
 </BaseLayout>
 
+<script>
+  function applyTabStateFromUrl() {
+    const tabs = document.querySelectorAll<HTMLButtonElement>('[role="tab"]');
+    if (!tabs.length) return;
+    const toIndex = new URL(location.href).searchParams.get('tab') === 'timeline' ? 1 : 0;
+    tabs.forEach((t, i) => {
+      const panel = document.getElementById(t.getAttribute('aria-controls')!);
+      const selected = i === toIndex;
+      t.setAttribute('aria-selected', String(selected));
+      t.tabIndex = selected ? -1 : 0;
+      if (panel) panel.hidden = !selected;
+    });
+  }
+
+  // Restore tab during the VT callback so the new snapshot captures the correct state
+  document.addEventListener('astro:after-swap', applyTabStateFromUrl);
+
+  document.addEventListener('astro:page-load', () => {
+    const tabs = Array.from(document.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
+
+    function getActiveIndex() {
+      return tabs.findIndex(t => t.getAttribute('aria-selected') === 'true');
+    }
+
+    function applyState(toIndex: number) {
+      tabs.forEach((t, i) => {
+        const panel = document.getElementById(t.getAttribute('aria-controls')!);
+        const selected = i === toIndex;
+        t.setAttribute('aria-selected', String(selected));
+        t.tabIndex = selected ? -1 : 0;
+        if (panel) panel.hidden = !selected;
+      });
+    }
+
+    // Restore tab from URL on load (no animation, no VT names)
+    applyTabStateFromUrl();
+
+    tabs.forEach((tab, toIndex) => {
+      tab.addEventListener('click', () => {
+        const fromIndex = getActiveIndex();
+        if (toIndex === fromIndex) return;
+
+        const direction = toIndex > fromIndex ? 'forward' : 'back';
+
+        const doSwitch = () => {
+          applyState(toIndex);
+          tabs[fromIndex].focus();
+          // Move tab-thumb name from old active tab to new active tab
+          tabs[fromIndex].style.viewTransitionName = '';
+          tabs[toIndex].style.viewTransitionName = `tab-thumb-${tabs[toIndex].id}`;
+          // Update URL and lang switch
+          const url = new URL(location.href);
+          if (toIndex === 0) url.searchParams.delete('tab');
+          else url.searchParams.set('tab', 'timeline');
+          history.replaceState(null, '', url);
+          const langSwitch = document.querySelector<HTMLAnchorElement>('.lang-switch');
+          if (langSwitch) {
+            const base = langSwitch.href.split('?')[0];
+            langSwitch.href = url.search ? `${base}${url.search}` : base;
+          }
+        };
+
+        if (document.startViewTransition) {
+          // Set tab-thumb name on current active tab before the before-snapshot
+          tabs[fromIndex].style.viewTransitionName = `tab-thumb-${tabs[fromIndex].id}`;
+          document.documentElement.setAttribute('data-tab-transition', direction);
+          const vt = document.startViewTransition(doSwitch);
+          vt.finished.finally(() => {
+            document.documentElement.removeAttribute('data-tab-transition');
+            tabs.forEach(t => { t.style.viewTransitionName = ''; });
+          });
+        } else {
+          doSwitch();
+        }
+      });
+    });
+  });
+</script>
+
+<style is:global>
+  /* tab-panel name is CSS-driven, only active during a tab switch */
+  [data-tab-transition] [role="tabpanel"]:not([hidden]) { view-transition-name: tab-panel; }
+
+  [data-tab-transition=forward]::view-transition-old(tab-panel) { animation: vt-out-left  0.25s ease both; }
+  [data-tab-transition=forward]::view-transition-new(tab-panel) { animation: vt-in-right  0.25s ease both; }
+  [data-tab-transition=back]::view-transition-old(tab-panel)    { animation: vt-out-right 0.25s ease both; }
+  [data-tab-transition=back]::view-transition-new(tab-panel)    { animation: vt-in-left   0.25s ease both; }
+</style>
+
 <style>
+  .tab-list {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 2px;
+    background: var(--surface-3);
+    border: var(--border-size-1) solid var(--border);
+    border-radius: var(--radius-round);
+    margin-block-start: var(--size-6);
+    margin-block-end: var(--size-3);
+    margin-inline-start: auto;
+    width: fit-content;
+    isolation: isolate;
+  }
+
+  [role="tab"] {
+    padding: 1px var(--size-3);
+    border: none;
+    border-radius: var(--radius-round);
+    background: none;
+    cursor: pointer;
+    color: var(--text-2);
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-6);
+    transition: color 0.15s;
+  }
+
+  [role="tab"]:hover {
+    color: var(--text-1);
+  }
+
+  [role="tab"]:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
+
+  [role="tab"][aria-selected="true"] {
+    background: var(--surface-1);
+    color: var(--text-1);
+    box-shadow: var(--shadow-1);
+  }
+
+  [role="tab"]:not([aria-selected="true"]) {
+    z-index: 2;
+  }
+
   .talk-list {
     list-style: none;
     margin: 0;
@@ -47,6 +235,99 @@ const talks = (await getCollection('talks', ({ id, data }) =>
 
     & li {
       padding-inline-start: 0;
+    }
+  }
+
+  .timeline__year {
+    margin-block-end: var(--size-8);
+  }
+
+  .timeline__year-heading {
+    font-size: var(--font-size-6);
+    font-weight: var(--font-weight-7);
+    color: var(--text-1);
+    margin-block-end: var(--size-4);
+    padding-block-end: var(--size-2);
+    border-block-end: var(--border-size-1) solid var(--border);
+  }
+
+  .timeline__events {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-4);
+  }
+
+  .timeline__event {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--size-1);
+    padding-inline-start: var(--size-4);
+    border-inline-start: var(--border-size-2) solid var(--border);
+  }
+
+  @media (width >= 600px) {
+    .timeline__event {
+      grid-template-columns: 10rem 1fr;
+      align-items: start;
+    }
+  }
+
+  .timeline__date {
+    font-size: var(--font-size-0);
+    color: var(--text-2);
+    white-space: nowrap;
+  }
+
+  .timeline__details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-2);
+  }
+
+  .timeline__event-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--size-1) var(--size-3);
+  }
+
+  .timeline__event-name {
+    font-size: var(--font-size-3);
+    font-family: var(--font-transitional);
+    font-weight: var(--font-weight-6);
+    color: var(--text-1);
+  }
+
+  .timeline__location {
+    font-size: var(--font-size-0);
+    color: var(--text-2);
+  }
+
+  .timeline__talks {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-1);
+
+    > li {
+      padding-inline-start: 0;
+    }
+  }
+
+  .timeline__talk-link {
+    font-size: var(--font-size-1);
+    color: var(--text-2);
+    text-decoration: underline;
+    text-decoration-color: var(--text-2);
+
+    &:hover {
+      color: var(--text-1);
+      text-decoration: underline;
     }
   }
 </style>

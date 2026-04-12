@@ -60,6 +60,8 @@ const en = {
     watchReplay: 'Watch replay',
     internalEvent: 'Internal',
     moreEvents: (count: number) => `+${count} more event${count > 1 ? 's' : ''}`,
+    listTab: 'Talks',
+    timelineTab: 'Timeline',
   },
   gallery: {
     title: 'Blue Screens',
