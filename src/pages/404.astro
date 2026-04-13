@@ -22,7 +22,9 @@ import '../styles/global.css';
         if (theme && expiry && Date.now() < Number(expiry)) {
           document.documentElement.setAttribute('data-theme', theme);
         }
-      } catch(e) {}
+      } catch {
+        // localStorage unavailable in some privacy modes; safe to ignore
+      }
     </script>
   </head>
   <body>

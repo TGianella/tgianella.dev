@@ -94,7 +94,9 @@ const pageTitle = title ? `${title} — ${t.seo.siteName}` : t.seo.siteName;
             localStorage.removeItem('theme-expiry');
             document.documentElement.removeAttribute('data-theme');
           }
-        } catch(e) {}
+        } catch {
+          // localStorage unavailable in some privacy modes; safe to ignore
+        }
       }
       applyStoredTheme();
       document.addEventListener('astro:after-swap', applyStoredTheme);

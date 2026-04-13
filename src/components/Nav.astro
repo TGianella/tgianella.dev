@@ -119,14 +119,18 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
     try {
       localStorage.setItem('theme', theme);
       localStorage.setItem('theme-expiry', String(Date.now() + WEEK_MS));
-    } catch(e) {}
+    } catch {
+      // localStorage unavailable in some privacy modes; theme still applies via data-theme
+    }
   }
 
   function clearStoredTheme() {
     try {
       localStorage.removeItem('theme');
       localStorage.removeItem('theme-expiry');
-    } catch(e) {}
+    } catch {
+      // localStorage unavailable in some privacy modes; safe to ignore
+    }
   }
 
   // When the system theme changes, drop the stored preference and follow the system
