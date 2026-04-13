@@ -39,42 +39,42 @@ import "../styles/global.css";
 
 <style>
   body {
-    min-block-size: 100dvh;
     display: flex;
     align-items: center;
     justify-content: center;
+    min-block-size: 100dvh;
   }
 
   main {
     display: flex;
     flex-direction: column;
     align-items: center;
-    text-align: center;
     gap: var(--size-3);
     padding-inline: var(--page-padding);
+    text-align: center;
   }
 
   .code {
+    margin: 0;
+    color: var(--color-brand);
     font-size: clamp(5rem, 20vw, 10rem);
     font-weight: var(--font-weight-7);
     line-height: 1;
-    color: var(--color-brand);
-    margin: 0;
   }
 
   h1 {
-    font-size: var(--font-size-5);
     margin: 0;
+    font-size: var(--font-size-5);
   }
 
   p {
-    color: var(--text-2);
     margin: 0;
+    color: var(--text-2);
   }
 
   a {
-    margin-block-start: var(--size-3);
     color: var(--color-brand);
+    margin-block-start: var(--size-3);
     text-underline-offset: 3px;
 
     &:hover {

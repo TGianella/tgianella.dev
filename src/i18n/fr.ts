@@ -27,6 +27,7 @@ const fr: Translations = {
     tagline: "Développeur Front-end",
     github: "Profil GitHub",
     linkedin: "Profil LinkedIn",
+    rss: "Flux RSS",
     sections: {
       blog: "Derniers articles",
       talks: "Conférences récentes",

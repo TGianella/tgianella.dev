@@ -25,6 +25,7 @@ const en = {
     tagline: "Frontend Engineer",
     github: "GitHub profile",
     linkedin: "LinkedIn profile",
+    rss: "RSS feed",
     sections: {
       blog: "Latest posts",
       talks: "Recent talks",

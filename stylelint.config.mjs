@@ -1,7 +1,14 @@
 /** @type {import("stylelint").Config} */
 export default {
-  extends: ["stylelint-config-standard", "stylelint-config-html"],
+  plugins: ["stylelint-plugin-defensive-css"],
+  extends: [
+    "stylelint-config-standard",
+    "stylelint-config-html",
+    "stylelint-plugin-defensive-css/configs/recommended",
+    "stylelint-config-idiomatic-order",
+  ],
   rules: {
+    "defensive-css/require-pure-selectors": null,
     "custom-property-pattern": null,
     "selector-pseudo-class-no-unknown": [
       true,

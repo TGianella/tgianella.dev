@@ -173,10 +173,10 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
     position: relative;
     display: flex;
     flex-direction: column;
-    padding-block: var(--size-7);
     border-block-end: var(--border-size-1) solid var(--border);
     margin-block-end: var(--size-8);
     min-block-size: calc(100dvh - ((var(--size-7) * 2) + var(--size-5)));
+    padding-block: var(--size-7);
   }
 
   .hero__name-container {
@@ -188,35 +188,35 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
 
   .hero__name {
     width: min-content;
-    font-size: clamp(1.5rem, 10vmax, 12rem);
     margin: 0;
+    font-size: clamp(1.5rem, 10vmax, 12rem);
     line-height: 0.8;
   }
 
   .hero__avatar {
-    object-fit: cover;
     max-width: 100%;
+    object-fit: cover;
   }
 
   .hero__tagline {
+    width: min-content;
+    margin: 0;
+    color: var(--text-2);
+    font-family: var(--font-transitional);
     font-size: clamp(1.5rem, 6vmax, 10rem);
     line-height: 0.9;
-    color: var(--text-2);
-    margin: 0;
-    width: min-content;
-    font-family: var(--font-transitional);
-    view-transition-class: text-transition;
     padding-block-end: 0.2em;
+    view-transition-class: text-transition;
   }
 
   .hero__scroll-hint {
     display: block;
-    text-align: end;
-    font-size: clamp(3rem, 10vmax, 8rem);
     color: var(--text-2);
-    line-height: 1;
     font-family: var(--font-transitional);
+    font-size: clamp(3rem, 10vmax, 8rem);
+    line-height: 1;
     margin-block-start: var(--size-4);
+    text-align: end;
   }
 
   @media (width >= 48rem) {
@@ -224,9 +224,9 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
       position: relative;
       align-items: center;
       gap: var(--size-1);
+      min-block-size: calc(100dvh - (var(--size-9) * 2));
       padding-block: var(--size-9);
       padding-inline: 10vw;
-      min-block-size: calc(100dvh - (var(--size-9) * 2));
     }
 
     .hero__name-container {
@@ -258,8 +258,8 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
       );
       bottom: calc(var(--size-7) - 0.2em);
       width: min-content;
-      text-align: end;
       font-size: clamp(2rem, 8vmax, 10rem);
+      text-align: end;
       view-transition-class: text-transition-right;
     }
 
@@ -276,9 +276,9 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
 
   /* ── Sections ──────────────────────────────────────── */
   .section {
-    padding-block-end: var(--size-8);
-    margin-block-end: var(--size-8);
     border-block-end: var(--border-size-1) solid var(--border);
+    margin-block-end: var(--size-8);
+    padding-block-end: var(--size-8);
 
     &:last-child {
       border-block-end: none;
@@ -296,16 +296,16 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
   }
 
   .section__title {
-    font-size: var(--font-size-4);
     margin: 0;
+    font-size: var(--font-size-4);
   }
 
   .section__see-all {
-    font-size: var(--font-size-1);
     color: var(--text-2);
+    font-size: var(--font-size-1);
     text-decoration: none;
-    white-space: nowrap;
     transition: color 0.15s;
+    white-space: nowrap;
 
     &:hover {
       color: var(--color-brand);
@@ -314,26 +314,26 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
 
   /* ── Content cards ─────────────────────────────────── */
   .card-grid {
-    list-style: none;
-    margin: 0;
-    padding: 0;
     display: grid;
+    padding: 0;
+    margin: 0;
     gap: var(--size-3);
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+    list-style: "";
   }
 
   .card {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    gap: 0.375rem;
     padding: var(--size-3);
-    background: var(--surface-2);
     border-radius: var(--radius-2);
-    text-decoration: none;
-    color: inherit;
-    transition: border-color 0.15s;
+    background: var(--surface-2);
     block-size: 100%;
+    color: inherit;
+    gap: 0.375rem;
+    text-decoration: none;
+    transition: border-color 0.15s;
   }
 
   .card__meta {
@@ -344,43 +344,43 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
   }
 
   .card__date {
-    font-size: var(--font-size-0);
     color: var(--text-2);
+    font-size: var(--font-size-0);
   }
 
   .card__title {
-    font-size: var(--font-size-2);
-    font-weight: var(--font-weight-6);
     margin: 0;
     color: var(--text-1);
+    font-size: var(--font-size-2);
+    font-weight: var(--font-weight-6);
   }
 
   .card__desc {
-    font-size: var(--font-size-1);
-    color: var(--text-2);
-    margin: 0;
     display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
     overflow: hidden;
+    margin: 0;
+    -webkit-box-orient: vertical;
+    color: var(--text-2);
+    font-size: var(--font-size-1);
+    -webkit-line-clamp: 3;
   }
 
   /* ── Gallery grid ──────────────────────────────────── */
   .gallery-grid {
-    list-style: none;
-    margin: 0;
-    padding: 0;
     display: grid;
+    padding: 0;
+    margin: 0;
     gap: 0.75rem;
     grid-template-columns: repeat(auto-fill, minmax(min(40dvw, 200px), 1fr));
+    list-style: "";
   }
 
   .gallery-card {
     display: block;
-    border-radius: var(--radius-2);
     overflow: hidden;
-    text-decoration: none;
+    border-radius: var(--radius-2);
     color: var(--text-1);
+    text-decoration: none;
   }
 
   .gallery-card__img {
@@ -391,15 +391,15 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
 
   .gallery-card__caption {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    gap: var(--size-2);
+    justify-content: space-between;
     padding: 0.625rem 0.75rem;
     font-size: var(--font-size-1);
+    gap: var(--size-2);
   }
 
   .gallery-card__title {
-    font-weight: var(--font-weight-6);
     color: var(--text-1);
+    font-weight: var(--font-weight-6);
   }
 </style>

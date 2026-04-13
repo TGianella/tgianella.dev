@@ -191,10 +191,10 @@ const dateStr = photo.data.date.toLocaleDateString(lang, {
   }
 
   .back-link {
-    font-size: var(--font-size-1);
-    color: var(--text-2);
-    text-decoration: none;
     flex-shrink: 0;
+    color: var(--text-2);
+    font-size: var(--font-size-1);
+    text-decoration: none;
     transition: color 0.15s;
 
     &:hover,
@@ -206,15 +206,15 @@ const dateStr = photo.data.date.toLocaleDateString(lang, {
   .photo-stage {
     position: relative;
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
   }
 
   .photo-hero-wrap {
-    aspect-ratio: var(--w) / var(--h);
-    inline-size: min(100%, calc(80dvh * var(--w) / var(--h)));
     overflow: hidden;
     border-radius: var(--radius-2);
+    animation: photo-shimmer 1.5s infinite;
+    aspect-ratio: var(--w) / var(--h);
     background: linear-gradient(
       90deg,
       var(--surface-2) 25%,
@@ -222,11 +222,11 @@ const dateStr = photo.data.date.toLocaleDateString(lang, {
       var(--surface-2) 75%
     );
     background-size: 200% 100%;
-    animation: photo-shimmer 1.5s infinite;
+    inline-size: min(100%, calc(80dvh * var(--w) / var(--h)));
 
     &.loaded {
-      background: none;
       animation: none;
+      background: none;
     }
   }
 
@@ -244,19 +244,19 @@ const dateStr = photo.data.date.toLocaleDateString(lang, {
 
   .photo-arrow {
     position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
     z-index: 1;
+    top: 50%;
     display: flex;
-    align-items: center;
-    justify-content: center;
     width: 2.5rem;
     height: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    border: var(--border-size-1) solid var(--border);
     border-radius: var(--radius-round);
     background: var(--surface-1);
-    border: var(--border-size-1) solid var(--border);
     color: var(--text-1);
     text-decoration: none;
+    transform: translateY(-50%);
     transition:
       background 0.15s,
       color 0.15s,
@@ -269,22 +269,23 @@ const dateStr = photo.data.date.toLocaleDateString(lang, {
 
     &:hover,
     &:focus-visible {
+      border-color: transparent;
       background: var(--color-brand);
       color: white;
-      border-color: transparent;
     }
   }
 
   .photo-arrow--prev {
     left: var(--size-2);
   }
+
   .photo-arrow--next {
     right: var(--size-2);
   }
 
   .prose {
+    border-block-start: var(--border-size-1) solid var(--border);
     margin-block-start: var(--size-6);
     padding-block-start: var(--size-6);
-    border-block-start: var(--border-size-1) solid var(--border);
   }
 </style>

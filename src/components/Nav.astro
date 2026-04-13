@@ -246,8 +246,8 @@ const alternatePath = getLocalizedPath(
 <style>
   .nav {
     position: sticky;
-    top: 0;
     z-index: var(--layer-2);
+    top: 0;
     background: var(--surface-1);
     border-block-end: var(--border-size-1) solid var(--border);
     view-transition-name: site-nav;
@@ -256,37 +256,37 @@ const alternatePath = getLocalizedPath(
   .nav__inner {
     display: flex;
     align-items: center;
-    gap: var(--size-3);
-    max-inline-size: var(--layout-width);
-    margin-inline: auto;
-    padding-inline: var(--page-padding);
     block-size: var(--nav-height);
+    gap: var(--size-3);
+    margin-inline: auto;
+    max-inline-size: var(--layout-width);
+    padding-inline: var(--page-padding);
   }
 
   .nav__logo {
-    font-family: var(--font-transitional);
-    font-weight: var(--font-weight-7);
-    text-decoration: none;
     color: var(--text-1);
-    margin-inline-end: auto;
+    font-family: var(--font-transitional);
     font-size: var(--font-size-2);
+    font-weight: var(--font-weight-7);
+    margin-inline-end: auto;
+    text-decoration: none;
   }
 
   .nav__links {
     display: flex;
-    gap: var(--size-1);
-    list-style: none;
-    margin: 0;
-    padding: 0;
     align-items: center;
+    padding: 0;
+    margin: 0;
+    gap: var(--size-1);
+    list-style: "";
   }
 
   .nav__link {
-    text-decoration: none;
-    color: var(--text-2);
-    font-size: var(--font-size-1);
     padding: var(--size-1) var(--size-2);
     border-radius: var(--radius-2);
+    color: var(--text-2);
+    font-size: var(--font-size-1);
+    text-decoration: none;
     transition:
       color 0.15s,
       background 0.15s;
@@ -295,13 +295,13 @@ const alternatePath = getLocalizedPath(
   }
 
   .nav__link:hover {
-    color: var(--text-1);
     background: var(--surface-3);
+    color: var(--text-1);
   }
 
   .nav__link:focus-visible {
-    color: var(--text-1);
     background: var(--surface-3);
+    color: var(--text-1);
     outline: 2px solid var(--color-brand);
     outline-offset: 2px;
   }
@@ -316,19 +316,20 @@ const alternatePath = getLocalizedPath(
     align-items: center;
     justify-content: center;
     padding: var(--size-2);
-    background: none;
     border: none;
     border-radius: var(--radius-round);
-    cursor: pointer;
+    background: none;
     color: var(--text-2);
+    cursor: pointer;
     transition:
       color 0.15s,
       background 0.15s;
 
     &:hover {
-      color: var(--text-1);
       background: var(--surface-3);
+      color: var(--text-1);
     }
+
     &:focus-visible {
       outline: 2px solid var(--color-brand);
       outline-offset: 2px;
@@ -337,16 +338,16 @@ const alternatePath = getLocalizedPath(
 
   .theme-toggle__icon-wrap {
     position: relative;
+    display: block;
     width: 1.25rem;
     height: 1.25rem;
-    display: block;
   }
 
   .theme-toggle__icon {
     position: absolute;
-    inset: 0;
     width: 1.25rem;
     height: 1.25rem;
+    inset: 0;
   }
 
   .theme-toggle.is-switching .theme-toggle__icon {
@@ -360,6 +361,7 @@ const alternatePath = getLocalizedPath(
     opacity: 1;
     transform: none;
   }
+
   .theme-toggle__icon[data-theme-icon="dark"] {
     opacity: 0;
     transform: rotate(90deg) scale(0.5);
@@ -372,20 +374,24 @@ const alternatePath = getLocalizedPath(
       opacity: 0;
       transform: rotate(-90deg) scale(0.5);
     }
+
     :root:not([data-theme="light"])
       .theme-toggle__icon[data-theme-icon="dark"] {
       opacity: 1;
       transform: none;
     }
   }
+
   :root[data-theme="dark"] .theme-toggle__icon[data-theme-icon="light"] {
     opacity: 0;
     transform: rotate(-90deg) scale(0.5);
   }
+
   :root[data-theme="dark"] .theme-toggle__icon[data-theme-icon="dark"] {
     opacity: 1;
     transform: none;
   }
+
   :root[data-theme="light"] .theme-toggle__icon[data-theme-icon="dark"] {
     opacity: 0;
     transform: rotate(90deg) scale(0.5);
@@ -394,13 +400,13 @@ const alternatePath = getLocalizedPath(
   .lang-switch {
     display: flex;
     align-items: center;
-    gap: 2px;
     padding: 2px;
-    background: var(--surface-3);
     border: var(--border-size-1) solid var(--border);
     border-radius: var(--radius-round);
-    text-decoration: none;
+    background: var(--surface-3);
     color: inherit;
+    gap: 2px;
+    text-decoration: none;
 
     &:focus-visible {
       outline: 2px solid var(--color-brand);
@@ -411,10 +417,10 @@ const alternatePath = getLocalizedPath(
   .lang-switch__opt {
     padding: 1px var(--size-2);
     border-radius: var(--radius-round);
+    color: var(--text-2);
     font-size: var(--font-size-0);
     font-weight: var(--font-weight-6);
     text-decoration: none;
-    color: var(--text-2);
     transition: color 0.15s;
 
     &:hover {
@@ -423,8 +429,8 @@ const alternatePath = getLocalizedPath(
 
     &[data-current="true"] {
       background: var(--surface-1);
-      color: var(--text-1);
       box-shadow: var(--shadow-1);
+      color: var(--text-1);
     }
   }
 
@@ -432,13 +438,13 @@ const alternatePath = getLocalizedPath(
     display: none;
     flex-direction: column;
     justify-content: center;
-    gap: 5px;
-    background: none;
-    border: none;
-    cursor: pointer;
     padding: var(--size-2);
+    border: none;
     border-radius: var(--radius-2);
+    background: none;
     color: var(--text-1);
+    cursor: pointer;
+    gap: 5px;
   }
 
   .nav__hamburger:hover {
@@ -455,8 +461,8 @@ const alternatePath = getLocalizedPath(
     display: block;
     width: 20px;
     height: var(--border-size-2);
-    background: currentcolor;
     border-radius: var(--radius-1);
+    background: currentcolor;
     transition:
       transform 0.2s,
       opacity 0.2s;
@@ -475,20 +481,19 @@ const alternatePath = getLocalizedPath(
   }
 
   .nav__mobile {
-    border: none;
-    padding: 0;
-    margin: 0;
-    inset: unset;
     position: fixed;
     top: var(--nav-height);
-    left: 0;
     right: 0;
+    left: 0;
     width: 100%;
+    padding: 0;
+    border: none;
+    margin: 0;
     background: var(--surface-1);
     border-block-end: var(--border-size-1) solid var(--border);
     box-shadow: var(--shadow-2);
-    transform: translateY(-0.5rem);
     opacity: 0;
+    transform: translateY(-0.5rem);
     transition:
       transform 0.2s ease,
       opacity 0.2s ease,
@@ -497,32 +502,32 @@ const alternatePath = getLocalizedPath(
   }
 
   .nav__mobile:popover-open {
-    transform: translateY(0);
     opacity: 1;
+    transform: translateY(0);
   }
 
   @starting-style {
     .nav__mobile:popover-open {
-      transform: translateY(-0.5rem);
       opacity: 0;
+      transform: translateY(-0.5rem);
     }
   }
 
   .nav__mobile ul {
-    list-style: none;
-    margin: 0;
-    padding: var(--size-2) var(--page-padding);
     display: flex;
     flex-direction: column;
+    padding: var(--size-2) var(--page-padding);
+    margin: 0;
+    list-style: "";
   }
 
   .nav__mobile-link {
     display: block;
     padding: var(--size-2) var(--size-2);
-    text-decoration: none;
+    border-block-end: var(--border-size-1) solid var(--border);
     color: var(--text-2);
     font-size: var(--font-size-2);
-    border-block-end: var(--border-size-1) solid var(--border);
+    text-decoration: none;
     transition: color 0.15s;
   }
 

@@ -50,12 +50,12 @@ const Tag = url ? "a" : "div";
   .person-card {
     display: inline-flex;
     align-items: center;
-    gap: var(--size-2);
     padding: var(--size-2) var(--size-3);
-    background: var(--surface-2);
     border-radius: var(--radius-2);
-    text-decoration: none;
+    background: var(--surface-2);
     color: inherit;
+    gap: var(--size-2);
+    text-decoration: none;
     transition: border-color 0.15s;
 
     &:is(a):hover {
@@ -66,22 +66,22 @@ const Tag = url ? "a" : "div";
   .person-card__avatar {
     width: 3rem;
     height: 3rem;
+    flex-shrink: 0;
     border-radius: var(--radius-round);
     object-fit: cover;
-    flex-shrink: 0;
   }
 
   .person-card__label {
-    font-size: var(--font-size-1);
     color: var(--text-2);
+    font-size: var(--font-size-1);
     white-space: nowrap;
   }
 
   .person-card__name {
-    font-size: var(--font-size-1);
-    font-weight: var(--font-weight-6);
     display: flex;
     flex-direction: column;
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-6);
     line-height: 1.5;
   }
 </style>

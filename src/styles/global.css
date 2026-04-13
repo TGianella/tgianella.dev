@@ -4,82 +4,84 @@
 
 /* ─── Charter (self-hosted) ──────────────────────────── */
 @font-face {
+  font-display: optional;
   font-family: Charter;
+  font-style: normal;
+  font-weight: 400;
   src: url("/fonts/Bitstream Charter.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: optional;
 }
 
 @font-face {
+  font-display: optional;
   font-family: Charter;
+  font-style: italic;
+  font-weight: 400;
   src: url("/fonts/Bitstream Charter Italic OSF.woff2") format("woff2");
-  font-weight: 400;
-  font-style: italic;
-  font-display: optional;
 }
 
 @font-face {
+  font-display: optional;
   font-family: Charter;
-  src: url("/fonts/Bitstream Charter Bold OSF.woff2") format("woff2");
-  font-weight: 700;
   font-style: normal;
-  font-display: optional;
+  font-weight: 700;
+  src: url("/fonts/Bitstream Charter Bold OSF.woff2") format("woff2");
 }
 
 @font-face {
-  font-family: Charter;
-  src: url("/fonts/Bitstream Charter Bold Italic OSF.woff2") format("woff2");
-  font-weight: 700;
-  font-style: italic;
   font-display: optional;
+  font-family: Charter;
+  font-style: italic;
+  font-weight: 700;
+  src: url("/fonts/Bitstream Charter Bold Italic OSF.woff2") format("woff2");
 }
 
 /* ─── Animatable color tokens ────────────────────────── */
 @property --color-brand {
-  syntax: "<color>";
   inherits: true;
   initial-value: transparent;
+  syntax: "<color>";
 }
 
 @property --text-1 {
-  syntax: "<color>";
   inherits: true;
   initial-value: transparent;
+  syntax: "<color>";
 }
 
 @property --text-2 {
-  syntax: "<color>";
   inherits: true;
   initial-value: transparent;
+  syntax: "<color>";
 }
 
 @property --surface-1 {
-  syntax: "<color>";
   inherits: true;
   initial-value: transparent;
+  syntax: "<color>";
 }
 
 @property --surface-2 {
-  syntax: "<color>";
   inherits: true;
   initial-value: transparent;
+  syntax: "<color>";
 }
 
 @property --surface-3 {
-  syntax: "<color>";
   inherits: true;
   initial-value: transparent;
+  syntax: "<color>";
 }
 
 @property --border {
-  syntax: "<color>";
   inherits: true;
   initial-value: transparent;
+  syntax: "<color>";
 }
 
 /* ─── Custom tokens ──────────────────────────────────── */
 :root {
+  /* Color scheme switching */
+  color-scheme: light;
   transition:
     --color-brand 0.3s,
     --text-1 0.3s,
@@ -94,9 +96,6 @@
   --layout-width: 64rem;
   --page-padding: clamp(1rem, 4vw, 2rem);
   --vt-slide: 10%;
-
-  /* Color scheme switching */
-  color-scheme: light;
 
   /* Tokens — declared once, light-dark() picks the right value */
   --color-brand: light-dark(var(--indigo-8), var(--yellow-7));
@@ -130,9 +129,11 @@
     color-scheme: dark;
   }
 }
+
 :root[data-theme="dark"] {
   color-scheme: dark;
 }
+
 :root[data-theme="light"] {
   color-scheme: light;
 }
@@ -158,12 +159,7 @@ html {
 }
 
 body {
-  font-family: var(--font-sans);
-  font-size: var(--font-size-2);
-  line-height: var(--font-lineheight-4);
-  color: var(--text-1);
   background-color: var(--surface-1);
-  background-size: 40px 40px;
   background-image:
     linear-gradient(
       to right,
@@ -176,14 +172,19 @@ body {
       transparent 1px
     );
   background-repeat: repeat;
+  background-size: 40px 40px;
+  color: var(--text-1);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-2);
+  line-height: var(--font-lineheight-4);
   min-block-size: 100dvh;
 }
 
 img,
 video {
-  max-inline-size: 100%;
-  block-size: auto;
   display: block;
+  block-size: auto;
+  max-inline-size: 100%;
 }
 
 h1,
@@ -193,8 +194,8 @@ h4,
 h5,
 h6 {
   font-family: var(--font-transitional);
-  line-height: var(--font-lineheight-2);
   font-weight: var(--font-weight-7);
+  line-height: var(--font-lineheight-2);
 }
 
 a {
@@ -204,51 +205,53 @@ a {
 
 /* ─── Utility ────────────────────────────────────────── */
 .visually-hidden {
-  clip-path: inset(50%);
-  height: 1px;
-  overflow: hidden;
   position: absolute;
-  white-space: nowrap;
+  overflow: hidden;
   width: 1px;
+  height: 1px;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 /* ─── Tags (shared across pages) ────────────────────── */
 .tag-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
   display: flex;
-  gap: 0.375rem;
   flex-wrap: wrap;
+  padding: 0;
+  margin: 0;
+  gap: 0.375rem;
+  list-style: "";
 }
 
 .tag {
-  font-size: var(--font-size-0);
   padding: 2px var(--size-2);
+  border-radius: var(--radius-round);
   background: color-mix(in oklch, var(--color-brand) 12%, transparent);
   color: var(--color-brand);
-  border-radius: var(--radius-round);
+  font-size: var(--font-size-0);
   white-space: nowrap;
 }
 
 /* ─── Upcoming pill (shared across cards) ───────────── */
 .upcoming-pill {
-  font-size: var(--font-size-0);
-  font-weight: var(--font-weight-5);
   padding: 1px var(--size-2);
   border-radius: var(--radius-round);
   background: color-mix(in oklch, var(--color-brand) 12%, transparent);
   color: var(--color-brand);
+  font-size: var(--font-size-0);
+  font-weight: var(--font-weight-5);
   white-space: nowrap;
 }
 
 /* ─── Prose (shared across blog/talks) ──────────────── */
 .prose {
-  overflow-wrap: break-word;
   min-inline-size: 0;
+  overflow-wrap: break-word;
+
   & > * + * {
     margin-block-start: var(--size-5);
   }
+
   & > * {
     max-inline-size: var(--content-width);
   }
@@ -259,8 +262,8 @@ a {
 
   & > img,
   & > p:has(> img:only-child) {
-    max-inline-size: 100cqi;
     width: 100cqi;
+    max-inline-size: 100cqi;
   }
 }
 
@@ -268,55 +271,58 @@ a {
   font-size: var(--font-size-5);
   margin-block: var(--size-7) var(--size-5);
 }
+
 .prose h3 {
   font-size: var(--font-size-4);
   margin-block: var(--size-5) var(--size-3);
 }
+
 .prose h4 {
   font-size: var(--font-size-3);
   margin-block: var(--size-5) var(--size-3);
 }
+
 .prose a {
   color: var(--color-brand);
 }
 
 .heading-anchor {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  margin-inline-start: 0.4em;
-  vertical-align: middle;
   padding: 0.1em 0.2em;
-  background: none;
   border: none;
   border-radius: var(--radius-1);
+  background: none;
   color: var(--color-brand);
   cursor: pointer;
   font: inherit;
+  margin-inline-start: 0.4em;
   opacity: 0;
   transition:
     opacity 0.15s,
     color 0.15s;
-  position: relative;
+  vertical-align: middle;
 
   &::after {
-    content: attr(data-tooltip);
     position: absolute;
+    z-index: var(--layer-1);
     bottom: calc(100% + 6px);
     left: 50%;
-    translate: -50% 0;
-    background: var(--surface-3);
+    padding: 0.2em 0.5em;
     border: var(--border-size-1) solid var(--border);
     border-radius: var(--radius-2);
-    padding: 0.2em 0.5em;
+    background: var(--surface-3);
+    color: var(--text-2);
+    content: attr(data-tooltip);
     font-family: var(--font-sans);
     font-size: var(--font-size-0);
     font-weight: var(--font-weight-4);
-    color: var(--text-2);
-    white-space: nowrap;
-    pointer-events: none;
     opacity: 0;
+    pointer-events: none;
     transition: opacity 0.1s;
-    z-index: var(--layer-1);
+    translate: -50% 0;
+    white-space: nowrap;
   }
 
   &:hover::after,
@@ -334,8 +340,8 @@ a {
     opacity: 1;
 
     &::after {
-      background: var(--color-brand);
       border-color: var(--color-brand);
+      background: var(--color-brand);
       color: var(--surface-1);
     }
   }
@@ -348,25 +354,25 @@ a {
 .prose pre {
   padding: var(--size-3);
   border-radius: var(--radius-2);
-  overflow-x: auto;
   background: var(--surface-3);
   font-size: var(--font-size-1);
+  overflow-x: auto;
 }
 
 .prose code:not(pre code) {
-  background: var(--surface-3);
   padding: 1px 5px;
   border-radius: var(--radius-1);
+  background: var(--surface-3);
   font-size: 0.9em;
   white-space: normal;
 }
 
 .prose blockquote {
   border-inline-start: var(--border-size-2) solid var(--color-brand);
-  margin-inline-start: 0;
-  padding-inline-start: var(--size-3);
   color: var(--text-2);
   font-style: italic;
+  margin-inline-start: 0;
+  padding-inline-start: var(--size-3);
 }
 
 .prose img {
@@ -383,6 +389,7 @@ a {
   0% {
     background-position: 200% 0;
   }
+
   100% {
     background-position: -200% 0;
   }
@@ -415,18 +422,18 @@ html[data-vt-swapping] {
 /* Text clip effect for nav links and page title during lang switch */
 ::view-transition-old(.text-transition),
 ::view-transition-new(.text-transition) {
+  overflow: clip;
   height: 100%;
   object-fit: none;
   object-position: left;
-  overflow: clip;
 }
 
 ::view-transition-old(.text-transition-right),
 ::view-transition-new(.text-transition-right) {
+  overflow: clip;
   height: 100%;
   object-fit: none;
   object-position: right;
-  overflow: clip;
 }
 
 /* ── Directional slide for page navigation ───────────── */

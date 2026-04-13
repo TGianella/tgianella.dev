@@ -52,21 +52,21 @@ const {
 
 <style>
   .card__title {
-    font-size: var(--font-size-3);
     margin: 0 0 0.25rem;
+    font-size: var(--font-size-3);
     transition: color 0.15s;
   }
 
   .card {
     display: grid;
-    grid-template-columns: minmax(auto, 16rem) 1fr;
-    gap: var(--size-5);
     align-items: center;
     padding: var(--size-4);
-    border-block-end: var(--border-size-1) solid var(--border);
     border-radius: var(--radius-2);
-    text-decoration: none;
+    border-block-end: var(--border-size-1) solid var(--border);
     color: inherit;
+    gap: var(--size-5);
+    grid-template-columns: minmax(auto, 16rem) 1fr;
+    text-decoration: none;
     transition: background 0.15s;
 
     &:last-of-type {
@@ -88,25 +88,25 @@ const {
 
   @media (width < 560px) {
     .card {
-      grid-template-columns: 1fr;
       gap: var(--size-3);
+      grid-template-columns: 1fr;
     }
   }
 
   .card__thumb-wrap {
     position: relative;
-    aspect-ratio: 16 / 9;
-    border-radius: var(--radius-2);
     overflow: hidden;
+    border-radius: var(--radius-2);
+    aspect-ratio: 16 / 9;
     background: var(--surface-3);
-    max-inline-size: 16rem;
     max-block-size: 9rem;
+    max-inline-size: 16rem;
   }
 
   @media (width < 560px) {
     .card__thumb-wrap {
-      max-inline-size: unset;
       max-block-size: unset;
+      max-inline-size: unset;
     }
   }
 
@@ -122,13 +122,13 @@ const {
   }
 
   .card__desc {
-    font-size: var(--font-size-1);
-    color: var(--text-2);
-    margin: 0 0 0.625rem;
     display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
     overflow: hidden;
+    margin: 0 0 0.625rem;
+    -webkit-box-orient: vertical;
+    color: var(--text-2);
+    font-size: var(--font-size-1);
+    -webkit-line-clamp: 3;
   }
 
   /* ── Slotted content ─────────────────────────── */
@@ -136,10 +136,10 @@ const {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.2em 0.9em;
-    font-size: var(--font-size-1);
-    color: var(--text-2);
     margin: 0 0 0.25rem;
+    color: var(--text-2);
+    font-size: var(--font-size-1);
+    gap: 0.2em 0.9em;
   }
 
   .card :global(.card__meta-item) {
@@ -159,17 +159,17 @@ const {
     position: absolute;
     top: var(--size-2);
     left: var(--size-2);
-    font-size: var(--font-size-0);
     padding: 1px var(--size-2);
-    background: color-mix(in oklch, var(--color-brand) 18%, var(--surface-1));
     backdrop-filter: blur(4px);
+    background: color-mix(in oklch, var(--color-brand) 18%, var(--surface-1));
+    font-size: var(--font-size-0);
     view-transition-class: text-transition;
   }
 
   @media (width < 560px) {
     .card :global(.card__upcoming-pill) {
-      font-size: var(--font-size-1);
       padding: var(--size-1) var(--size-3);
+      font-size: var(--font-size-1);
     }
   }
 </style>

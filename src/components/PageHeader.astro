@@ -16,15 +16,15 @@ const { title, description, transitionName } = Astro.props;
 
 <style>
   .page-header {
-    margin-block-end: var(--size-5);
     border-block-end: var(--border-size-1) solid var(--border);
+    margin-block-end: var(--size-5);
   }
 
   .page-header h1 {
+    width: fit-content;
+    margin: 0 0 var(--size-4);
     font-size: clamp(2.25rem, 5vw, 3.5rem);
     line-height: 1.1;
-    margin: 0 0 var(--size-4);
-    width: fit-content;
     view-transition-class: text-transition;
   }
 

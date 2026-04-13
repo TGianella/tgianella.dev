@@ -226,10 +226,10 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 300));
 
   .back-link {
     display: inline-block;
-    font-size: var(--font-size-1);
     color: var(--text-2);
-    text-decoration: none;
+    font-size: var(--font-size-1);
     margin-block-end: var(--size-5);
+    text-decoration: none;
     transition: color 0.15s;
 
     &:hover,
@@ -239,18 +239,18 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 300));
   }
 
   .post-header {
+    border-block-end: var(--border-size-1) solid var(--border);
     margin-block-end: var(--size-5);
     padding-block-end: var(--size-5);
-    border-block-end: var(--border-size-1) solid var(--border);
   }
 
   .post-header__meta {
     display: flex;
-    gap: 0.9em;
-    align-items: center;
     flex-wrap: wrap;
-    font-size: var(--font-size-1);
+    align-items: center;
     color: var(--text-2);
+    font-size: var(--font-size-1);
+    gap: 0.9em;
     margin-block-end: 0.75rem;
   }
 
@@ -268,30 +268,30 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 300));
   }
 
   .post-header__title {
+    margin: 0 0 0.75rem;
     font-size: clamp(2rem, 4vw, 3rem);
     line-height: 1.1;
-    margin: 0 0 0.75rem;
   }
 
   .post-header__desc {
-    font-size: var(--font-size-2);
-    color: var(--text-2);
     margin: 0 0 0.875rem;
+    color: var(--text-2);
+    font-size: var(--font-size-2);
     max-inline-size: 55ch;
   }
 
   .post-header__updated {
-    font-size: var(--font-size-0);
-    color: var(--text-2);
     margin: 0.75rem 0 0;
+    color: var(--text-2);
+    font-size: var(--font-size-0);
     font-style: italic;
   }
 
   .post-body {
     display: grid;
-    grid-template-columns: 1fr;
     align-items: start;
     gap: var(--size-4) var(--size-8);
+    grid-template-columns: 1fr;
   }
 
   @media (width >= 48rem) {
@@ -327,22 +327,22 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 300));
   }
 
   .coauthors-sidebar__label {
-    font-size: var(--font-size-1);
-    color: var(--text-2);
-    font-weight: var(--font-weight-6);
     margin: 0;
+    color: var(--text-2);
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-6);
   }
 
   .origin-notice {
     display: flex;
     align-items: center;
-    gap: var(--size-4);
-    font-size: var(--font-size-1);
-    color: var(--text-2);
-    background: var(--surface-2);
-    border-radius: var(--radius-2);
     padding: var(--size-3) var(--size-4);
+    border-radius: var(--radius-2);
     margin: 0;
+    background: var(--surface-2);
+    color: var(--text-2);
+    font-size: var(--font-size-1);
+    gap: var(--size-4);
 
     & svg {
       flex-shrink: 0;
@@ -351,6 +351,7 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 300));
 
   :global(.prose img) {
     cursor: zoom-in;
+
     &:focus-visible {
       outline: 2px solid var(--color-brand);
       outline-offset: 3px;
@@ -359,17 +360,17 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 300));
 
   /* ── Lightbox ──────────────────────────────── */
   .lbx {
+    position: fixed;
+    display: grid;
+    padding: var(--size-4);
     border: none;
     background: transparent;
-    max-inline-size: 100%;
-    max-block-size: 100%;
-    position: fixed;
-    inset: 0;
-    inline-size: 100%;
     block-size: 100%;
-    display: grid;
+    inline-size: 100%;
+    inset: 0;
+    max-block-size: 100%;
+    max-inline-size: 100%;
     place-items: center;
-    padding: var(--size-4);
   }
 
   .lbx:not([open]) {
@@ -377,26 +378,27 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 300));
   }
 
   .lbx::backdrop {
-    background: oklch(0% 0 0deg / 88%);
     animation: lbx-backdrop-in 0.15s ease;
+    background: oklch(0% 0 0deg / 88%);
   }
 
   @keyframes lbx-backdrop-in {
     from {
       opacity: 0;
     }
+
     to {
       opacity: 1;
     }
   }
 
   .lbx__img {
-    max-inline-size: min(90vw, 960px);
-    max-block-size: 85dvh;
-    object-fit: contain;
+    display: block;
     border-radius: var(--radius-2);
     animation: lbx-img-in 0.2s ease;
-    display: block;
+    max-block-size: 85dvh;
+    max-inline-size: min(90vw, 960px);
+    object-fit: contain;
   }
 
   @keyframes lbx-img-in {
@@ -404,6 +406,7 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 300));
       opacity: 0;
       scale: 0.97;
     }
+
     to {
       opacity: 1;
       scale: 1;
@@ -412,19 +415,19 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 300));
 
   .lbx__close {
     position: absolute;
-    inset-block-start: var(--size-4);
-    inset-inline-end: var(--size-4);
-    background: oklch(100% 0 0deg / 15%);
-    border: 1px solid oklch(100% 0 0deg / 25%);
-    color: white;
-    border-radius: var(--radius-round);
-    inline-size: 2.25rem;
-    block-size: 2.25rem;
     display: grid;
-    place-items: center;
+    border: 1px solid oklch(100% 0 0deg / 25%);
+    border-radius: var(--radius-round);
+    background: oklch(100% 0 0deg / 15%);
+    block-size: 2.25rem;
+    color: white;
     cursor: pointer;
     font-size: var(--font-size-2);
+    inline-size: 2.25rem;
+    inset-block-start: var(--size-4);
+    inset-inline-end: var(--size-4);
     line-height: 1;
+    place-items: center;
     transition: background 0.15s;
 
     &:hover,

@@ -162,10 +162,10 @@ const eventsSorted = [...talk.data.events].sort(
 
   .back-link {
     display: inline-block;
-    font-size: var(--font-size-1);
     color: var(--text-2);
-    text-decoration: none;
+    font-size: var(--font-size-1);
     margin-block-end: var(--size-5);
+    text-decoration: none;
     transition: color 0.15s;
 
     &:hover,
@@ -176,22 +176,22 @@ const eventsSorted = [...talk.data.events].sort(
 
   .talk-header {
     display: grid;
-    grid-template-columns: minmax(min-content, 1fr) auto;
+    border-block-end: var(--border-size-1) solid var(--border);
+    gap: var(--size-4) var(--size-5);
     grid-template-areas:
       "top top"
       "tags cospeakers";
-    gap: var(--size-4) var(--size-5);
+    grid-template-columns: minmax(min-content, 1fr) auto;
     margin-block-end: var(--size-5);
     padding-block-end: var(--size-5);
-    border-block-end: var(--border-size-1) solid var(--border);
   }
 
   @media (width >= 36rem) {
     .talk-header {
-      grid-template-columns: 1fr auto;
       grid-template-areas:
         "top cospeakers"
         "tags cospeakers";
+      grid-template-columns: 1fr auto;
     }
 
     .talk-header__cospeakers {
@@ -200,44 +200,44 @@ const eventsSorted = [...talk.data.events].sort(
   }
 
   .talk-header__top {
-    grid-area: top;
     display: flex;
     flex-direction: column;
     gap: var(--size-4);
+    grid-area: top;
   }
 
   .talk-header__title {
-    font-size: clamp(2rem, 4vw, 3rem);
     margin: 0;
+    font-size: clamp(2rem, 4vw, 3rem);
   }
 
   .talk-header__tags {
-    grid-area: tags;
     align-self: center;
+    grid-area: tags;
   }
 
   .talk-header__cospeakers {
-    grid-area: cospeakers;
     display: flex;
     flex-direction: column;
     align-items: end;
     gap: var(--size-2);
+    grid-area: cospeakers;
   }
 
   .talk-header__actions {
     display: flex;
-    gap: 0.75rem;
     flex-wrap: wrap;
+    gap: 0.75rem;
   }
 
   .btn {
     display: inline-flex;
     align-items: center;
-    gap: var(--size-1);
     padding: var(--size-2) var(--size-3);
     border-radius: var(--radius-2);
     font-size: var(--font-size-1);
     font-weight: var(--font-weight-6);
+    gap: var(--size-1);
     text-decoration: none;
     transition: opacity 0.15s;
 
@@ -253,16 +253,16 @@ const eventsSorted = [...talk.data.events].sort(
   }
 
   .btn--secondary {
+    border: var(--border-size-1) solid var(--border);
     background: var(--surface-2);
     color: var(--text-1);
-    border: var(--border-size-1) solid var(--border);
   }
 
   .talk-layout {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--size-5) var(--size-8);
     align-items: start;
+    gap: var(--size-5) var(--size-8);
+    grid-template-columns: 1fr;
   }
 
   @media (width >= 48rem) {
@@ -272,25 +272,25 @@ const eventsSorted = [...talk.data.events].sort(
   }
 
   .abstract {
-    font-size: var(--font-size-2);
     color: var(--text-2);
+    font-size: var(--font-size-2);
     line-height: 1.7;
-    max-inline-size: 70ch;
     margin-block-end: var(--size-8);
+    max-inline-size: 70ch;
   }
 
   .events-sidebar__heading {
-    font-size: var(--font-size-2);
     margin: 0 0 var(--size-3);
+    font-size: var(--font-size-2);
   }
 
   .event-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
     display: flex;
     flex-direction: column;
+    padding: 0;
+    margin: 0;
     gap: var(--size-2);
+    list-style: "";
   }
 
   .video-section {
@@ -299,17 +299,17 @@ const eventsSorted = [...talk.data.events].sort(
 
   .video-wrapper {
     position: relative;
-    aspect-ratio: 16/9;
-    border-radius: var(--radius-2);
     overflow: hidden;
+    border-radius: var(--radius-2);
+    aspect-ratio: 16/9;
     background: var(--surface-3);
 
     & iframe {
       position: absolute;
-      inset: 0;
       width: 100%;
       height: 100%;
       border: 0;
+      inset: 0;
     }
   }
 </style>

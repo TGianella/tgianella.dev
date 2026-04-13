@@ -70,23 +70,24 @@ const dateFormatter = getDateFormatter(lang);
 
 <style>
   .photo-grid {
-    list-style: none;
-    margin: 0;
-    padding: 0;
     display: grid;
+    padding: 0;
+    margin: 0;
     gap: var(--size-2);
     grid-template-columns: repeat(
       auto-fill,
       minmax(min(160px, calc((100% - 2 * var(--size-2)) / 3)), 1fr)
     );
+    list-style: "";
   }
 
   .photo-card {
-    display: block;
     position: relative;
-    aspect-ratio: 1;
+    display: block;
     overflow: hidden;
     border-radius: var(--radius-2);
+    animation: photo-shimmer 1.5s infinite;
+    aspect-ratio: 1;
     background: linear-gradient(
       90deg,
       var(--surface-2) 25%,
@@ -94,7 +95,6 @@ const dateFormatter = getDateFormatter(lang);
       var(--surface-2) 75%
     );
     background-size: 200% 100%;
-    animation: photo-shimmer 1.5s infinite;
   }
 
   .photo-card:focus-visible {
@@ -108,6 +108,7 @@ const dateFormatter = getDateFormatter(lang);
   }
 
   .photo-card__img {
+    display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -115,7 +116,6 @@ const dateFormatter = getDateFormatter(lang);
     transition:
       opacity 0.3s ease,
       transform 0.3s ease;
-    display: block;
   }
 
   .photo-card__img.loaded {
@@ -124,11 +124,9 @@ const dateFormatter = getDateFormatter(lang);
 
   .photo-card__overlay {
     position: absolute;
-    inset: 0;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    gap: 0.2em;
     padding: var(--size-3);
     background: linear-gradient(
       to top,
@@ -136,6 +134,8 @@ const dateFormatter = getDateFormatter(lang);
       rgb(0 0 0 / 20%) 50%,
       transparent 100%
     );
+    gap: 0.2em;
+    inset: 0;
     opacity: 0;
     transition: opacity 0.25s ease;
   }
@@ -143,9 +143,9 @@ const dateFormatter = getDateFormatter(lang);
   .photo-card__meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.1em 0.5em;
     color: white;
     font-size: var(--font-size-0);
+    gap: 0.1em 0.5em;
     opacity: 0.75;
   }
 
