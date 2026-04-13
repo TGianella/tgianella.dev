@@ -10,7 +10,20 @@ export function sortByDate<T extends { data: { date?: Date } }>(entries: T[]): T
   });
 }
 
-type RawEvent = { date: Date; name: string; location: string; scope: 'internal' | 'regional' | 'national' };
+export type RawEvent = { date: Date; name: string; location: string; scope: 'internal' | 'regional' | 'national' };
+
+/** Returns the debut event for a talk: earliest national, then regional, then internal.
+ *  Ignores upcoming events when past events exist, so a talk already given at a regional
+ *  conference doesn't show an upcoming national event as its debut. */
+export function debutEvent(events: RawEvent[]): RawEvent {
+  const now = new Date();
+  const pool = events.some(e => e.date <= now)
+    ? events.filter(e => e.date <= now)
+    : events;
+  const earliest = (scope: RawEvent['scope']) =>
+    pool.filter(e => e.scope === scope).sort((a, b) => a.date.valueOf() - b.date.valueOf())[0];
+  return earliest('national') ?? earliest('regional') ?? earliest('internal');
+}
 
 export type TimelineTalk = {
   title: string;

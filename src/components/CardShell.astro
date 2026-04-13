@@ -24,7 +24,6 @@ const { href, title, description, thumb, thumbAlt = '', tags = [], thumbTransiti
     <slot name="meta" />
     <h2 class="card__title">{title}</h2>
     <p class="card__desc">{description}</p>
-    <slot />
     {tags.length > 0 && (
       <ul class="tag-list">
         {tags.map(tag => <li class="tag">{tag}</li>)}

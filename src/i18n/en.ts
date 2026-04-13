@@ -18,6 +18,10 @@ const en = {
     toDark: 'Switch to dark mode',
   },
   home: {
+    bio: [
+        "Passionate about the web platform as a whole, I come from an academic and research background in Liberal Arts. I love giving shape to performant, accessible and beautiful web experiences. Being extremely curious, I'm always on the lookout for new things to learn, and you will find on this website articles and talks about some topics that caught my interest.",
+        "I am very interested about browser internals, web toolchains (transpilation, bundling, etc.) and the intricacies of JavaScript and CSS. Beyond that, I'm your stereotypical French person, being a film nerd, a good cuisine enjoyer and often wearing a striped shirt."
+    ],
     tagline: 'Frontend Engineer',
     github: 'GitHub profile',
     linkedin: 'LinkedIn profile',
@@ -65,7 +69,7 @@ const en = {
   },
   gallery: {
     title: 'Blue Screens',
-    description: 'A hobby of mine is to snap pictures of public display screens with errors on them. I find them very interesting and somehow meaningful, here are my best catches !',
+    description: 'A hobby of mine is to snap pictures of public display screens not showing what they are supposed to (error screens, menus, OS home screens, etc.). I find them very interesting and somehow meaningful, here are my best catches !',
     photos: (count: number) => `${count} photo${count !== 1 ? 's' : ''}`,
     backToList: '← Back to Gallery',
   },

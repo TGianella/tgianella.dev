@@ -42,11 +42,12 @@ const t = useTranslations(lang);
 const { Content } = await render(photo);
 
 const hasContent = !!photo.body?.trim();
+const dateStr = photo.data.date.toLocaleDateString(lang, { year: 'numeric', month: 'long', day: 'numeric' });
 ---
 
 <BaseLayout
   lang={lang}
-  title={photo.data.location ?? photo.data.alt}
+  title={`Blue Screens — ${dateStr}`}
   description={photo.data.caption ?? photo.data.alt}
   canonicalPath={`/blue-screens/${slug}`}
   ogImage={photo.data.src}

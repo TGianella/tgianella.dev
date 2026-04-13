@@ -20,6 +20,10 @@ const fr: Translations = {
     toDark: 'Passer en mode sombre',
   },
   home: {
+    bio: [
+        "Passionné par toutes les technologies du web, je suis passé par une première carrière dans la recherche et l'enseignement en littérature avant d'apprendre à façonner des interfaces performantes, accessibles et intuitives. Étant extrêmement curieux, je suis toujours à la recherche de nouvelles choses à apprendre, et vous trouverez sur ce site des articles et conférences sur certains sujets qui ont retenu mon attention.",
+        "Je suis particulièrement intéressé par le fonctionnement des navigateurs web, des outils utilisés pour construire des applications web (transpilation, bundling, etc.) et de toutes les subtilités de JavaScript et CSS. En dehors de ça, je suis amateur de cinéma, de cuisine et (surprise) de littérature.",
+    ],
     tagline: 'Développeur Front-end',
     github: 'Profil GitHub',
     linkedin: 'Profil LinkedIn',
@@ -67,7 +71,7 @@ const fr: Translations = {
   },
   gallery: {
     title: 'Blue Screens',
-    description: "Une de mes obsessions est de photographier les écrans d'affichages qui montrent des messages d'erreur. Je trouve ça fascinant et plus intéressant qu'il n'y paraît. Voici mes meilleures trouvailles !",
+    description: "Une de mes obsessions est de photographier les écrans d'affichages qui montrent autre chose que ce qu'ils devraient (messages d'erreur, menus, écrans d'accueil de l'OS, etc.). Je trouve ça fascinant et plus intéressant qu'il n'y paraît. Voici mes meilleures trouvailles !",
     photos: (count: number) => `${count} photo${count !== 1 ? 's' : ''}`,
     backToList: '← Retour à la galerie',
   },
