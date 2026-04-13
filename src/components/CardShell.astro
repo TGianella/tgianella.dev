@@ -33,6 +33,12 @@ const { href, title, description, thumb, thumbAlt = '', tags = [], thumbTransiti
 </a>
 
 <style>
+  .card__title {
+    font-size: var(--font-size-3);
+    margin: 0 0 0.25rem;
+    transition: color 0.15s;
+  }
+
   .card {
     display: grid;
     grid-template-columns: minmax(auto, 16rem) 1fr;
@@ -46,8 +52,14 @@ const { href, title, description, thumb, thumbAlt = '', tags = [], thumbTransiti
     transition: background 0.15s;
 
     &:last-of-type { border-block-end: none; }
+
     &:hover,
-    &:focus-visible { background: var(--surface-2); outline: 2px solid var(--color-brand); outline-offset: 2px; }
+    &:focus-visible {
+      background: var(--surface-2);
+      outline: 2px solid var(--color-brand);
+      outline-offset: 2px;
+    }
+
     &:hover .card__title,
     &:focus-visible .card__title { color: var(--color-brand); }
   }
@@ -82,12 +94,6 @@ const { href, title, description, thumb, thumbAlt = '', tags = [], thumbTransiti
     object-fit: cover;
     transition: transform 0.3s ease;
     .card:hover & { transform: scale(1.04); }
-  }
-
-  .card__title {
-    font-size: var(--font-size-3);
-    margin: 0 0 0.25rem;
-    transition: color 0.15s;
   }
 
   .card__desc {

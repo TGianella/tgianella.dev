@@ -175,10 +175,10 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'long' });
   /* tab-panel name is CSS-driven, only active during a tab switch */
   [data-tab-transition] [role="tabpanel"]:not([hidden]) { view-transition-name: tab-panel; }
 
-  [data-tab-transition=forward]::view-transition-old(tab-panel) { animation: vt-out-left  0.25s ease both; }
-  [data-tab-transition=forward]::view-transition-new(tab-panel) { animation: vt-in-right  0.25s ease both; }
-  [data-tab-transition=back]::view-transition-old(tab-panel)    { animation: vt-out-right 0.25s ease both; }
-  [data-tab-transition=back]::view-transition-new(tab-panel)    { animation: vt-in-left   0.25s ease both; }
+  [data-tab-transition="forward"]::view-transition-old(tab-panel) { animation: vt-out-left  0.25s ease both; }
+  [data-tab-transition="forward"]::view-transition-new(tab-panel) { animation: vt-in-right  0.25s ease both; }
+  [data-tab-transition="back"]::view-transition-old(tab-panel)    { animation: vt-out-right 0.25s ease both; }
+  [data-tab-transition="back"]::view-transition-new(tab-panel)    { animation: vt-in-left   0.25s ease both; }
 </style>
 
 <style>
@@ -190,8 +190,7 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'long' });
     background: var(--surface-3);
     border: var(--border-size-1) solid var(--border);
     border-radius: var(--radius-round);
-    margin-block-start: var(--size-6);
-    margin-block-end: var(--size-3);
+    margin-block: var(--size-6) var(--size-3);
     margin-inline-start: auto;
     width: fit-content;
     isolation: isolate;

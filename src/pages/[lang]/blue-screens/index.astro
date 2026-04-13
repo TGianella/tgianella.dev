@@ -66,6 +66,11 @@ const dateFormatter = getDateFormatter(lang);
     animation: photo-shimmer 1.5s infinite;
   }
 
+  .photo-card:focus-visible {
+    outline: var(--border-size-2) solid var(--color-brand);
+    outline-offset: var(--border-size-2);
+  }
+
   .photo-card:has(.photo-card__img.loaded) {
     animation: none;
     background: var(--surface-3);
@@ -92,7 +97,7 @@ const dateFormatter = getDateFormatter(lang);
     justify-content: flex-end;
     gap: 0.2em;
     padding: var(--size-3);
-    background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 50%, transparent 100%);
+    background: linear-gradient(to top, rgb(0 0 0 / 70%) 0%, rgb(0 0 0 / 20%) 50%, transparent 100%);
     opacity: 0;
     transition: opacity 0.25s ease;
   }
@@ -100,8 +105,7 @@ const dateFormatter = getDateFormatter(lang);
   .photo-card__meta {
     display: flex;
     flex-wrap: wrap;
-    column-gap: 0.5em;
-    row-gap: 0.1em;
+    gap: 0.1em 0.5em;
     color: white;
     font-size: var(--font-size-0);
     opacity: 0.75;
@@ -115,11 +119,6 @@ const dateFormatter = getDateFormatter(lang);
   .photo-card:hover .photo-card__overlay,
   .photo-card:focus-visible .photo-card__overlay {
     opacity: 1;
-  }
-
-  .photo-card:focus-visible {
-    outline: var(--border-size-2) solid var(--color-brand);
-    outline-offset: var(--border-size-2);
   }
 </style>
 

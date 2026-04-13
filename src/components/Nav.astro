@@ -318,7 +318,6 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
     border-radius: var(--radius-round);
     font-size: var(--font-size-0);
     font-weight: var(--font-weight-6);
-
     text-decoration: none;
     color: var(--text-2);
     transition: color 0.15s;
@@ -361,7 +360,7 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
     display: block;
     width: 20px;
     height: var(--border-size-2);
-    background: currentColor;
+    background: currentcolor;
     border-radius: var(--radius-1);
     transition: transform 0.2s, opacity 0.2s;
   }
@@ -369,9 +368,11 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
   .nav:has(#mobile-menu:popover-open) .hamburger__bar:nth-child(1) {
     transform: translateY(7px) rotate(45deg);
   }
+
   .nav:has(#mobile-menu:popover-open) .hamburger__bar:nth-child(2) {
     opacity: 0;
   }
+
   .nav:has(#mobile-menu:popover-open) .hamburger__bar:nth-child(3) {
     transform: translateY(-7px) rotate(-45deg);
   }
@@ -381,17 +382,14 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
     padding: 0;
     margin: 0;
     inset: unset;
-
     position: fixed;
     top: var(--nav-height);
     left: 0;
     right: 0;
     width: 100%;
-
     background: var(--surface-1);
     border-block-end: var(--border-size-1) solid var(--border);
     box-shadow: var(--shadow-2);
-
     transform: translateY(-0.5rem);
     opacity: 0;
     transition:
@@ -431,10 +429,6 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
     transition: color 0.15s;
   }
 
-  .nav__mobile ul li:last-child .nav__mobile-link {
-    border-block-end: none;
-  }
-
   .nav__mobile-link:hover,
   .nav__mobile-link[aria-current="page"] {
     color: var(--text-1);
@@ -444,6 +438,10 @@ const alternatePath = getLocalizedPath(currentPath.replace(/^\/(en|fr)/, '') || 
     color: var(--text-1);
     outline: 2px solid var(--color-brand);
     outline-offset: -2px;
+  }
+
+  .nav__mobile ul li:last-child .nav__mobile-link {
+    border-block-end: none;
   }
 
   @media (width < 700px) {
