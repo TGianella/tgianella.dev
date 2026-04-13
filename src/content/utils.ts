@@ -1,7 +1,9 @@
-import { slugOf, isUpcoming, type Locale } from '../i18n/utils';
+import { slugOf, isUpcoming, type Locale } from "../i18n/utils";
 
 /** Sorts content entries by `data.date` descending (undated entries sort last) */
-export function sortByDate<T extends { data: { date?: Date } }>(entries: T[]): T[] {
+export function sortByDate<T extends { data: { date?: Date } }>(
+  entries: T[],
+): T[] {
   return [...entries].sort((a, b) => {
     if (!a.data.date && !b.data.date) return 0;
     if (!a.data.date) return 1;
@@ -10,19 +12,26 @@ export function sortByDate<T extends { data: { date?: Date } }>(entries: T[]): T
   });
 }
 
-export type RawEvent = { date: Date; name: string; location: string; scope: 'internal' | 'regional' | 'national' };
+export type RawEvent = {
+  date: Date;
+  name: string;
+  location: string;
+  scope: "internal" | "regional" | "national";
+};
 
 /** Returns the debut event for a talk: earliest national, then regional, then internal.
  *  Ignores upcoming events when past events exist, so a talk already given at a regional
  *  conference doesn't show an upcoming national event as its debut. */
 export function debutEvent(events: RawEvent[]): RawEvent {
   const now = new Date();
-  const pool = events.some(e => e.date <= now)
-    ? events.filter(e => e.date <= now)
+  const pool = events.some((e) => e.date <= now)
+    ? events.filter((e) => e.date <= now)
     : events;
-  const earliest = (scope: RawEvent['scope']) =>
-    pool.filter(e => e.scope === scope).sort((a, b) => a.date.valueOf() - b.date.valueOf())[0];
-  return earliest('national') ?? earliest('regional') ?? earliest('internal');
+  const earliest = (scope: RawEvent["scope"]) =>
+    pool
+      .filter((e) => e.scope === scope)
+      .sort((a, b) => a.date.valueOf() - b.date.valueOf())[0];
+  return earliest("national") ?? earliest("regional") ?? earliest("internal");
 }
 
 export type TimelineTalk = {
@@ -47,7 +56,7 @@ export type TimelineYear = {
 /** Groups talks by event (same name + same day), sorts newest-first within each year */
 export function buildTimeline(
   talks: { id: string; data: { title: string; events: RawEvent[] } }[],
-  lang: Locale
+  lang: Locale,
 ): TimelineYear[] {
   // Key: ISO date (YYYY-MM-DD) + event name — identifies a unique occurrence
   const grouped = new Map<string, TimelineEventGroup>();
@@ -88,5 +97,5 @@ export function buildTimeline(
 
   return [...byYear.keys()]
     .sort((a, b) => b - a)
-    .map(year => ({ year, events: byYear.get(year)! }));
+    .map((year) => ({ year, events: byYear.get(year)! }));
 }

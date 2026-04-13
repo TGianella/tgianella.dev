@@ -7,19 +7,26 @@ interface Props {
 }
 
 const { name, picture, url, label } = Astro.props;
-const avatar = picture ?? `https://picsum.photos/seed/${encodeURIComponent(name)}/96/96`;
-const Tag = url ? 'a' : 'div';
+const avatar =
+  picture ?? `https://picsum.photos/seed/${encodeURIComponent(name)}/96/96`;
+const Tag = url ? "a" : "div";
 ---
 
 <div class="person-card-wrap">
   {label && <span class="person-card__label">{label}</span>}
   <Tag
     class="person-card"
-    {...url ? { href: url, target: '_blank', rel: 'noopener noreferrer' } : {}}
+    {...url ? { href: url, target: "_blank", rel: "noopener noreferrer" } : {}}
   >
-    <img class="person-card__avatar" src={avatar} alt={name} width="96" height="96" />
+    <img
+      class="person-card__avatar"
+      src={avatar}
+      alt={name}
+      width="96"
+      height="96"
+    />
     <span class="person-card__name">
-      {name.split(' ').map(part => <span>{part}</span>)}
+      {name.split(" ").map((part) => <span>{part}</span>)}
     </span>
   </Tag>
 </div>
@@ -51,7 +58,9 @@ const Tag = url ? 'a' : 'div';
     color: inherit;
     transition: border-color 0.15s;
 
-    &:is(a):hover { border-color: var(--color-brand); }
+    &:is(a):hover {
+      border-color: var(--color-brand);
+    }
   }
 
   .person-card__avatar {

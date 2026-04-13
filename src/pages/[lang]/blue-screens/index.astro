@@ -1,47 +1,70 @@
 ---
-import BaseLayout from '../../../layouts/BaseLayout.astro';
-import PageHeader from '../../../components/PageHeader.astro';
-import { useTranslations, getLocaleStaticPaths, getDateFormatter, slugOf, type Locale } from '../../../i18n/utils';
-import { sortByDate } from '../../../content/utils';
-import { getCollection } from 'astro:content';
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import PageHeader from "../../../components/PageHeader.astro";
+import {
+  useTranslations,
+  getLocaleStaticPaths,
+  getDateFormatter,
+  slugOf,
+  type Locale,
+} from "../../../i18n/utils";
+import { sortByDate } from "../../../content/utils";
+import { getCollection } from "astro:content";
 
 export const getStaticPaths = getLocaleStaticPaths;
 
 const { lang } = Astro.params as { lang: Locale };
 const t = useTranslations(lang);
 
-const photos = sortByDate(await getCollection('gallery', ({ id }) => id.startsWith(`${lang}/`)));
+const photos = sortByDate(
+  await getCollection("gallery", ({ id }) => id.startsWith(`${lang}/`)),
+);
 
 const dateFormatter = getDateFormatter(lang);
 ---
 
-<BaseLayout lang={lang} title={t.gallery.title} description={t.gallery.description} canonicalPath="/blue-screens">
+<BaseLayout
+  lang={lang}
+  title={t.gallery.title}
+  description={t.gallery.description}
+  canonicalPath="/blue-screens"
+>
   <PageHeader title={t.gallery.title} description={t.gallery.description} />
 
   <ul class="photo-grid">
-    {photos.map(photo => (
-      <li>
-        <a href={`/${lang}/blue-screens/${slugOf(photo.id, lang)}`} class="photo-card">
-          <img
-            src={photo.data.src.replace(/\/([^/]+)\.[^.]+$/, '/thumbnails/$1.webp')}
-            alt={photo.data.alt}
-            width={400}
-            height={400}
-            class="photo-card__img"
-            loading="lazy"
-            decoding="async"
-          />
-          {(photo.data.location || photo.data.date) && (
-            <div class="photo-card__overlay" aria-hidden="true">
-              <span class="photo-card__meta">
-                {photo.data.location && <span>{photo.data.location}</span>}
-                {photo.data.date && <span>{dateFormatter.format(photo.data.date)}</span>}
-              </span>
-            </div>
-          )}
-        </a>
-      </li>
-    ))}
+    {
+      photos.map((photo) => (
+        <li>
+          <a
+            href={`/${lang}/blue-screens/${slugOf(photo.id, lang)}`}
+            class="photo-card"
+          >
+            <img
+              src={photo.data.src.replace(
+                /\/([^/]+)\.[^.]+$/,
+                "/thumbnails/$1.webp",
+              )}
+              alt={photo.data.alt}
+              width={400}
+              height={400}
+              class="photo-card__img"
+              loading="lazy"
+              decoding="async"
+            />
+            {(photo.data.location || photo.data.date) && (
+              <div class="photo-card__overlay" aria-hidden="true">
+                <span class="photo-card__meta">
+                  {photo.data.location && <span>{photo.data.location}</span>}
+                  {photo.data.date && (
+                    <span>{dateFormatter.format(photo.data.date)}</span>
+                  )}
+                </span>
+              </div>
+            )}
+          </a>
+        </li>
+      ))
+    }
   </ul>
 </BaseLayout>
 
@@ -52,7 +75,10 @@ const dateFormatter = getDateFormatter(lang);
     padding: 0;
     display: grid;
     gap: var(--size-2);
-    grid-template-columns: repeat(auto-fill, minmax(min(160px, calc((100% - 2 * var(--size-2)) / 3)), 1fr));
+    grid-template-columns: repeat(
+      auto-fill,
+      minmax(min(160px, calc((100% - 2 * var(--size-2)) / 3)), 1fr)
+    );
   }
 
   .photo-card {
@@ -61,7 +87,12 @@ const dateFormatter = getDateFormatter(lang);
     aspect-ratio: 1;
     overflow: hidden;
     border-radius: var(--radius-2);
-    background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface-3) 50%, var(--surface-2) 75%);
+    background: linear-gradient(
+      90deg,
+      var(--surface-2) 25%,
+      var(--surface-3) 50%,
+      var(--surface-2) 75%
+    );
     background-size: 200% 100%;
     animation: photo-shimmer 1.5s infinite;
   }
@@ -81,7 +112,9 @@ const dateFormatter = getDateFormatter(lang);
     height: 100%;
     object-fit: cover;
     opacity: 0;
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    transition:
+      opacity 0.3s ease,
+      transform 0.3s ease;
     display: block;
   }
 
@@ -97,7 +130,12 @@ const dateFormatter = getDateFormatter(lang);
     justify-content: flex-end;
     gap: 0.2em;
     padding: var(--size-3);
-    background: linear-gradient(to top, rgb(0 0 0 / 70%) 0%, rgb(0 0 0 / 20%) 50%, transparent 100%);
+    background: linear-gradient(
+      to top,
+      rgb(0 0 0 / 70%) 0%,
+      rgb(0 0 0 / 20%) 50%,
+      transparent 100%
+    );
     opacity: 0;
     transition: opacity 0.25s ease;
   }
@@ -124,14 +162,18 @@ const dateFormatter = getDateFormatter(lang);
 
 <script>
   function initSkeletons() {
-    document.querySelectorAll<HTMLImageElement>('.photo-card__img').forEach(img => {
-      if (img.complete) {
-        img.classList.add('loaded');
-      } else {
-        img.addEventListener('load', () => img.classList.add('loaded'), { once: true });
-      }
-    });
+    document
+      .querySelectorAll<HTMLImageElement>(".photo-card__img")
+      .forEach((img) => {
+        if (img.complete) {
+          img.classList.add("loaded");
+        } else {
+          img.addEventListener("load", () => img.classList.add("loaded"), {
+            once: true,
+          });
+        }
+      });
   }
 
-  document.addEventListener('astro:page-load', initSkeletons);
+  document.addEventListener("astro:page-load", initSkeletons);
 </script>

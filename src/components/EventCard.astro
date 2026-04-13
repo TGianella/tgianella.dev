@@ -1,5 +1,5 @@
 ---
-import { useTranslations, isUpcoming, type Locale } from '../i18n/utils';
+import { useTranslations, isUpcoming, type Locale } from "../i18n/utils";
 
 interface Props {
   event: {
@@ -7,7 +7,7 @@ interface Props {
     name: string;
     url?: string;
     location: string;
-    scope: 'internal' | 'regional' | 'national';
+    scope: "internal" | "regional" | "national";
     videoId?: string;
     timestamp?: number;
     duration?: number;
@@ -17,7 +17,7 @@ interface Props {
 
 const { event, lang } = Astro.props;
 const t = useTranslations(lang);
-const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'long' });
+const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "long" });
 const upcoming = isUpcoming([event]);
 ---
 
@@ -27,36 +27,43 @@ const upcoming = isUpcoming([event]);
       {dateFormatter.format(event.date)}
     </time>
     <span class="event-card__name">
-      {event.url
-        ? <a href={event.url} target="_blank" rel="noopener noreferrer">{event.name}&nbsp;↗</a>
-        : event.name
+      {
+        event.url ? (
+          <a href={event.url} target="_blank" rel="noopener noreferrer">
+            {event.name}&nbsp;↗
+          </a>
+        ) : (
+          event.name
+        )
       }
     </span>
     <div class="event-card__location-row">
       <span class="event-card__location">
         {event.location}{event.duration && ` · ${event.duration} min`}
       </span>
-      {upcoming && (
-        <span class="upcoming-pill">{t.talks.upcoming}</span>
-      )}
-      {event.scope === 'internal' && (
-        <span class="event-card__internal-pill">{t.talks.internalEvent}</span>
-      )}
+      {upcoming && <span class="upcoming-pill">{t.talks.upcoming}</span>}
+      {
+        event.scope === "internal" && (
+          <span class="event-card__internal-pill">{t.talks.internalEvent}</span>
+        )
+      }
     </div>
   </div>
 
-  {event.videoId && (
-    <a
-      href={`https://www.youtube.com/watch?v=${event.videoId}${event.timestamp ? `&t=${event.timestamp}` : ''}`}
-      target="_blank"
-      rel="noopener noreferrer"
-      class="event-card__video-btn"
-      aria-label={t.talks.watchReplay}
-      data-tooltip={t.talks.watchReplay}
-    >
-      ▶
-    </a>
-  )}
+  {
+    event.videoId && (
+      <a
+        href={`https://www.youtube.com/watch?v=${event.videoId}${event.timestamp ? `&t=${event.timestamp}` : ""}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="event-card__video-btn"
+        aria-label={t.talks.watchReplay}
+        data-tooltip={t.talks.watchReplay}
+      >
+        ▶
+      </a>
+    )
+  }
 </li>
 
 <style>
@@ -105,7 +112,9 @@ const upcoming = isUpcoming([event]);
     & a {
       color: inherit;
       text-decoration: none;
-      &:hover { color: var(--color-brand); }
+      &:hover {
+        color: var(--color-brand);
+      }
     }
   }
 
@@ -130,7 +139,9 @@ const upcoming = isUpcoming([event]);
     font-size: var(--font-size-1);
     transition: opacity 0.15s;
 
-    &:hover { opacity: 0.75; }
+    &:hover {
+      opacity: 0.75;
+    }
 
     &::after {
       content: attr(data-tooltip);
@@ -146,7 +157,9 @@ const upcoming = isUpcoming([event]);
       border-radius: var(--radius-1);
       pointer-events: none;
       opacity: 0;
-      transition: opacity 0.15s, translate 0.15s;
+      transition:
+        opacity 0.15s,
+        translate 0.15s;
     }
 
     &:hover::after,

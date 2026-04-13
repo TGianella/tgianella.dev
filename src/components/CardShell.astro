@@ -9,13 +9,27 @@ interface Props {
   thumbTransitionName?: string;
 }
 
-const { href, title, description, thumb, thumbAlt = '', tags = [], thumbTransitionName } = Astro.props;
+const {
+  href,
+  title,
+  description,
+  thumb,
+  thumbAlt = "",
+  tags = [],
+  thumbTransitionName,
+} = Astro.props;
 ---
 
 <a href={href} class="card" data-vt-name={thumbTransitionName || undefined}>
   <div class="card__side">
     <div class="card__thumb-wrap">
-      <img src={thumb} alt={thumbAlt} class="card__thumb" loading="lazy" decoding="async" />
+      <img
+        src={thumb}
+        alt={thumbAlt}
+        class="card__thumb"
+        loading="lazy"
+        decoding="async"
+      />
       <slot name="thumb-overlay" />
     </div>
   </div>
@@ -24,11 +38,15 @@ const { href, title, description, thumb, thumbAlt = '', tags = [], thumbTransiti
     <slot name="meta" />
     <h2 class="card__title">{title}</h2>
     <p class="card__desc">{description}</p>
-    {tags.length > 0 && (
-      <ul class="tag-list">
-        {tags.map(tag => <li class="tag">{tag}</li>)}
-      </ul>
-    )}
+    {
+      tags.length > 0 && (
+        <ul class="tag-list">
+          {tags.map((tag) => (
+            <li class="tag">{tag}</li>
+          ))}
+        </ul>
+      )
+    }
   </div>
 </a>
 
@@ -51,7 +69,9 @@ const { href, title, description, thumb, thumbAlt = '', tags = [], thumbTransiti
     color: inherit;
     transition: background 0.15s;
 
-    &:last-of-type { border-block-end: none; }
+    &:last-of-type {
+      border-block-end: none;
+    }
 
     &:hover,
     &:focus-visible {
@@ -61,7 +81,9 @@ const { href, title, description, thumb, thumbAlt = '', tags = [], thumbTransiti
     }
 
     &:hover .card__title,
-    &:focus-visible .card__title { color: var(--color-brand); }
+    &:focus-visible .card__title {
+      color: var(--color-brand);
+    }
   }
 
   @media (width < 560px) {
@@ -93,7 +115,10 @@ const { href, title, description, thumb, thumbAlt = '', tags = [], thumbTransiti
     height: 100%;
     object-fit: cover;
     transition: transform 0.3s ease;
-    .card:hover & { transform: scale(1.04); }
+
+    .card:hover & {
+      transform: scale(1.04);
+    }
   }
 
   .card__desc {

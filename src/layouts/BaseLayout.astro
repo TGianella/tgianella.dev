@@ -1,9 +1,14 @@
 ---
-import { ClientRouter } from 'astro:transitions';
-import Nav from '../components/Nav.astro';
-import SocialLinks from '../components/SocialLinks.astro';
-import { useTranslations, getLocalizedPath, getAlternateLocale, type Locale } from '../i18n/utils';
-import '../styles/global.css';
+import { ClientRouter } from "astro:transitions";
+import Nav from "../components/Nav.astro";
+import SocialLinks from "../components/SocialLinks.astro";
+import {
+  useTranslations,
+  getLocalizedPath,
+  getAlternateLocale,
+  type Locale,
+} from "../i18n/utils";
+import "../styles/global.css";
 
 interface Props {
   lang: Locale;
@@ -15,15 +20,25 @@ interface Props {
   noindex?: boolean;
 }
 
-const { lang, title, description, canonicalPath = '/', ogImage, noindex } = Astro.props;
+const {
+  lang,
+  title,
+  description,
+  canonicalPath = "/",
+  ogImage,
+  noindex,
+} = Astro.props;
 const t = useTranslations(lang);
 const currentPath = Astro.url.pathname;
 
 const alternateLang = getAlternateLocale(lang);
-const alternateUrl = new URL(getLocalizedPath(canonicalPath, alternateLang), Astro.site);
+const alternateUrl = new URL(
+  getLocalizedPath(canonicalPath, alternateLang),
+  Astro.site,
+);
 const canonicalUrl = new URL(getLocalizedPath(canonicalPath, lang), Astro.site);
 
-const ogImageUrl = ogImage ?? new URL('/og-default.png', Astro.site).toString();
+const ogImageUrl = ogImage ?? new URL("/og-default.png", Astro.site).toString();
 const pageTitle = title ? `${title} — ${t.seo.siteName}` : t.seo.siteName;
 ---
 
@@ -43,7 +58,11 @@ const pageTitle = title ? `${title} — ${t.seo.siteName}` : t.seo.siteName;
     <!-- Alternate locale -->
     <link rel="alternate" hreflang={lang} href={canonicalUrl} />
     <link rel="alternate" hreflang={alternateLang} href={alternateUrl} />
-    <link rel="alternate" hreflang="x-default" href={new URL(getLocalizedPath(canonicalPath, 'en'), Astro.site)} />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href={new URL(getLocalizedPath(canonicalPath, "en"), Astro.site)}
+    />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
@@ -52,7 +71,7 @@ const pageTitle = title ? `${title} — ${t.seo.siteName}` : t.seo.siteName;
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImageUrl} />
     <meta property="og:site_name" content={t.seo.siteName} />
-    <meta property="og:locale" content={lang === 'en' ? 'en_US' : 'fr_FR'} />
+    <meta property="og:locale" content={lang === "en" ? "en_US" : "fr_FR"} />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -64,10 +83,34 @@ const pageTitle = title ? `${title} — ${t.seo.siteName}` : t.seo.siteName;
     <link rel="preconnect" href="https://images.tgianella.dev" />
 
     <!-- Fonts -->
-    <link rel="preload" as="font" type="font/woff2" href="/fonts/Bitstream%20Charter.woff2" crossorigin />
-    <link rel="preload" as="font" type="font/woff2" href="/fonts/Bitstream%20Charter%20Italic%20OSF.woff2" crossorigin />
-    <link rel="preload" as="font" type="font/woff2" href="/fonts/Bitstream%20Charter%20Bold%20OSF.woff2" crossorigin />
-    <link rel="preload" as="font" type="font/woff2" href="/fonts/Bitstream%20Charter%20Bold%20Italic%20OSF.woff2" crossorigin />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/Bitstream%20Charter.woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/Bitstream%20Charter%20Italic%20OSF.woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/Bitstream%20Charter%20Bold%20OSF.woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/Bitstream%20Charter%20Bold%20Italic%20OSF.woff2"
+      crossorigin
+    />
 
     <!-- Favicon -->
     <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
@@ -85,21 +128,21 @@ const pageTitle = title ? `${title} — ${t.seo.siteName}` : t.seo.siteName;
     <script is:inline>
       function applyStoredTheme() {
         try {
-          const theme = localStorage.getItem('theme');
-          const expiry = localStorage.getItem('theme-expiry');
+          const theme = localStorage.getItem("theme");
+          const expiry = localStorage.getItem("theme-expiry");
           if (theme && expiry && Date.now() < Number(expiry)) {
-            document.documentElement.setAttribute('data-theme', theme);
+            document.documentElement.setAttribute("data-theme", theme);
           } else {
-            localStorage.removeItem('theme');
-            localStorage.removeItem('theme-expiry');
-            document.documentElement.removeAttribute('data-theme');
+            localStorage.removeItem("theme");
+            localStorage.removeItem("theme-expiry");
+            document.documentElement.removeAttribute("data-theme");
           }
         } catch {
           // localStorage unavailable in some privacy modes; safe to ignore
         }
       }
       applyStoredTheme();
-      document.addEventListener('astro:after-swap', applyStoredTheme);
+      document.addEventListener("astro:after-swap", applyStoredTheme);
     </script>
 
     <ClientRouter />
@@ -114,7 +157,8 @@ const pageTitle = title ? `${title} — ${t.seo.siteName}` : t.seo.siteName;
     <footer class="footer">
       <div class="footer__inner">
         <p class="footer__copy">
-          &copy; {new Date().getFullYear()} {t.seo.siteName}. {t.footer.rights}
+          &copy; {new Date().getFullYear()}
+          {t.seo.siteName}. {t.footer.rights}
         </p>
         <SocialLinks lang={lang} />
       </div>
@@ -123,8 +167,8 @@ const pageTitle = title ? `${title} — ${t.seo.siteName}` : t.seo.siteName;
 </html>
 
 <script>
-  import '../scripts/view-transitions';
-  import '../scripts/scroll-preservation';
+  import "../scripts/view-transitions";
+  import "../scripts/scroll-preservation";
 </script>
 
 <style>

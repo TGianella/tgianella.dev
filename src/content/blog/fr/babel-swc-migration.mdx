@@ -1,11 +1,21 @@
 ---
 title: "Migration de Babel à SWC : comment concilier la performance des nouveaux outils et le code legacy"
 description: "Un compte-rendu de notre migration d'un transpileur vieux de plus de 10 ans à un compilateur de nouvelle génération, des obstacles que nous avons rencontrés, et des résultats obtenus."
-tags: ["SWC", "Babel", "JavaScript", "React", "Web", "Frontend", "Performance", "Bundler"]
+tags:
+  [
+    "SWC",
+    "Babel",
+    "JavaScript",
+    "React",
+    "Web",
+    "Frontend",
+    "Performance",
+    "Bundler",
+  ]
 pubDate: 2025-12-22
 firstPublishedIn:
-    name: "le blog technique de BedrockStreaming"
-    url: "https://tech.bedrockstreaming.com/2025/12/22/switching-from-babel-to-swc.html"
+  name: "le blog technique de BedrockStreaming"
+  url: "https://tech.bedrockstreaming.com/2025/12/22/switching-from-babel-to-swc.html"
 coAuthors:
   - name: "Mickaël Alves"
     url: "https://mickaelalvs.dev/"
@@ -16,15 +26,15 @@ coAuthors:
 thumbnail: "../../../assets/posts/thumbnails/babel-swc-migration.webp"
 ---
 
-import { Image } from 'astro:assets'
-import Callout from '../../../components/Callout.astro'
-import ImagePair from '../../../components/ImagePair.astro'
-import babelProcess from '../../../assets/posts/babel-swc-migration/babel-process.png'
-import finalProcess from '../../../assets/posts/babel-swc-migration/final-process.png'
-import buildPerformance from '../../../assets/posts/babel-swc-migration/build-performance.png'
-import devBuildPerformance from '../../../assets/posts/babel-swc-migration/dev-build-performance.png'
-import bundleSize from '../../../assets/posts/babel-swc-migration/bundle-size.png'
-import bundleAnalysis from '../../../assets/posts/babel-swc-migration/bundle-analysis.png'
+import { Image } from "astro:assets";
+import Callout from "../../../components/Callout.astro";
+import ImagePair from "../../../components/ImagePair.astro";
+import babelProcess from "../../../assets/posts/babel-swc-migration/babel-process.png";
+import finalProcess from "../../../assets/posts/babel-swc-migration/final-process.png";
+import buildPerformance from "../../../assets/posts/babel-swc-migration/build-performance.png";
+import devBuildPerformance from "../../../assets/posts/babel-swc-migration/dev-build-performance.png";
+import bundleSize from "../../../assets/posts/babel-swc-migration/bundle-size.png";
+import bundleAnalysis from "../../../assets/posts/babel-swc-migration/bundle-analysis.png";
 
 Depuis que les sites web sont écrits principalement en JavaScript (et non plus simplement en HTML/CSS), la transpilation de ce code afin qu'il puisse être exécuté dans le plus grand nombre d'environnements différents est une étape essentielle du processus de _build_. Dès sa création il y a plus de dix ans, l'application web de **BedrockStreaming** a utilisé [Babel](https://babeljs.io/) dans ce but. Cette année, nous avons migré de Babel vers son remplaçant de nouvelle génération : [SWC](https://swc.rs/). Ça n'a pas été un long fleuve tranquille, donc examinons ensemble les défis que nous avons dû relever et si le jeu en valait la chandelle !
 
@@ -49,19 +59,30 @@ Au fil des années, avec l'évolution des technologies du web, de nombreuses tra
 Dans Babel, toutes les transformations sont effectuées au moyen de **plugins** et de **presets**.
 
 <Callout>
-Les **plugins** sont des fonctions qui effectuent une seule et unique transformation sur un morceau de code. Un pipeline Babel typique consiste en plusieurs plugins qui transforment le code source d'entrée de manière séquentielle.
+  Les **plugins** sont des fonctions qui effectuent une seule et unique
+  transformation sur un morceau de code. Un pipeline Babel typique consiste en
+  plusieurs plugins qui transforment le code source d'entrée de manière
+  séquentielle.
 </Callout>
 
 <Callout>
-Les **presets** sont des groupements de plugins rassemblés pour être plus pratiques à utiliser pour certains cas d'usages spécifiques. Par exemple, `@babel/preset-env` transpile le JavaScript moderne vers une version compatible avec les navigateurs ciblés, `@babel/preset-react` gère le JSX et `@babel/preset-typescript` transpile le TypeScript en JavaScript. Chacun de ces presets n'est qu'une liste pré-définie de plugins individuels appliqués en séquence sur le code d'entrée.
+  Les **presets** sont des groupements de plugins rassemblés pour être plus
+  pratiques à utiliser pour certains cas d'usages spécifiques. Par exemple,
+  `@babel/preset-env` transpile le JavaScript moderne vers une version
+  compatible avec les navigateurs ciblés, `@babel/preset-react` gère le JSX et
+  `@babel/preset-typescript` transpile le TypeScript en JavaScript. Chacun de
+  ces presets n'est qu'une liste pré-définie de plugins individuels appliqués en
+  séquence sur le code d'entrée.
 </Callout>
 
 L'architecture de Babel nous permet d'activer différents ensembles de plugins en fonction de l'environnement afin d'atteindre un compromis parfait entre la taille du bundle, le temps de build et l'expérience développeur. Par exemple, en plus des transformations classiques (Typescript, JSX, preset-env...), voici quelques plugins que nous n'activons que dans certains environnements :
 
 **En développement:**
+
 - `react-refresh/babel` pour supporter le HMR (Hot Module Replacement) et améliorer l'expérience développeur.
 
 **En production:**
+
 - Découpage du code avec `@loadable/babel-plugin`
 - Suppression des attributs `data-testid` avec `react-remove-properties`
 - Suppression des prop types avec `transform-react-remove-prop-types`
@@ -71,7 +92,10 @@ L'architecture de Babel nous permet d'activer différents ensembles de plugins e
 En revanche, lorsque nous avons commencé à inspecter les temps de compilation de notre bundler, Webpack, les limitations de Babel sont immédiatement apparues. Une rapide analyse a montré que le seul `babel-loader` comptait pour plus de 50% du temps de build total (35 secondes pour une minute de build). En d'autres termes, même en ayant optimisé tout le reste, l'étape de transpilation reste le maillon faible.
 
 <Callout>
-Avec Webpack, **la plupart des opérations de transpilation sont effectuées au moyen de loaders**. Webpack lui-même est responsable de construire le graphe des dépendances, mais chaque fichier passe à travers un ou plusieurs loaders afin d'être transformé avant d'être bundlé.
+  Avec Webpack, **la plupart des opérations de transpilation sont effectuées au
+  moyen de loaders**. Webpack lui-même est responsable de construire le graphe
+  des dépendances, mais chaque fichier passe à travers un ou plusieurs loaders
+  afin d'être transformé avant d'être bundlé.
 </Callout>
 
 Dans notre cas, `babel-loader` est incontournable dans notre processus de build : chaque fichier JavaScript doit y passer (au moment de l'écriture de l'article, notre projet compte environ **5000** fichiers JavaScript/TypeScript). Cela en fait l'un des composants les plus critiques en termes de performance. Optimiser cette étape ou la remplacer par une alternative plus performante est ce qui aurait le plus d'impact dans notre situation.
@@ -164,14 +188,20 @@ Par ailleurs, **cette architecture hybride est une solution temporaire** en atte
 ## 📊 Résultats du comparatif
 
 <Callout>
-Pour la partie SWC, nous avons mesuré sans la suppression des `propTypes`
+  Pour la partie SWC, nous avons mesuré sans la suppression des `propTypes`
 </Callout>
 
 ### 🏗️ Temps de build (sans cache)
 
 <ImagePair>
-  <Image src={buildPerformance} alt="Comparatif de performance de build en production" />
-  <Image src={devBuildPerformance} alt="Comparatif de performance de build en développement" />
+  <Image
+    src={buildPerformance}
+    alt="Comparatif de performance de build en production"
+  />
+  <Image
+    src={devBuildPerformance}
+    alt="Comparatif de performance de build en développement"
+  />
 </ImagePair>
 
 Le temps du build de production s'est largement amoindri : **77.4s (Babel) → 55s (SWC + Babel) → 40.4s (SWC seul)**. Les gains ont été encore plus drastiques pour les builds de développement : **dev serveur 54.5s → 14.1s** et **dev client 27.4s → 15s**. Malgré notre solution hybride, SWC apporte des gains de performance substantiels.

@@ -1,11 +1,21 @@
 ---
 title: "Switching from Babel to SWC: Balancing performance with modern tools and legacy code"
 description: "From Babel to SWC: our journey of migrating from a 10-year-old transpiler to a next-gen compiler, overcoming challenges and achieving build performance improvements."
-tags: ["SWC", "Babel", "JavaScript", "React", "Web", "Frontend", "Performance", "Bundler"]
+tags:
+  [
+    "SWC",
+    "Babel",
+    "JavaScript",
+    "React",
+    "Web",
+    "Frontend",
+    "Performance",
+    "Bundler",
+  ]
 pubDate: 2025-12-22
 firstPublishedIn:
-    name: "BedrockStreaming technical blog"
-    url: "https://tech.bedrockstreaming.com/2025/12/22/switching-from-babel-to-swc.html"
+  name: "BedrockStreaming technical blog"
+  url: "https://tech.bedrockstreaming.com/2025/12/22/switching-from-babel-to-swc.html"
 coAuthors:
   - name: "Mickaël Alves"
     url: "https://mickaelalvs.dev/"
@@ -16,15 +26,15 @@ coAuthors:
 thumbnail: "../../../assets/posts/thumbnails/babel-swc-migration.webp"
 ---
 
-import { Image } from 'astro:assets'
-import Callout from '../../../components/Callout.astro'
-import ImagePair from '../../../components/ImagePair.astro'
-import babelProcess from '../../../assets/posts/babel-swc-migration/babel-process.png'
-import finalProcess from '../../../assets/posts/babel-swc-migration/final-process.png'
-import buildPerformance from '../../../assets/posts/babel-swc-migration/build-performance.png'
-import devBuildPerformance from '../../../assets/posts/babel-swc-migration/dev-build-performance.png'
-import bundleSize from '../../../assets/posts/babel-swc-migration/bundle-size.png'
-import bundleAnalysis from '../../../assets/posts/babel-swc-migration/bundle-analysis.png'
+import { Image } from "astro:assets";
+import Callout from "../../../components/Callout.astro";
+import ImagePair from "../../../components/ImagePair.astro";
+import babelProcess from "../../../assets/posts/babel-swc-migration/babel-process.png";
+import finalProcess from "../../../assets/posts/babel-swc-migration/final-process.png";
+import buildPerformance from "../../../assets/posts/babel-swc-migration/build-performance.png";
+import devBuildPerformance from "../../../assets/posts/babel-swc-migration/dev-build-performance.png";
+import bundleSize from "../../../assets/posts/babel-swc-migration/bundle-size.png";
+import bundleAnalysis from "../../../assets/posts/babel-swc-migration/bundle-analysis.png";
 
 Ever since websites started being made essentially from JavaScript, transpiling this code to run in the largest number of different browsers has been an essential step in the build process. From the very beginning, more than ten years ago, the BedrockStreaming web application has relied on [Babel](https://babeljs.io/) for this task. This year we migrated from Babel to its next-gen replacement, [SWC](https://swc.rs/). It was not a smooth ride all the way, so let’s see what challenges we’ve had to overcome and if the payoff was worth the effort!
 
@@ -49,19 +59,28 @@ Over the years, as the web technologies evolved, countless transformations have 
 In Babel, all transformations happen through **presets** and **plugins**.
 
 <Callout>
-**Plugins** are pieces of code which perform a single transformation on a piece of code. A typical Babel pipeline consists of several plugins which sequentially transform the input source code.
+  **Plugins** are pieces of code which perform a single transformation on a
+  piece of code. A typical Babel pipeline consists of several plugins which
+  sequentially transform the input source code.
 </Callout>
 
 <Callout>
-**Presets** are plugins that are grouped together for convenience in order to fill a more general use case. For example, `@babel/preset-env` compiles modern JavaScript for the targeted browsers, `@babel/preset-react` handles JSX, and `@babel/preset-typescript` transpiles TypeScript. Each of those presets actually return a group of individual plugins, which are then applied sequentially to transform the code.
+  **Presets** are plugins that are grouped together for convenience in order to
+  fill a more general use case. For example, `@babel/preset-env` compiles modern
+  JavaScript for the targeted browsers, `@babel/preset-react` handles JSX, and
+  `@babel/preset-typescript` transpiles TypeScript. Each of those presets
+  actually return a group of individual plugins, which are then applied
+  sequentially to transform the code.
 </Callout>
 
 The architecture of Babel allows us to enable different sets of plugins depending on the environment to achieve optimal bundle size/build time/developer experience. For instance, on top of all the traditional transformations (TypeScript, JSX, preset-env…), here are some plugins we enable only conditionally:
 
 **In development:**
+
 - `react-refresh/babel` to enable Hot Module Replacement and improve the Developer eXperience (DX)
 
 **In production:**
+
 - Code splitting via `@loadable/babel-plugin`
 - Removal of attributes like `data-testid` with `react-remove-properties`
 - Removal of PropTypes with `transform-react-remove-prop-types`
@@ -71,7 +90,10 @@ The architecture of Babel allows us to enable different sets of plugins dependin
 On the flip side, when we started looking more closely at our bundler, Webpack, compilation times, the limits of Babel became obvious. A quick analysis showed that `babel-loader` alone accounted for roughly **50% of the total build time** (around 35 seconds out of a 1-minute build). In other words, even if everything else were optimized, transpilation would still remain our main bottleneck.
 
 <Callout>
-In a Webpack-based setup, **most of the transpilation work happens inside loaders**. Webpack itself is responsible for building the dependency graph, but every file then goes through one or more loaders to be transformed before being bundled.
+  In a Webpack-based setup, **most of the transpilation work happens inside
+  loaders**. Webpack itself is responsible for building the dependency graph,
+  but every file then goes through one or more loaders to be transformed before
+  being bundled.
 </Callout>
 
 In our case, babel-loader sits on the hot path of the build: every JavaScript file passes through it (at the time of writing this article, we have almost **5,000** JavaScript/TypeScript files in our project). This makes it one of the most impactful pieces of the pipeline in terms of performance. Optimizing this step, or replacing it with a faster alternative, is where the biggest gains can be achieved.
@@ -158,12 +180,15 @@ This has a cost, of course, because there is the overhead of running all files t
 
 What's more, **this hybrid setup is a temporary solution** while we finish migrating away from `prop-types`, so we were looking for a solution that would allow us to bring the build time improvements as quick as possible, even if the setup isn't definitive and will be tweaked in the future.
 
-<Image src={finalProcess} alt="Final hybrid SWC + Babel build process diagram" />
+<Image
+  src={finalProcess}
+  alt="Final hybrid SWC + Babel build process diagram"
+/>
 
 ## 📊 Benchmark results
 
 <Callout>
-For the SWC part, we measure SWC here without removing PropTypes.
+  For the SWC part, we measure SWC here without removing PropTypes.
 </Callout>
 
 ### 🏗️ Build times (without cache)

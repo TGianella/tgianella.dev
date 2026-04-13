@@ -1,6 +1,6 @@
 ---
-import en from '../i18n/en';
-import '../styles/global.css';
+import en from "../i18n/en";
+import "../styles/global.css";
 ---
 
 <!doctype html>
@@ -17,10 +17,10 @@ import '../styles/global.css';
 
     <script is:inline>
       try {
-        const theme = localStorage.getItem('theme');
-        const expiry = localStorage.getItem('theme-expiry');
+        const theme = localStorage.getItem("theme");
+        const expiry = localStorage.getItem("theme-expiry");
         if (theme && expiry && Date.now() < Number(expiry)) {
-          document.documentElement.setAttribute('data-theme', theme);
+          document.documentElement.setAttribute("data-theme", theme);
         }
       } catch {
         // localStorage unavailable in some privacy modes; safe to ignore
@@ -77,6 +77,8 @@ import '../styles/global.css';
     color: var(--color-brand);
     text-underline-offset: 3px;
 
-    &:hover { text-decoration: none; }
+    &:hover {
+      text-decoration: none;
+    }
   }
 </style>

@@ -1,19 +1,26 @@
 ---
-import BaseLayout from '../../../layouts/BaseLayout.astro';
-import { useTranslations, isUpcoming, locales, type Locale } from '../../../i18n/utils';
-import { getCollection, render } from 'astro:content';
-import EventCard from '../../../components/EventCard.astro';
-import PersonCard from '../../../components/PersonCard.astro';
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import {
+  useTranslations,
+  isUpcoming,
+  locales,
+  type Locale,
+} from "../../../i18n/utils";
+import { getCollection, render } from "astro:content";
+import EventCard from "../../../components/EventCard.astro";
+import PersonCard from "../../../components/PersonCard.astro";
 
 export async function getStaticPaths() {
-  const talks = await getCollection('talks');
-  return talks.flatMap(talk => {
-    const [lang, ...slugParts] = talk.id.split('/');
+  const talks = await getCollection("talks");
+  return talks.flatMap((talk) => {
+    const [lang, ...slugParts] = talk.id.split("/");
     if (!locales.includes(lang as Locale)) return [];
-    return [{
-      params: { lang, slug: slugParts.join('/') },
-      props: { talk },
-    }];
+    return [
+      {
+        params: { lang, slug: slugParts.join("/") },
+        props: { talk },
+      },
+    ];
   });
 }
 
@@ -24,71 +31,110 @@ const { Content } = await render(talk);
 
 const upcoming = isUpcoming(talk.data.events);
 
-const videoId = talk.data.featuredVideo ?? talk.data.events.find(e => e.videoId)?.videoId;
-const videoTimestamp = talk.data.events.find(e => e.videoId === videoId)?.timestamp;
-const eventsSorted = [...talk.data.events].sort((a, b) => b.date.valueOf() - a.date.valueOf());
+const videoId =
+  talk.data.featuredVideo ?? talk.data.events.find((e) => e.videoId)?.videoId;
+const videoTimestamp = talk.data.events.find(
+  (e) => e.videoId === videoId,
+)?.timestamp;
+const eventsSorted = [...talk.data.events].sort(
+  (a, b) => b.date.valueOf() - a.date.valueOf(),
+);
 ---
 
-<BaseLayout lang={lang} title={talk.data.title} description={talk.data.description} canonicalPath={`/talks/${slug}`} noindex={talk.data.events.length === 0}>
-  <article data-copy-link={t.prose.copyLink} data-link-copied={t.prose.linkCopied}>
+<BaseLayout
+  lang={lang}
+  title={talk.data.title}
+  description={talk.data.description}
+  canonicalPath={`/talks/${slug}`}
+  noindex={talk.data.events.length === 0}
+>
+  <article
+    data-copy-link={t.prose.copyLink}
+    data-link-copied={t.prose.linkCopied}
+  >
     <a href={`/${lang}/talks`} class="back-link">{t.talks.backToList}</a>
 
     <header class="talk-header">
       <div class="talk-header__top">
         <h1 class="talk-header__title">{talk.data.title}</h1>
 
-        {!upcoming && (
-          <div class="talk-header__actions">
-            {videoId && (
-              <a href="#video" class="btn btn--primary">{t.talks.watchTalk} ↓</a>
-            )}
-            {talk.data.slides && (
-              <a href={talk.data.slides} target="_blank" rel="noopener noreferrer" class="btn btn--secondary">
-                {t.talks.viewSlides} ↗
-              </a>
-            )}
-          </div>
-        )}
+        {
+          !upcoming && (
+            <div class="talk-header__actions">
+              {videoId && (
+                <a href="#video" class="btn btn--primary">
+                  {t.talks.watchTalk} ↓
+                </a>
+              )}
+              {talk.data.slides && (
+                <a
+                  href={talk.data.slides}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="btn btn--secondary"
+                >
+                  {t.talks.viewSlides} ↗
+                </a>
+              )}
+            </div>
+          )
+        }
       </div>
 
-      {talk.data.tags.length > 0 && (
-        <div class="talk-header__tags">
-          <ul class="tag-list">
-            {talk.data.tags.map(tag => <li class="tag">{tag}</li>)}
-          </ul>
-        </div>
-      )}
+      {
+        talk.data.tags.length > 0 && (
+          <div class="talk-header__tags">
+            <ul class="tag-list">
+              {talk.data.tags.map((tag) => (
+                <li class="tag">{tag}</li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
 
-      {talk.data.coSpeakers.length > 0 && (
-        <div class="talk-header__cospeakers">
-          {talk.data.coSpeakers.map(s => (
-            <PersonCard name={s.name} picture={s.picture} url={s.url} label={t.talks.with} />
-          ))}
-        </div>
-      )}
+      {
+        talk.data.coSpeakers.length > 0 && (
+          <div class="talk-header__cospeakers">
+            {talk.data.coSpeakers.map((s) => (
+              <PersonCard
+                name={s.name}
+                picture={s.picture}
+                url={s.url}
+                label={t.talks.with}
+              />
+            ))}
+          </div>
+        )
+      }
     </header>
 
     <div class="talk-layout">
       <div class="talk-main">
         <section class="abstract">
-          {talk.data.abstract.split('\n').filter(p => p.trim()).map(p => (
-            <p>{p}</p>
-          ))}
+          {
+            talk.data.abstract
+              .split("\n")
+              .filter((p) => p.trim())
+              .map((p) => <p>{p}</p>)
+          }
         </section>
 
-        {videoId && !upcoming && (
-          <section id="video" class="video-section">
-            <div class="video-wrapper">
-              <iframe
-                src={`https://www.youtube.com/embed/${videoId}${videoTimestamp ? `?start=${videoTimestamp}` : ''}`}
-                title={talk.data.title}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen
-                loading="lazy"
-              ></iframe>
-            </div>
-          </section>
-        )}
+        {
+          videoId && !upcoming && (
+            <section id="video" class="video-section">
+              <div class="video-wrapper">
+                <iframe
+                  src={`https://www.youtube.com/embed/${videoId}${videoTimestamp ? `?start=${videoTimestamp}` : ""}`}
+                  title={talk.data.title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen
+                  loading="lazy"
+                />
+              </div>
+            </section>
+          )
+        }
 
         <div class="prose">
           <Content />
@@ -98,9 +144,7 @@ const eventsSorted = [...talk.data.events].sort((a, b) => b.date.valueOf() - a.d
       <aside class="events-sidebar">
         <h2 class="events-sidebar__heading">{t.talks.events}</h2>
         <ul class="event-list">
-          {eventsSorted.map(event => (
-            <EventCard event={event} lang={lang} />
-          ))}
+          {eventsSorted.map((event) => <EventCard event={event} lang={lang} />)}
         </ul>
       </aside>
     </div>
@@ -108,7 +152,7 @@ const eventsSorted = [...talk.data.events].sort((a, b) => b.date.valueOf() - a.d
 </BaseLayout>
 
 <script>
-  import '../../../scripts/heading-anchors';
+  import "../../../scripts/heading-anchors";
 </script>
 
 <style>
@@ -125,7 +169,9 @@ const eventsSorted = [...talk.data.events].sort((a, b) => b.date.valueOf() - a.d
     transition: color 0.15s;
 
     &:hover,
-    &:focus-visible { color: var(--color-brand); }
+    &:focus-visible {
+      color: var(--color-brand);
+    }
   }
 
   .talk-header {
@@ -196,7 +242,9 @@ const eventsSorted = [...talk.data.events].sort((a, b) => b.date.valueOf() - a.d
     transition: opacity 0.15s;
 
     &:hover,
-    &:focus-visible { opacity: 0.85; }
+    &:focus-visible {
+      opacity: 0.85;
+    }
   }
 
   .btn--primary {
@@ -245,7 +293,7 @@ const eventsSorted = [...talk.data.events].sort((a, b) => b.date.valueOf() - a.d
     gap: var(--size-2);
   }
 
-.video-section {
+  .video-section {
     margin-block-end: var(--size-8);
   }
 

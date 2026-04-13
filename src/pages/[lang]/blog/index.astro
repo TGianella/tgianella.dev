@@ -1,30 +1,47 @@
 ---
-import BaseLayout from '../../../layouts/BaseLayout.astro';
-import PageHeader from '../../../components/PageHeader.astro';
-import BlogCard from '../../../components/BlogCard.astro';
-import { useTranslations, getLocaleStaticPaths, slugOf, type Locale } from '../../../i18n/utils';
-import { getCollection } from 'astro:content';
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import PageHeader from "../../../components/PageHeader.astro";
+import BlogCard from "../../../components/BlogCard.astro";
+import {
+  useTranslations,
+  getLocaleStaticPaths,
+  slugOf,
+  type Locale,
+} from "../../../i18n/utils";
+import { getCollection } from "astro:content";
 
 export const getStaticPaths = getLocaleStaticPaths;
 
 const { lang } = Astro.params as { lang: Locale };
 const t = useTranslations(lang);
 
-const posts = (await getCollection('blog', ({ id }) => id.startsWith(`${lang}/`)))
-  .filter(p => !p.data.draft)
+const posts = (
+  await getCollection("blog", ({ id }) => id.startsWith(`${lang}/`))
+)
+  .filter((p) => !p.data.draft)
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
-
 ---
 
-<BaseLayout lang={lang} title={t.blog.title} description={t.blog.description} canonicalPath="/blog">
+<BaseLayout
+  lang={lang}
+  title={t.blog.title}
+  description={t.blog.description}
+  canonicalPath="/blog"
+>
   <PageHeader title={t.blog.title} description={t.blog.description} />
 
   <ul class="post-list">
-    {posts.map(post => (
-      <li>
-        <BlogCard post={{ ...post.data, body: post.body }} lang={lang} slug={slugOf(post.id, lang)} />
-      </li>
-    ))}
+    {
+      posts.map((post) => (
+        <li>
+          <BlogCard
+            post={{ ...post.data, body: post.body }}
+            lang={lang}
+            slug={slugOf(post.id, lang)}
+          />
+        </li>
+      ))
+    }
   </ul>
 </BaseLayout>
 
@@ -34,6 +51,8 @@ const posts = (await getCollection('blog', ({ id }) => id.startsWith(`${lang}/`)
     margin: 0;
     padding: 0;
 
-    & li { padding-inline-start: 0; }
+    & li {
+      padding-inline-start: 0;
+    }
   }
 </style>

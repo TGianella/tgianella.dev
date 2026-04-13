@@ -1,16 +1,21 @@
 ---
-import BaseLayout from '../../../layouts/BaseLayout.astro';
-import PhotoMeta from '../../../components/PhotoMeta.astro';
-import { useTranslations, locales, slugOf, type Locale } from '../../../i18n/utils';
-import { sortByDate } from '../../../content/utils';
-import { getCollection, render } from 'astro:content';
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import PhotoMeta from "../../../components/PhotoMeta.astro";
+import {
+  useTranslations,
+  locales,
+  slugOf,
+  type Locale,
+} from "../../../i18n/utils";
+import { sortByDate } from "../../../content/utils";
+import { getCollection, render } from "astro:content";
 
 export async function getStaticPaths() {
-  const allPhotos = await getCollection('gallery');
+  const allPhotos = await getCollection("gallery");
 
   const byLang = new Map<Locale, typeof allPhotos>();
   for (const photo of allPhotos) {
-    const [lang] = photo.id.split('/');
+    const [lang] = photo.id.split("/");
     if (!locales.includes(lang as Locale)) continue;
     const list = byLang.get(lang as Locale) ?? [];
     list.push(photo);
@@ -22,7 +27,7 @@ export async function getStaticPaths() {
     const sorted = sortByDate(langPhotos);
     for (let i = 0; i < sorted.length; i++) {
       const photo = sorted[i];
-      const slug = photo.id.split('/').slice(1).join('/');
+      const slug = photo.id.split("/").slice(1).join("/");
       paths.push({
         params: { lang, slug },
         props: {
@@ -42,7 +47,11 @@ const t = useTranslations(lang);
 const { Content } = await render(photo);
 
 const hasContent = !!photo.body?.trim();
-const dateStr = photo.data.date.toLocaleDateString(lang, { year: 'numeric', month: 'long', day: 'numeric' });
+const dateStr = photo.data.date.toLocaleDateString(lang, {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
 ---
 
 <BaseLayout
@@ -54,8 +63,14 @@ const dateStr = photo.data.date.toLocaleDateString(lang, { year: 'numeric', mont
 >
   <article>
     <header class="photo-header">
-      <a href={`/${lang}/blue-screens`} class="back-link">{t.gallery.backToList}</a>
-      <PhotoMeta date={photo.data.date} location={photo.data.location} lang={lang} />
+      <a href={`/${lang}/blue-screens`} class="back-link"
+        >{t.gallery.backToList}</a
+      >
+      <PhotoMeta
+        date={photo.data.date}
+        location={photo.data.location}
+        lang={lang}
+      />
     </header>
 
     <div class="photo-stage">
@@ -74,54 +89,93 @@ const dateStr = photo.data.date.toLocaleDateString(lang, { year: 'numeric', mont
         />
       </div>
 
-      {prevPhoto && (
-        <a href={`/${lang}/blue-screens/${slugOf(prevPhoto.id, lang)}`} class="photo-arrow photo-arrow--prev" aria-label={prevPhoto.data.alt} aria-keyshortcuts="ArrowLeft">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <polyline points="15 18 9 12 15 6"/>
-          </svg>
-        </a>
-      )}
+      {
+        prevPhoto && (
+          <a
+            href={`/${lang}/blue-screens/${slugOf(prevPhoto.id, lang)}`}
+            class="photo-arrow photo-arrow--prev"
+            aria-label={prevPhoto.data.alt}
+            aria-keyshortcuts="ArrowLeft"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </a>
+        )
+      }
 
-      {nextPhoto && (
-        <a href={`/${lang}/blue-screens/${slugOf(nextPhoto.id, lang)}`} class="photo-arrow photo-arrow--next" aria-label={nextPhoto.data.alt} aria-keyshortcuts="ArrowRight">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <polyline points="9 18 15 12 9 6"/>
-          </svg>
-        </a>
-      )}
+      {
+        nextPhoto && (
+          <a
+            href={`/${lang}/blue-screens/${slugOf(nextPhoto.id, lang)}`}
+            class="photo-arrow photo-arrow--next"
+            aria-label={nextPhoto.data.alt}
+            aria-keyshortcuts="ArrowRight"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </a>
+        )
+      }
     </div>
 
-    {hasContent && (
-      <div class="prose">
-        <Content />
-      </div>
-    )}
+    {
+      hasContent && (
+        <div class="prose">
+          <Content />
+        </div>
+      )
+    }
   </article>
 </BaseLayout>
 
 <script>
-  import { navigate } from 'astro:transitions/client';
+  import { navigate } from "astro:transitions/client";
 
-  document.addEventListener('astro:page-load', () => {
-    const wrap = document.querySelector('.photo-hero-wrap');
+  document.addEventListener("astro:page-load", () => {
+    const wrap = document.querySelector(".photo-hero-wrap");
     if (!wrap) return;
-    const img = wrap.querySelector<HTMLImageElement>('.photo-hero');
+    const img = wrap.querySelector<HTMLImageElement>(".photo-hero");
     if (!img) return;
-    const reveal = () => wrap.classList.add('loaded');
+    const reveal = () => wrap.classList.add("loaded");
     if (img.complete && img.naturalWidth > 0) {
       reveal();
     } else {
-      img.addEventListener('load', reveal, { once: true });
+      img.addEventListener("load", reveal, { once: true });
     }
   });
 
-  document.addEventListener('keydown', (e) => {
-    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
     if (e.metaKey || e.ctrlKey || e.altKey) return;
     const active = document.activeElement;
-    if (active && active.matches('input, textarea, select, button, [contenteditable]')) return;
+    if (
+      active &&
+      active.matches("input, textarea, select, button, [contenteditable]")
+    )
+      return;
 
-    const selector = e.key === 'ArrowLeft' ? '.photo-arrow--prev' : '.photo-arrow--next';
+    const selector =
+      e.key === "ArrowLeft" ? ".photo-arrow--prev" : ".photo-arrow--next";
     const link = document.querySelector<HTMLAnchorElement>(selector);
     if (link) navigate(link.href);
   });
@@ -144,7 +198,9 @@ const dateStr = photo.data.date.toLocaleDateString(lang, { year: 'numeric', mont
     transition: color 0.15s;
 
     &:hover,
-    &:focus-visible { color: var(--color-brand); }
+    &:focus-visible {
+      color: var(--color-brand);
+    }
   }
 
   .photo-stage {
@@ -159,7 +215,12 @@ const dateStr = photo.data.date.toLocaleDateString(lang, { year: 'numeric', mont
     inline-size: min(100%, calc(80dvh * var(--w) / var(--h)));
     overflow: hidden;
     border-radius: var(--radius-2);
-    background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface-3) 50%, var(--surface-2) 75%);
+    background: linear-gradient(
+      90deg,
+      var(--surface-2) 25%,
+      var(--surface-3) 50%,
+      var(--surface-2) 75%
+    );
     background-size: 200% 100%;
     animation: photo-shimmer 1.5s infinite;
 
@@ -196,9 +257,15 @@ const dateStr = photo.data.date.toLocaleDateString(lang, { year: 'numeric', mont
     border: var(--border-size-1) solid var(--border);
     color: var(--text-1);
     text-decoration: none;
-    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    transition:
+      background 0.15s,
+      color 0.15s,
+      border-color 0.15s;
 
-    & svg { width: 1.25rem; height: 1.25rem; }
+    & svg {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
 
     &:hover,
     &:focus-visible {
@@ -208,8 +275,12 @@ const dateStr = photo.data.date.toLocaleDateString(lang, { year: 'numeric', mont
     }
   }
 
-  .photo-arrow--prev { left: var(--size-2); }
-  .photo-arrow--next { right: var(--size-2); }
+  .photo-arrow--prev {
+    left: var(--size-2);
+  }
+  .photo-arrow--next {
+    right: var(--size-2);
+  }
 
   .prose {
     margin-block-start: var(--size-6);

@@ -1,29 +1,41 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import { useTranslations, getLocaleStaticPaths, slugOf, isUpcoming, type Locale } from '../../i18n/utils';
-import { getCollection } from 'astro:content';
-import { debutEvent } from '../../content/utils';
-import Portrait from '../../assets/portrait-theo-gianella-2.jpg';
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import {
+  useTranslations,
+  getLocaleStaticPaths,
+  slugOf,
+  isUpcoming,
+  type Locale,
+} from "../../i18n/utils";
+import { getCollection } from "astro:content";
+import { debutEvent } from "../../content/utils";
+import Portrait from "../../assets/portrait-theo-gianella-2.jpg";
 
 export const getStaticPaths = getLocaleStaticPaths;
 
 const { lang } = Astro.params as { lang: Locale };
 const t = useTranslations(lang);
 
-const posts = (await getCollection('blog', ({ id }) => id.startsWith(`${lang}/`)))
-  .filter(p => !p.data.draft)
+const posts = (
+  await getCollection("blog", ({ id }) => id.startsWith(`${lang}/`))
+)
+  .filter((p) => !p.data.draft)
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
   .slice(0, 3);
 
-const talks = (await getCollection('talks', ({ id }) => id.startsWith(`${lang}/`)))
+const talks = (
+  await getCollection("talks", ({ id }) => id.startsWith(`${lang}/`))
+)
   .sort((a, b) => {
-    const aMin = Math.min(...a.data.events.map(e => e.date.valueOf()));
-    const bMin = Math.min(...b.data.events.map(e => e.date.valueOf()));
+    const aMin = Math.min(...a.data.events.map((e) => e.date.valueOf()));
+    const bMin = Math.min(...b.data.events.map((e) => e.date.valueOf()));
     return bMin - aMin;
   })
   .slice(0, 3);
 
-const recentPhotos = (await getCollection('gallery', ({ id }) => id.startsWith(`${lang}/`)))
+const recentPhotos = (
+  await getCollection("gallery", ({ id }) => id.startsWith(`${lang}/`))
+)
   .sort((a, b) => {
     if (!a.data.date && !b.data.date) return 0;
     if (!a.data.date) return 1;
@@ -32,31 +44,30 @@ const recentPhotos = (await getCollection('gallery', ({ id }) => id.startsWith(`
   })
   .slice(0, 4);
 
-const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'medium' });
+const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
 ---
 
 <BaseLayout lang={lang} description={t.home.tagline} canonicalPath="/">
-
   <section class="hero">
     <div class="hero__name-container">
       <h1 class="hero__name">{t.seo.siteName}</h1>
       <img
-          src={Portrait.src}
-          alt={t.seo.siteName}
-          class="hero__avatar"
-          width="646"
-          height="363"
+        src={Portrait.src}
+        alt={t.seo.siteName}
+        class="hero__avatar"
+        width="646"
+        height="363"
       />
     </div>
 
     <div class="hero__bottom">
       <p class="hero__tagline" data-vt-name="hero-tagline">{t.home.tagline}</p>
-<span class="hero__scroll-hint" aria-hidden="true">↓</span>
+      <span class="hero__scroll-hint" aria-hidden="true">↓</span>
     </div>
   </section>
 
   <section class="section">
-    {t.home.bio.map(p => <p>{p}</p>)}
+    {t.home.bio.map((p) => <p>{p}</p>)}
   </section>
 
   <section class="section">
@@ -65,17 +76,22 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'medium' });
       <a href={`/${lang}/blog`} class="section__see-all">{t.home.seeAll} →</a>
     </header>
     <ul class="card-grid">
-      {posts.map(post => (
-        <li>
-          <a href={`/${lang}/blog/${slugOf(post.id, lang)}`} class="card">
-            <time class="card__date" datetime={post.data.pubDate.toISOString()}>
-              {dateFormatter.format(post.data.pubDate)}
-            </time>
-            <h3 class="card__title">{post.data.title}</h3>
-            <p class="card__desc">{post.data.description}</p>
-          </a>
-        </li>
-      ))}
+      {
+        posts.map((post) => (
+          <li>
+            <a href={`/${lang}/blog/${slugOf(post.id, lang)}`} class="card">
+              <time
+                class="card__date"
+                datetime={post.data.pubDate.toISOString()}
+              >
+                {dateFormatter.format(post.data.pubDate)}
+              </time>
+              <h3 class="card__title">{post.data.title}</h3>
+              <p class="card__desc">{post.data.description}</p>
+            </a>
+          </li>
+        ))
+      }
     </ul>
   </section>
 
@@ -85,56 +101,71 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'medium' });
       <a href={`/${lang}/talks`} class="section__see-all">{t.home.seeAll} →</a>
     </header>
     <ul class="card-grid">
-      {talks.map(talk => {
-        const debut = debutEvent(talk.data.events);
-        const upcoming = isUpcoming(talk.data.events);
-        return (
-          <li>
-            <a href={`/${lang}/talks/${slugOf(talk.id, lang)}`} class="card">
-              <div class="card__meta">
-                <time class="card__date" datetime={debut.date.toISOString()}>
-                  {dateFormatter.format(debut.date)}
-                </time>
-                {upcoming && <span class="upcoming-pill">{t.talks.upcoming}</span>}
-              </div>
-              <h3 class="card__title">{talk.data.title}</h3>
-              <p class="card__desc">{debut.name} — {debut.location}</p>
-            </a>
-          </li>
-        );
-      })}
+      {
+        talks.map((talk) => {
+          const debut = debutEvent(talk.data.events);
+          const upcoming = isUpcoming(talk.data.events);
+          return (
+            <li>
+              <a href={`/${lang}/talks/${slugOf(talk.id, lang)}`} class="card">
+                <div class="card__meta">
+                  <time class="card__date" datetime={debut.date.toISOString()}>
+                    {dateFormatter.format(debut.date)}
+                  </time>
+                  {upcoming && (
+                    <span class="upcoming-pill">{t.talks.upcoming}</span>
+                  )}
+                </div>
+                <h3 class="card__title">{talk.data.title}</h3>
+                <p class="card__desc">
+                  {debut.name} — {debut.location}
+                </p>
+              </a>
+            </li>
+          );
+        })
+      }
     </ul>
   </section>
 
   <section class="section">
     <header class="section__header">
       <h2 class="section__title">{t.home.sections.gallery}</h2>
-      <a href={`/${lang}/blue-screens`} class="section__see-all">{t.home.seeAll} →</a>
+      <a href={`/${lang}/blue-screens`} class="section__see-all"
+        >{t.home.seeAll} →</a
+      >
     </header>
     <ul class="gallery-grid">
-      {recentPhotos.map(photo => (
-        <li>
-          <a href={`/${lang}/blue-screens/${slugOf(photo.id, lang)}`} class="gallery-card">
-            <img
-              src={photo.data.src.replace(/\/([^/]+)\.[^.]+$/, '/thumbnails/$1.webp')}
-              alt={photo.data.alt}
-              width={400}
-              height={300}
-              class="gallery-card__img"
-              loading="lazy"
-              decoding="async"
-            />
-            {photo.data.location && (
-              <div class="gallery-card__caption">
-                <span class="gallery-card__title">{photo.data.location}</span>
-              </div>
-            )}
-          </a>
-        </li>
-      ))}
+      {
+        recentPhotos.map((photo) => (
+          <li>
+            <a
+              href={`/${lang}/blue-screens/${slugOf(photo.id, lang)}`}
+              class="gallery-card"
+            >
+              <img
+                src={photo.data.src.replace(
+                  /\/([^/]+)\.[^.]+$/,
+                  "/thumbnails/$1.webp",
+                )}
+                alt={photo.data.alt}
+                width={400}
+                height={300}
+                class="gallery-card__img"
+                loading="lazy"
+                decoding="async"
+              />
+              {photo.data.location && (
+                <div class="gallery-card__caption">
+                  <span class="gallery-card__title">{photo.data.location}</span>
+                </div>
+              )}
+            </a>
+          </li>
+        ))
+      }
     </ul>
   </section>
-
 </BaseLayout>
 
 <style>
@@ -201,7 +232,10 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'medium' });
     .hero__name-container {
       position: absolute;
       top: var(--size-1);
-      left: min(calc((100vw - var(--layout-width)) / -2 + var(--size-5)), var(--size-5));
+      left: min(
+        calc((100vw - var(--layout-width)) / -2 + var(--size-5)),
+        var(--size-5)
+      );
       max-width: min-content;
       gap: 0;
     }
@@ -218,7 +252,10 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'medium' });
 
     .hero__tagline {
       position: absolute;
-      right: min(calc((100vw - var(--layout-width)) / -2 + var(--size-5)), var(--size-5));
+      right: min(
+        calc((100vw - var(--layout-width)) / -2 + var(--size-5)),
+        var(--size-5)
+      );
       bottom: calc(var(--size-7) - 0.2em);
       width: min-content;
       text-align: end;
@@ -229,7 +266,10 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'medium' });
     .hero__scroll-hint {
       position: absolute;
       bottom: var(--size-5);
-      left: min(calc((100vw - var(--layout-width)) / -2 + var(--size-5)), var(--size-5));
+      left: min(
+        calc((100vw - var(--layout-width)) / -2 + var(--size-5)),
+        var(--size-5)
+      );
       margin-block-start: 0;
     }
   }
@@ -267,7 +307,9 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'medium' });
     white-space: nowrap;
     transition: color 0.15s;
 
-    &:hover { color: var(--color-brand); }
+    &:hover {
+      color: var(--color-brand);
+    }
   }
 
   /* ── Content cards ─────────────────────────────────── */
@@ -360,5 +402,4 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'medium' });
     font-weight: var(--font-weight-6);
     color: var(--text-1);
   }
-
 </style>

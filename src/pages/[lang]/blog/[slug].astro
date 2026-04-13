@@ -1,19 +1,21 @@
 ---
-import { getImage } from 'astro:assets';
-import BaseLayout from '../../../layouts/BaseLayout.astro';
-import PersonCard from '../../../components/PersonCard.astro';
-import { useTranslations, locales, type Locale } from '../../../i18n/utils';
-import { getCollection, render } from 'astro:content';
+import { getImage } from "astro:assets";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import PersonCard from "../../../components/PersonCard.astro";
+import { useTranslations, locales, type Locale } from "../../../i18n/utils";
+import { getCollection, render } from "astro:content";
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog');
-  return posts.flatMap(post => {
-    const [lang, ...slugParts] = post.id.split('/');
+  const posts = await getCollection("blog");
+  return posts.flatMap((post) => {
+    const [lang, ...slugParts] = post.id.split("/");
     if (!locales.includes(lang as Locale)) return [];
-    return [{
-      params: { lang, slug: slugParts.join('/') },
-      props: { post },
-    }];
+    return [
+      {
+        params: { lang, slug: slugParts.join("/") },
+        props: { post },
+      },
+    ];
   });
 }
 
@@ -22,7 +24,7 @@ const { post } = Astro.props;
 const t = useTranslations(lang);
 const { Content } = await render(post);
 
-const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: 'long' });
+const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "long" });
 const ogImage = post.data.thumbnail
   ? (await getImage({ src: post.data.thumbnail })).src
   : undefined;
@@ -37,20 +39,46 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 300));
   canonicalPath={`/blog/${slug}`}
   ogImage={ogImage}
 >
-  <article data-copy-link={t.prose.copyLink} data-link-copied={t.prose.linkCopied}>
+  <article
+    data-copy-link={t.prose.copyLink}
+    data-link-copied={t.prose.linkCopied}
+  >
     <a href={`/${lang}/blog`} class="back-link">{t.blog.backToList}</a>
 
     <header class="post-header">
       <div class="post-header__meta">
         <span class="post-header__meta-item">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"
+            ></path>
           </svg>
-          <time datetime={post.data.pubDate.toISOString()}>{dateFormatter.format(post.data.pubDate)}</time>
+          <time datetime={post.data.pubDate.toISOString()}
+            >{dateFormatter.format(post.data.pubDate)}</time
+          >
         </span>
         <span class="post-header__meta-item">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path>
           </svg>
           {t.blog.readingTime(readingTime)}
         </span>
@@ -59,52 +87,78 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 300));
       <h1 class="post-header__title">{post.data.title}</h1>
       <p class="post-header__desc">{post.data.description}</p>
 
-      {post.data.tags.length > 0 && (
-        <ul class="tag-list" aria-label={t.blog.tags}>
-          {post.data.tags.map(tag => <li class="tag">{tag}</li>)}
-        </ul>
-      )}
+      {
+        post.data.tags.length > 0 && (
+          <ul class="tag-list" aria-label={t.blog.tags}>
+            {post.data.tags.map((tag) => (
+              <li class="tag">{tag}</li>
+            ))}
+          </ul>
+        )
+      }
 
-      {post.data.updatedDate && (
-        <p class="post-header__updated">
-          {t.blog.updatedOn} {dateFormatter.format(post.data.updatedDate)}
-        </p>
-      )}
-
+      {
+        post.data.updatedDate && (
+          <p class="post-header__updated">
+            {t.blog.updatedOn} {dateFormatter.format(post.data.updatedDate)}
+          </p>
+        )
+      }
     </header>
 
-
     <div class="post-body">
-      {post.data.coAuthors.length > 0 && (
-        <aside class="coauthors-sidebar">
-          <p class="coauthors-sidebar__label">{t.blog.writtenWith}</p>
-          <div class="coauthors-sidebar__list">
-            {post.data.coAuthors.map(a => (
-              <PersonCard name={a.name} picture={a.picture} url={a.url} />
-            ))}
-          </div>
-        </aside>
-      )}
+      {
+        post.data.coAuthors.length > 0 && (
+          <aside class="coauthors-sidebar">
+            <p class="coauthors-sidebar__label">{t.blog.writtenWith}</p>
+            <div class="coauthors-sidebar__list">
+              {post.data.coAuthors.map((a) => (
+                <PersonCard name={a.name} picture={a.picture} url={a.url} />
+              ))}
+            </div>
+          </aside>
+        )
+      }
 
       <div class="prose">
-        {post.data.firstPublishedIn && (
-          <p class="origin-notice">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="12" cy="12" r="10"/>
-              <line x1="12" y1="16" x2="12" y2="12"/>
-              <line x1="12" y1="8" x2="12.01" y2="8"/>
-            </svg>
-            <span>
-              {t.blog.firstPublishedIn}{' '}
-              {post.data.firstPublishedIn.url
-                ? <a href={post.data.firstPublishedIn.url} target="_blank" rel="noopener noreferrer">{post.data.firstPublishedIn.name}</a>
-                : post.data.firstPublishedIn.name}
-            </span>
-          </p>
-        )}
+        {
+          post.data.firstPublishedIn && (
+            <p class="origin-notice">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="16" x2="12" y2="12" />
+                <line x1="12" y1="8" x2="12.01" y2="8" />
+              </svg>
+              <span>
+                {t.blog.firstPublishedIn}{" "}
+                {post.data.firstPublishedIn.url ? (
+                  <a
+                    href={post.data.firstPublishedIn.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {post.data.firstPublishedIn.name}
+                  </a>
+                ) : (
+                  post.data.firstPublishedIn.name
+                )}
+              </span>
+            </p>
+          )
+        }
         <Content />
       </div>
-
     </div>
   </article>
 </BaseLayout>
@@ -115,42 +169,53 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 300));
 </dialog>
 
 <script>
-  import '../../../scripts/heading-anchors';
-  import '../../../scripts/blog-scroll';
+  import "../../../scripts/heading-anchors";
+  import "../../../scripts/blog-scroll";
 </script>
 
 <script>
   let lbxController: AbortController | null = null;
 
-  document.addEventListener('astro:page-load', () => {
+  document.addEventListener("astro:page-load", () => {
     lbxController?.abort();
     lbxController = new AbortController();
     const { signal } = lbxController;
 
-    const dialog = document.querySelector<HTMLDialogElement>('.lbx');
+    const dialog = document.querySelector<HTMLDialogElement>(".lbx");
     if (!dialog) return;
 
-    const lbxImg = dialog.querySelector<HTMLImageElement>('.lbx__img');
-    const closeBtn = dialog.querySelector<HTMLButtonElement>('.lbx__close');
+    const lbxImg = dialog.querySelector<HTMLImageElement>(".lbx__img");
+    const closeBtn = dialog.querySelector<HTMLButtonElement>(".lbx__close");
     if (!lbxImg || !closeBtn) return;
 
-    document.querySelectorAll<HTMLImageElement>('.prose img').forEach(img => {
+    document.querySelectorAll<HTMLImageElement>(".prose img").forEach((img) => {
       img.tabIndex = 0;
       const open = () => {
         lbxImg.src = img.src;
         lbxImg.alt = img.alt;
         dialog.showModal();
       };
-      img.addEventListener('click', open, { signal });
-      img.addEventListener('keydown', e => {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
-      }, { signal });
+      img.addEventListener("click", open, { signal });
+      img.addEventListener(
+        "keydown",
+        (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            open();
+          }
+        },
+        { signal },
+      );
     });
 
-    closeBtn.addEventListener('click', () => dialog.close(), { signal });
-    dialog.addEventListener('click', e => {
-      if (e.target === dialog) dialog.close();
-    }, { signal });
+    closeBtn.addEventListener("click", () => dialog.close(), { signal });
+    dialog.addEventListener(
+      "click",
+      (e) => {
+        if (e.target === dialog) dialog.close();
+      },
+      { signal },
+    );
   });
 </script>
 
@@ -168,7 +233,9 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 300));
     transition: color 0.15s;
 
     &:hover,
-    &:focus-visible { color: var(--color-brand); }
+    &:focus-visible {
+      color: var(--color-brand);
+    }
   }
 
   .post-header {
@@ -232,7 +299,9 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 300));
       grid-template-columns: 1fr auto;
     }
 
-    .prose { order: -1; }
+    .prose {
+      order: -1;
+    }
   }
 
   .coauthors-sidebar {
@@ -251,7 +320,9 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 300));
     .coauthors-sidebar__list {
       flex-direction: column;
 
-      & :global(.person-card) { width: 100%; }
+      & :global(.person-card) {
+        width: 100%;
+      }
     }
   }
 
@@ -273,13 +344,17 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 300));
     padding: var(--size-3) var(--size-4);
     margin: 0;
 
-    & svg { flex-shrink: 0; }
+    & svg {
+      flex-shrink: 0;
+    }
   }
-
 
   :global(.prose img) {
     cursor: zoom-in;
-    &:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 3px; }
+    &:focus-visible {
+      outline: 2px solid var(--color-brand);
+      outline-offset: 3px;
+    }
   }
 
   /* ── Lightbox ──────────────────────────────── */
@@ -297,7 +372,9 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 300));
     padding: var(--size-4);
   }
 
-  .lbx:not([open]) { display: none; }
+  .lbx:not([open]) {
+    display: none;
+  }
 
   .lbx::backdrop {
     background: oklch(0% 0 0deg / 88%);
@@ -305,8 +382,12 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 300));
   }
 
   @keyframes lbx-backdrop-in {
-    from { opacity: 0; }
-    to   { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 
   .lbx__img {
@@ -319,8 +400,14 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 300));
   }
 
   @keyframes lbx-img-in {
-    from { opacity: 0; scale: 0.97; }
-    to   { opacity: 1; scale: 1; }
+    from {
+      opacity: 0;
+      scale: 0.97;
+    }
+    to {
+      opacity: 1;
+      scale: 1;
+    }
   }
 
   .lbx__close {
@@ -341,6 +428,8 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 300));
     transition: background 0.15s;
 
     &:hover,
-    &:focus-visible { background: oklch(100% 0 0deg / 28%); }
+    &:focus-visible {
+      background: oklch(100% 0 0deg / 28%);
+    }
   }
 </style>
