@@ -9,6 +9,7 @@ export default {
   ],
   rules: {
     "defensive-css/require-pure-selectors": null,
+    "defensive-css/require-system-font-fallback": null,
     "custom-property-pattern": null,
     "selector-pseudo-class-no-unknown": [
       true,

@@ -1,4 +1,5 @@
-import { defineCollection, z } from "astro:content";
+import { defineCollection } from "astro:content";
+import { z } from "astro/zod";
 import { glob } from "astro/loaders";
 
 const blog = defineCollection({
@@ -76,7 +77,7 @@ const gallery = defineCollection({
     alt: z.string(),
     width: z.number(),
     height: z.number(),
-    date: z.coerce.date().optional(),
+    date: z.coerce.date(),
     location: z.string().optional(),
     caption: z.string().optional(),
   }),

@@ -199,8 +199,10 @@ const pageTitle = title ? `${title} — ${t.seo.siteName}` : t.seo.siteName;
 
   .footer__inner {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
+    gap: var(--size-3);
     margin-inline: auto;
     max-inline-size: var(--layout-width);
     padding-inline: var(--page-padding);

@@ -59,18 +59,22 @@ const t = useTranslations(lang);
 <style>
   .social-links {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: var(--size-4);
   }
 
   .social-link {
     display: flex;
+    flex-wrap: nowrap;
     color: var(--text-2);
     text-decoration: none;
     transition: color 0.15s;
 
-    &:hover {
-      color: var(--color-brand);
+    @media (hover: hover) {
+      &:hover {
+        color: var(--color-brand);
+      }
     }
 
     & svg {

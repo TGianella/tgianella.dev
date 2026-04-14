@@ -1,5 +1,6 @@
 ---
 import { useTranslations, isUpcoming, type Locale } from "../i18n/utils";
+import Pill from "./Pill.astro";
 
 interface Props {
   event: {
@@ -41,12 +42,10 @@ const upcoming = isUpcoming([event]);
       <span class="event-card__location">
         {event.location}{event.duration && ` · ${event.duration} min`}
       </span>
-      {upcoming && <span class="upcoming-pill">{t.talks.upcoming}</span>}
-      {
-        event.scope === "internal" && (
-          <span class="event-card__internal-pill">{t.talks.internalEvent}</span>
-        )
-      }
+      {upcoming && <Pill variant="brand">{t.talks.upcoming}</Pill>}
+      {event.scope === "internal" && (
+        <Pill variant="neutral">{t.talks.internalEvent}</Pill>
+      )}
     </div>
   </div>
 
@@ -69,6 +68,7 @@ const upcoming = isUpcoming([event]);
 <style>
   .event-card {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     padding: var(--size-3);
     border-radius: var(--radius-2);
@@ -95,16 +95,7 @@ const upcoming = isUpcoming([event]);
     gap: var(--size-2);
   }
 
-  .event-card__internal-pill {
-    padding: 1px var(--size-2);
-    border-radius: var(--radius-round);
-    background: var(--surface-3);
-    color: var(--text-2);
-    font-size: var(--font-size-0);
-    white-space: nowrap;
-  }
-
-  .event-card__name {
+.event-card__name {
     font-size: var(--font-size-1);
     font-weight: var(--font-weight-6);
     text-wrap: balance;
@@ -113,8 +104,10 @@ const upcoming = isUpcoming([event]);
       color: inherit;
       text-decoration: none;
 
-      &:hover {
-        color: var(--color-brand);
+      @media (hover: hover) {
+        &:hover {
+          color: var(--color-brand);
+        }
       }
     }
   }
@@ -128,6 +121,7 @@ const upcoming = isUpcoming([event]);
     position: relative;
     display: flex;
     flex-shrink: 0;
+    flex-wrap: nowrap;
     align-items: center;
     justify-content: center;
     border: var(--border-size-1) solid var(--border);
@@ -138,35 +132,44 @@ const upcoming = isUpcoming([event]);
     font-size: var(--font-size-1);
     inline-size: 2.5rem;
     text-decoration: none;
-    transition: opacity 0.15s;
+    transition: opacity var(--duration-quick-2);
 
-    &:hover {
-      opacity: 0.75;
+    @media (hover: hover) {
+      &:hover {
+        opacity: 0.75;
+      }
     }
 
     &::after {
       position: absolute;
-      bottom: calc(100% + 0.75rem);
+      bottom: calc(100% + var(--size-2));
       left: 50%;
-      padding: 0.25rem var(--size-2);
-      border-radius: var(--radius-1);
-      background: var(--gray-9);
-      color: var(--gray-0);
+      padding: 0.2em 0.5em;
+      border: var(--border-size-1) solid var(--border);
+      border-radius: var(--radius-2);
+      background: var(--surface-3);
+      color: var(--text-2);
       content: attr(data-tooltip);
       font-size: var(--font-size-0);
       opacity: 0;
       pointer-events: none;
       transition:
-        opacity 0.15s,
-        translate 0.15s;
-      translate: -50% 0.25rem;
+        opacity var(--duration-quick-2),
+        translate var(--duration-quick-2);
+      translate: -50% var(--size-2);
       white-space: nowrap;
     }
 
-    &:hover::after,
     &:focus-visible::after {
       opacity: 1;
       translate: -50% 0;
+    }
+
+    @media (hover: hover) {
+      &:hover::after {
+        opacity: 1;
+        translate: -50% 0;
+      }
     }
   }
 </style>

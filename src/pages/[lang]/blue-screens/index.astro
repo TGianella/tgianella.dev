@@ -71,14 +71,11 @@ const dateFormatter = getDateFormatter(lang);
 <style>
   .photo-grid {
     display: grid;
-    padding: 0;
-    margin: 0;
     gap: var(--size-2);
     grid-template-columns: repeat(
       auto-fill,
-      minmax(min(160px, calc((100% - 2 * var(--size-2)) / 3)), 1fr)
+      [photo-start] minmax(min(160px, calc((100% - 2 * var(--size-2)) / 3)), 1fr) [photo-end]
     );
-    list-style: "";
   }
 
   .photo-card {
@@ -86,7 +83,6 @@ const dateFormatter = getDateFormatter(lang);
     display: block;
     overflow: hidden;
     border-radius: var(--radius-2);
-    animation: photo-shimmer 1.5s infinite;
     aspect-ratio: 1;
     background: linear-gradient(
       90deg,
@@ -95,6 +91,10 @@ const dateFormatter = getDateFormatter(lang);
       var(--surface-2) 75%
     );
     background-size: 200% 100%;
+
+    @media (prefers-reduced-motion: no-preference) {
+      animation: photo-shimmer 1.5s infinite;
+    }
   }
 
   .photo-card:focus-visible {
@@ -113,9 +113,12 @@ const dateFormatter = getDateFormatter(lang);
     height: 100%;
     object-fit: cover;
     opacity: 0;
-    transition:
-      opacity 0.3s ease,
-      transform 0.3s ease;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition:
+        opacity 0.3s ease,
+        transform 0.3s ease;
+    }
   }
 
   .photo-card__img.loaded {
@@ -149,14 +152,22 @@ const dateFormatter = getDateFormatter(lang);
     opacity: 0.75;
   }
 
-  .photo-card:hover .photo-card__img,
   .photo-card:focus-visible .photo-card__img {
     transform: scale(1.05);
   }
 
-  .photo-card:hover .photo-card__overlay,
   .photo-card:focus-visible .photo-card__overlay {
     opacity: 1;
+  }
+
+  @media (hover: hover) {
+    .photo-card:hover .photo-card__img {
+      transform: scale(1.05);
+    }
+
+    .photo-card:hover .photo-card__overlay {
+      opacity: 1;
+    }
   }
 </style>
 

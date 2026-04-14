@@ -184,6 +184,7 @@ const dateStr = photo.data.date.toLocaleDateString(lang, {
 <style>
   .photo-header {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: var(--size-4);
@@ -192,20 +193,12 @@ const dateStr = photo.data.date.toLocaleDateString(lang, {
 
   .back-link {
     flex-shrink: 0;
-    color: var(--text-2);
-    font-size: var(--font-size-1);
-    text-decoration: none;
-    transition: color 0.15s;
-
-    &:hover,
-    &:focus-visible {
-      color: var(--color-brand);
-    }
   }
 
   .photo-stage {
     position: relative;
     display: flex;
+    flex-wrap: nowrap;
     align-items: center;
     justify-content: center;
   }
@@ -213,7 +206,6 @@ const dateStr = photo.data.date.toLocaleDateString(lang, {
   .photo-hero-wrap {
     overflow: hidden;
     border-radius: var(--radius-2);
-    animation: photo-shimmer 1.5s infinite;
     aspect-ratio: var(--w) / var(--h);
     background: linear-gradient(
       90deg,
@@ -223,6 +215,10 @@ const dateStr = photo.data.date.toLocaleDateString(lang, {
     );
     background-size: 200% 100%;
     inline-size: min(100%, calc(80dvh * var(--w) / var(--h)));
+
+    @media (prefers-reduced-motion: no-preference) {
+      animation: photo-shimmer 1.5s infinite;
+    }
 
     &.loaded {
       animation: none;
@@ -249,6 +245,7 @@ const dateStr = photo.data.date.toLocaleDateString(lang, {
     display: flex;
     width: 2.5rem;
     height: 2.5rem;
+    flex-wrap: nowrap;
     align-items: center;
     justify-content: center;
     border: var(--border-size-1) solid var(--border);
@@ -257,21 +254,31 @@ const dateStr = photo.data.date.toLocaleDateString(lang, {
     color: var(--text-1);
     text-decoration: none;
     transform: translateY(-50%);
-    transition:
-      background 0.15s,
-      color 0.15s,
-      border-color 0.15s;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition:
+        background 0.15s,
+        color 0.15s,
+        border-color 0.15s;
+    }
 
     & svg {
       width: 1.25rem;
       height: 1.25rem;
     }
 
-    &:hover,
     &:focus-visible {
       border-color: transparent;
       background: var(--color-brand);
       color: white;
+    }
+
+    @media (hover: hover) {
+      &:hover {
+        border-color: transparent;
+        background: var(--color-brand);
+        color: white;
+      }
     }
   }
 

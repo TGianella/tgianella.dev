@@ -1,0 +1,33 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+interface Props extends HTMLAttributes<"span"> {
+  variant: "brand" | "neutral";
+}
+
+const { variant, class: className, ...rest } = Astro.props;
+---
+
+<span class:list={["pill", `pill--${variant}`, className]} {...rest}>
+  <slot />
+</span>
+
+<style>
+  .pill {
+    padding: 1px var(--size-2);
+    border-radius: var(--radius-round);
+    font-size: var(--font-size-0);
+    white-space: nowrap;
+  }
+
+  .pill--brand {
+    background: var(--color-brand-tint);
+    color: var(--color-brand);
+    font-weight: var(--font-weight-5);
+  }
+
+  .pill--neutral {
+    background: var(--surface-3);
+    color: var(--text-2);
+  }
+</style>

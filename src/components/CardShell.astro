@@ -52,9 +52,9 @@ const {
 
 <style>
   .card__title {
-    margin: 0 0 0.25rem;
+    margin: 0 0 var(--size-1);
     font-size: var(--font-size-3);
-    transition: color 0.15s;
+    transition: color var(--duration-quick-2);
   }
 
   .card {
@@ -64,32 +64,42 @@ const {
     border-radius: var(--radius-2);
     border-block-end: var(--border-size-1) solid var(--border);
     color: inherit;
-    gap: var(--size-5);
-    grid-template-columns: minmax(auto, 16rem) 1fr;
+    gap: var(--size-3);
+    grid-template-columns: [content-start] 1fr [content-end];
     text-decoration: none;
-    transition: background 0.15s;
+    transition: background var(--duration-quick-2);
 
     &:last-of-type {
       border-block-end: none;
     }
 
-    &:hover,
     &:focus-visible {
       background: var(--surface-2);
       outline: 2px solid var(--color-brand);
       outline-offset: 2px;
     }
 
-    &:hover .card__title,
     &:focus-visible .card__title {
       color: var(--color-brand);
     }
+
+    @media (hover: hover) {
+      &:hover {
+        background: var(--surface-2);
+        outline: 2px solid var(--color-brand);
+        outline-offset: 2px;
+      }
+
+      &:hover .card__title {
+        color: var(--color-brand);
+      }
+    }
   }
 
-  @media (width < 560px) {
+  @media (width >= 560px) {
     .card {
-      gap: var(--size-3);
-      grid-template-columns: 1fr;
+      gap: var(--size-5);
+      grid-template-columns: [thumb-start] minmax(auto, 16rem) [thumb-end body-start] 1fr [body-end];
     }
   }
 
@@ -99,14 +109,12 @@ const {
     border-radius: var(--radius-2);
     aspect-ratio: 16 / 9;
     background: var(--surface-3);
-    max-block-size: 9rem;
-    max-inline-size: 16rem;
   }
 
-  @media (width < 560px) {
+  @media (width >= 560px) {
     .card__thumb-wrap {
-      max-block-size: unset;
-      max-inline-size: unset;
+      max-block-size: 9rem;
+      max-inline-size: 16rem;
     }
   }
 
@@ -114,17 +122,19 @@ const {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
+    transition: transform var(--duration-gentle-1) ease;
 
-    .card:hover & {
-      transform: scale(1.04);
+    @media (hover: hover) {
+      .card:hover & {
+        transform: scale(1.04);
+      }
     }
   }
 
   .card__desc {
     display: -webkit-box;
     overflow: hidden;
-    margin: 0 0 0.625rem;
+    margin: 0 0 var(--size-2);
     -webkit-box-orient: vertical;
     color: var(--text-2);
     font-size: var(--font-size-1);
@@ -136,40 +146,29 @@ const {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    margin: 0 0 0.25rem;
     color: var(--text-2);
     font-size: var(--font-size-1);
     gap: 0.2em 0.9em;
+    margin-block: 0 var(--size-1);
   }
 
-  .card :global(.card__meta-item) {
-    display: flex;
-    align-items: center;
-    gap: 0.3em;
-  }
-
-  .card :global(.card__meta-item svg) {
-    width: 1em;
-    height: 1em;
-    flex-shrink: 0;
-    opacity: 0.7;
-  }
+  /* .card__meta-item icon layout is provided by the global .icon-row class */
 
   .card :global(.card__upcoming-pill) {
     position: absolute;
     top: var(--size-2);
     left: var(--size-2);
-    padding: 1px var(--size-2);
+    padding: var(--size-1) var(--size-3);
     backdrop-filter: blur(4px);
     background: color-mix(in oklch, var(--color-brand) 18%, var(--surface-1));
-    font-size: var(--font-size-0);
+    font-size: var(--font-size-1);
     view-transition-class: text-transition;
   }
 
-  @media (width < 560px) {
+  @media (width >= 560px) {
     .card :global(.card__upcoming-pill) {
-      padding: var(--size-1) var(--size-3);
-      font-size: var(--font-size-1);
+      padding: 1px var(--size-2);
+      font-size: var(--font-size-0);
     }
   }
 </style>

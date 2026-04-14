@@ -250,11 +250,15 @@ const alternatePath = getLocalizedPath(
     top: 0;
     background: var(--surface-1);
     border-block-end: var(--border-size-1) solid var(--border);
-    view-transition-name: site-nav;
+
+    @media (prefers-reduced-motion: no-preference) {
+      view-transition-name: site-nav;
+    }
   }
 
   .nav__inner {
     display: flex;
+    flex-wrap: nowrap;
     align-items: center;
     block-size: var(--nav-height);
     gap: var(--size-3);
@@ -273,12 +277,16 @@ const alternatePath = getLocalizedPath(
   }
 
   .nav__links {
-    display: flex;
+    display: none;
     align-items: center;
-    padding: 0;
-    margin: 0;
     gap: var(--size-1);
-    list-style: "";
+  }
+
+  @media (width >= 700px) {
+    .nav__links {
+      display: flex;
+      flex-wrap: nowrap;
+    }
   }
 
   .nav__link {
@@ -288,15 +296,17 @@ const alternatePath = getLocalizedPath(
     font-size: var(--font-size-1);
     text-decoration: none;
     transition:
-      color 0.15s,
-      background 0.15s;
+      color var(--duration-quick-2),
+      background var(--duration-quick-2);
     view-transition-class: text-transition nav-elevated;
     white-space: nowrap;
   }
 
-  .nav__link:hover {
-    background: var(--surface-3);
-    color: var(--text-1);
+  @media (hover: hover) {
+    .nav__link:hover {
+      background: var(--surface-3);
+      color: var(--text-1);
+    }
   }
 
   .nav__link:focus-visible {
@@ -313,6 +323,7 @@ const alternatePath = getLocalizedPath(
 
   .theme-toggle {
     display: flex;
+    flex-wrap: nowrap;
     align-items: center;
     justify-content: center;
     padding: var(--size-2);
@@ -322,17 +333,19 @@ const alternatePath = getLocalizedPath(
     color: var(--text-2);
     cursor: pointer;
     transition:
-      color 0.15s,
-      background 0.15s;
-
-    &:hover {
-      background: var(--surface-3);
-      color: var(--text-1);
-    }
+      color var(--duration-quick-2),
+      background var(--duration-quick-2);
 
     &:focus-visible {
       outline: 2px solid var(--color-brand);
       outline-offset: 2px;
+    }
+
+    @media (hover: hover) {
+      &:hover {
+        background: var(--surface-3);
+        color: var(--text-1);
+      }
     }
   }
 
@@ -352,8 +365,8 @@ const alternatePath = getLocalizedPath(
 
   .theme-toggle.is-switching .theme-toggle__icon {
     transition:
-      opacity 0.15s,
-      transform 0.15s;
+      opacity var(--duration-quick-2),
+      transform var(--duration-quick-2);
   }
 
   /* Default: sun visible, moon rotated away */
@@ -399,6 +412,7 @@ const alternatePath = getLocalizedPath(
 
   .lang-switch {
     display: flex;
+    flex-wrap: nowrap;
     align-items: center;
     padding: 2px;
     border: var(--border-size-1) solid var(--border);
@@ -421,10 +435,12 @@ const alternatePath = getLocalizedPath(
     font-size: var(--font-size-0);
     font-weight: var(--font-weight-6);
     text-decoration: none;
-    transition: color 0.15s;
+    transition: color var(--duration-quick-2);
 
-    &:hover {
-      color: var(--text-1);
+    @media (hover: hover) {
+      &:hover {
+        color: var(--text-1);
+      }
     }
 
     &[data-current="true"] {
@@ -435,7 +451,7 @@ const alternatePath = getLocalizedPath(
   }
 
   .nav__hamburger {
-    display: none;
+    display: flex;
     flex-direction: column;
     justify-content: center;
     padding: var(--size-2);
@@ -444,17 +460,25 @@ const alternatePath = getLocalizedPath(
     background: none;
     color: var(--text-1);
     cursor: pointer;
-    gap: 5px;
+    gap: var(--size-px-1);
   }
 
-  .nav__hamburger:hover {
-    background: var(--surface-2);
+  @media (hover: hover) {
+    .nav__hamburger:hover {
+      background: var(--surface-2);
+    }
   }
 
   .nav__hamburger:focus-visible {
     background: var(--surface-2);
     outline: 2px solid var(--color-brand);
     outline-offset: 2px;
+  }
+
+  @media (width >= 700px) {
+    .nav__hamburger {
+      display: none;
+    }
   }
 
   .hamburger__bar {
@@ -464,8 +488,8 @@ const alternatePath = getLocalizedPath(
     border-radius: var(--radius-1);
     background: currentcolor;
     transition:
-      transform 0.2s,
-      opacity 0.2s;
+      transform var(--duration-moderate-1),
+      opacity var(--duration-moderate-1);
   }
 
   .nav:has(#mobile-menu:popover-open) .hamburger__bar:nth-child(1) {
@@ -495,10 +519,10 @@ const alternatePath = getLocalizedPath(
     opacity: 0;
     transform: translateY(-0.5rem);
     transition:
-      transform 0.2s ease,
-      opacity 0.2s ease,
-      display 0.2s allow-discrete,
-      overlay 0.2s allow-discrete;
+      transform var(--duration-moderate-1) ease,
+      opacity var(--duration-moderate-1) ease,
+      display var(--duration-moderate-1) allow-discrete,
+      overlay var(--duration-moderate-1) allow-discrete;
   }
 
   .nav__mobile:popover-open {
@@ -517,8 +541,6 @@ const alternatePath = getLocalizedPath(
     display: flex;
     flex-direction: column;
     padding: var(--size-2) var(--page-padding);
-    margin: 0;
-    list-style: "";
   }
 
   .nav__mobile-link {
@@ -528,12 +550,17 @@ const alternatePath = getLocalizedPath(
     color: var(--text-2);
     font-size: var(--font-size-2);
     text-decoration: none;
-    transition: color 0.15s;
+    transition: color var(--duration-quick-2);
   }
 
-  .nav__mobile-link:hover,
   .nav__mobile-link[aria-current="page"] {
     color: var(--text-1);
+  }
+
+  @media (hover: hover) {
+    .nav__mobile-link:hover {
+      color: var(--text-1);
+    }
   }
 
   .nav__mobile-link:focus-visible {
@@ -546,13 +573,4 @@ const alternatePath = getLocalizedPath(
     border-block-end: none;
   }
 
-  @media (width < 700px) {
-    .nav__links {
-      display: none;
-    }
-
-    .nav__hamburger {
-      display: flex;
-    }
-  }
 </style>

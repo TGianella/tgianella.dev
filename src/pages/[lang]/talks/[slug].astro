@@ -9,6 +9,7 @@ import {
 import { getCollection, render } from "astro:content";
 import EventCard from "../../../components/EventCard.astro";
 import PersonCard from "../../../components/PersonCard.astro";
+import VideoEmbed from "../../../components/VideoEmbed.astro";
 
 export async function getStaticPaths() {
   const talks = await getCollection("talks");
@@ -123,15 +124,11 @@ const eventsSorted = [...talk.data.events].sort(
         {
           videoId && !upcoming && (
             <section id="video" class="video-section">
-              <div class="video-wrapper">
-                <iframe
-                  src={`https://www.youtube.com/embed/${videoId}${videoTimestamp ? `?start=${videoTimestamp}` : ""}`}
-                  title={talk.data.title}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowfullscreen
-                  loading="lazy"
-                />
-              </div>
+              <VideoEmbed
+                videoId={videoId}
+                title={talk.data.title}
+                timestamp={videoTimestamp}
+              />
             </section>
           )
         }
@@ -162,16 +159,7 @@ const eventsSorted = [...talk.data.events].sort(
 
   .back-link {
     display: inline-block;
-    color: var(--text-2);
-    font-size: var(--font-size-1);
     margin-block-end: var(--size-5);
-    text-decoration: none;
-    transition: color 0.15s;
-
-    &:hover,
-    &:focus-visible {
-      color: var(--color-brand);
-    }
   }
 
   .talk-header {
@@ -181,7 +169,7 @@ const eventsSorted = [...talk.data.events].sort(
     grid-template-areas:
       "top top"
       "tags cospeakers";
-    grid-template-columns: minmax(min-content, 1fr) auto;
+    grid-template-columns: [main-start] minmax(min-content, 1fr) [main-end meta-start] auto [meta-end];
     margin-block-end: var(--size-5);
     padding-block-end: var(--size-5);
   }
@@ -191,7 +179,7 @@ const eventsSorted = [...talk.data.events].sort(
       grid-template-areas:
         "top cospeakers"
         "tags cospeakers";
-      grid-template-columns: 1fr auto;
+      grid-template-columns: [main-start] 1fr [main-end meta-start] auto [meta-end];
     }
 
     .talk-header__cospeakers {
@@ -208,7 +196,7 @@ const eventsSorted = [...talk.data.events].sort(
 
   .talk-header__title {
     margin: 0;
-    font-size: clamp(2rem, 4vw, 3rem);
+    font-size: var(--font-size-article-title);
   }
 
   .talk-header__tags {
@@ -232,6 +220,7 @@ const eventsSorted = [...talk.data.events].sort(
 
   .btn {
     display: inline-flex;
+    flex-wrap: nowrap;
     align-items: center;
     padding: var(--size-2) var(--size-3);
     border-radius: var(--radius-2);
@@ -239,11 +228,16 @@ const eventsSorted = [...talk.data.events].sort(
     font-weight: var(--font-weight-6);
     gap: var(--size-1);
     text-decoration: none;
-    transition: opacity 0.15s;
+    transition: opacity var(--duration-quick-2);
 
-    &:hover,
     &:focus-visible {
       opacity: 0.85;
+    }
+
+    @media (hover: hover) {
+      &:hover {
+        opacity: 0.85;
+      }
     }
   }
 
@@ -262,12 +256,12 @@ const eventsSorted = [...talk.data.events].sort(
     display: grid;
     align-items: start;
     gap: var(--size-5) var(--size-8);
-    grid-template-columns: 1fr;
+    grid-template-columns: [content-start] 1fr [content-end];
   }
 
   @media (width >= 48rem) {
     .talk-layout {
-      grid-template-columns: 2fr 1fr;
+      grid-template-columns: [prose-start] 2fr [prose-end sidebar-start] 1fr [sidebar-end];
     }
   }
 
@@ -287,29 +281,10 @@ const eventsSorted = [...talk.data.events].sort(
   .event-list {
     display: flex;
     flex-direction: column;
-    padding: 0;
-    margin: 0;
     gap: var(--size-2);
-    list-style: "";
   }
 
   .video-section {
     margin-block-end: var(--size-8);
-  }
-
-  .video-wrapper {
-    position: relative;
-    overflow: hidden;
-    border-radius: var(--radius-2);
-    aspect-ratio: 16/9;
-    background: var(--surface-3);
-
-    & iframe {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      border: 0;
-      inset: 0;
-    }
   }
 </style>

@@ -21,8 +21,8 @@ const fr: Translations = {
   },
   home: {
     bio: [
-      "Passionné par toutes les technologies du web, je suis passé par une première carrière dans la recherche et l'enseignement en littérature avant d'apprendre à façonner des interfaces performantes, accessibles et intuitives. Étant extrêmement curieux, je suis toujours à la recherche de nouvelles choses à apprendre, et vous trouverez sur ce site des articles et conférences sur certains sujets qui ont retenu mon attention.",
-      "Je suis particulièrement intéressé par le fonctionnement des navigateurs web, des outils utilisés pour construire des applications web (transpilation, bundling, etc.) et de toutes les subtilités de JavaScript et CSS. En dehors de ça, je suis amateur de cinéma, de cuisine et (surprise) de littérature.",
+      "Passionné par toutes les technologies du web, je façonne des interfaces performantes, accessibles et intuitives. Étant extrêmement curieux, je suis toujours à la recherche de nouvelles choses à apprendre, et vous trouverez sur ce site des articles et conférences sur certains sujets qui ont retenu mon attention.",
+      "Je suis particulièrement intéressé par le fonctionnement des navigateurs web, des outils utilisés pour construire des applications web (transpilation, bundling, etc.) et de toutes les subtilités de JavaScript et CSS. En dehors de ça, je suis amateur de cinéma, de cuisine et de littérature.",
     ],
     tagline: "Développeur Front-end",
     github: "Profil GitHub",

@@ -40,6 +40,7 @@ import "../styles/global.css";
 <style>
   body {
     display: flex;
+    flex-wrap: nowrap;
     align-items: center;
     justify-content: center;
     min-block-size: 100dvh;
@@ -77,8 +78,10 @@ import "../styles/global.css";
     margin-block-start: var(--size-3);
     text-underline-offset: 3px;
 
-    &:hover {
-      text-decoration: none;
+    @media (hover: hover) {
+      &:hover {
+        text-decoration: none;
+      }
     }
   }
 </style>

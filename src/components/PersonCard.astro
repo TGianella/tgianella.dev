@@ -49,6 +49,7 @@ const Tag = url ? "a" : "div";
 
   .person-card {
     display: inline-flex;
+    flex-wrap: nowrap;
     align-items: center;
     padding: var(--size-2) var(--size-3);
     border-radius: var(--radius-2);
@@ -58,8 +59,10 @@ const Tag = url ? "a" : "div";
     text-decoration: none;
     transition: border-color 0.15s;
 
-    &:is(a):hover {
-      border-color: var(--color-brand);
+    @media (hover: hover) {
+      &:is(a):hover {
+        border-color: var(--color-brand);
+      }
     }
   }
 

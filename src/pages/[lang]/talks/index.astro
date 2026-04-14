@@ -227,25 +227,27 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "long" });
 </script>
 
 <style is:global>
-  /* tab-panel name is CSS-driven, only active during a tab switch */
-  [data-tab-transition] [role="tabpanel"]:not([hidden]) {
-    view-transition-name: tab-panel;
-  }
+  @media (prefers-reduced-motion: no-preference) {
+    /* tab-panel name is CSS-driven, only active during a tab switch */
+    [data-tab-transition] [role="tabpanel"]:not([hidden]) {
+      view-transition-name: tab-panel;
+    }
 
-  [data-tab-transition="forward"]::view-transition-old(tab-panel) {
-    animation: vt-out-left 0.25s ease both;
-  }
+    [data-tab-transition="forward"]::view-transition-old(tab-panel) {
+      animation: vt-out-left 0.25s ease both;
+    }
 
-  [data-tab-transition="forward"]::view-transition-new(tab-panel) {
-    animation: vt-in-right 0.25s ease both;
-  }
+    [data-tab-transition="forward"]::view-transition-new(tab-panel) {
+      animation: vt-in-right 0.25s ease both;
+    }
 
-  [data-tab-transition="back"]::view-transition-old(tab-panel) {
-    animation: vt-out-right 0.25s ease both;
-  }
+    [data-tab-transition="back"]::view-transition-old(tab-panel) {
+      animation: vt-out-right 0.25s ease both;
+    }
 
-  [data-tab-transition="back"]::view-transition-new(tab-panel) {
-    animation: vt-in-left 0.25s ease both;
+    [data-tab-transition="back"]::view-transition-new(tab-panel) {
+      animation: vt-in-left 0.25s ease both;
+    }
   }
 </style>
 
@@ -253,6 +255,7 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "long" });
   .tab-list {
     display: flex;
     width: fit-content;
+    flex-wrap: nowrap;
     align-items: center;
     padding: 2px;
     border: var(--border-size-1) solid var(--border);
@@ -276,8 +279,10 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "long" });
     transition: color 0.15s;
   }
 
-  [role="tab"]:hover {
-    color: var(--text-1);
+  @media (hover: hover) {
+    [role="tab"]:hover {
+      color: var(--text-1);
+    }
   }
 
   [role="tab"]:focus-visible {
@@ -296,10 +301,6 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "long" });
   }
 
   .talk-list {
-    padding: 0;
-    margin: 0;
-    list-style: "";
-
     & li {
       padding-inline-start: 0;
     }
@@ -321,24 +322,21 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "long" });
   .timeline__events {
     display: flex;
     flex-direction: column;
-    padding: 0;
-    margin: 0;
     gap: var(--size-4);
-    list-style: "";
   }
 
   .timeline__event {
     display: grid;
     border-inline-start: var(--border-size-2) solid var(--border);
     gap: var(--size-1);
-    grid-template-columns: 1fr;
+    grid-template-columns: [content-start] 1fr [content-end];
     padding-inline-start: var(--size-4);
   }
 
   @media (width >= 600px) {
     .timeline__event {
       align-items: start;
-      grid-template-columns: 10rem 1fr;
+      grid-template-columns: [date-start] 10rem [date-end content-start] 1fr [content-end];
     }
   }
 
@@ -376,10 +374,7 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "long" });
   .timeline__talks {
     display: flex;
     flex-direction: column;
-    padding: 0;
-    margin: 0;
     gap: var(--size-1);
-    list-style: "";
 
     > li {
       padding-inline-start: 0;
@@ -392,9 +387,11 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "long" });
     text-decoration: underline;
     text-decoration-color: var(--text-2);
 
-    &:hover {
-      color: var(--text-1);
-      text-decoration: underline;
+    @media (hover: hover) {
+      &:hover {
+        color: var(--text-1);
+        text-decoration: underline;
+      }
     }
   }
 </style>
