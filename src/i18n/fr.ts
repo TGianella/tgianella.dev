@@ -35,6 +35,7 @@ const fr: Translations = {
     },
     readMore: "Lire la suite",
     seeAll: "Voir tout",
+    scrollToBio: "Défiler vers la bio",
   },
   prose: {
     copyLink: "Copier le lien de la section",

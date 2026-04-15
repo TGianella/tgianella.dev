@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../../layouts/BaseLayout.astro";
+import MainContent from "../../../layouts/MainContent.astro";
 import PageHeader from "../../../components/PageHeader.astro";
 import {
   useTranslations,
@@ -29,9 +30,10 @@ const dateFormatter = getDateFormatter(lang);
   description={t.gallery.description}
   canonicalPath="/blue-screens"
 >
-  <PageHeader title={t.gallery.title} description={t.gallery.description} />
+  <MainContent>
+    <PageHeader title={t.gallery.title} description={t.gallery.description} />
 
-  <ul class="photo-grid">
+    <ul class="photo-grid">
     {
       photos.map((photo) => (
         <li>
@@ -65,7 +67,8 @@ const dateFormatter = getDateFormatter(lang);
         </li>
       ))
     }
-  </ul>
+    </ul>
+  </MainContent>
 </BaseLayout>
 
 <style>

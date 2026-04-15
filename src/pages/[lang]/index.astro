@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import MainContent from "../../layouts/MainContent.astro";
 import {
   useTranslations,
   getLocaleStaticPaths,
@@ -9,7 +10,7 @@ import {
 } from "../../i18n/utils";
 import { getCollection } from "astro:content";
 import { debutEvent } from "../../content/utils";
-import Portrait from "../../assets/portrait-theo-gianella-2.jpg";
+import Portrait from "../../assets/portrait-theo-gianella-hero.webp";
 
 export const getStaticPaths = getLocaleStaticPaths;
 
@@ -49,153 +50,154 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
 
 <BaseLayout lang={lang} description={t.home.tagline} canonicalPath="/">
   <section class="hero">
-    <div class="hero__name-container">
-      <h1 class="hero__name">{t.seo.siteName}</h1>
-      <img
-        src={Portrait.src}
-        alt={t.seo.siteName}
-        class="hero__avatar"
-        width="646"
-        height="363"
-      />
-    </div>
-
-    <div class="hero__bottom">
-      <p class="hero__tagline" data-vt-name="hero-tagline">{t.home.tagline}</p>
-      <span class="hero__scroll-hint" aria-hidden="true">↓</span>
-    </div>
+    <h1 class="hero__name">{t.seo.siteName}</h1>
+    <img
+      src={Portrait.src}
+      alt={t.seo.siteName}
+      class="hero__avatar"
+      width="3813"
+      height="1870"
+    />
+    <p class="hero__tagline" data-vt-name="hero-tagline">{t.home.tagline}</p>
+    <button class="hero__scroll-hint" aria-label={t.home.scrollToBio}>↓</button>
   </section>
 
-  <section class="section">
+  <section id="bio" class="bio">
     {t.home.bio.map((p) => <p>{p}</p>)}
   </section>
 
-  <section class="section">
-    <header class="section__header">
-      <h2 class="section__title">{t.home.sections.blog}</h2>
-      <a href={`/${lang}/blog`} class="section__see-all">{t.home.seeAll} →</a>
-    </header>
-    <ul class="card-grid">
-      {
-        posts.map((post) => (
-          <li>
-            <a href={`/${lang}/blog/${slugOf(post.id, lang)}`} class="card">
-              <time
-                class="card__date"
-                datetime={post.data.pubDate.toISOString()}
-              >
-                {dateFormatter.format(post.data.pubDate)}
-              </time>
-              <h3 class="card__title">{post.data.title}</h3>
-              <p class="card__desc">{post.data.description}</p>
-            </a>
-          </li>
-        ))
-      }
-    </ul>
-  </section>
-
-  <section class="section">
-    <header class="section__header">
-      <h2 class="section__title">{t.home.sections.talks}</h2>
-      <a href={`/${lang}/talks`} class="section__see-all">{t.home.seeAll} →</a>
-    </header>
-    <ul class="card-grid">
-      {
-        talks.map((talk) => {
-          const debut = debutEvent(talk.data.events);
-          const upcoming = isUpcoming(talk.data.events);
-          return (
+  <MainContent>
+    <section class="section">
+      <header class="section__header">
+        <h2 class="section__title">{t.home.sections.blog}</h2>
+        <a href={`/${lang}/blog`} class="section__see-all">{t.home.seeAll} →</a>
+      </header>
+      <ul class="card-grid">
+        {
+          posts.map((post) => (
             <li>
-              <a href={`/${lang}/talks/${slugOf(talk.id, lang)}`} class="card">
-                <div class="card__meta">
-                  <time class="card__date" datetime={debut.date.toISOString()}>
-                    {dateFormatter.format(debut.date)}
-                  </time>
-                  {upcoming && (
-                    <span class="upcoming-pill">{t.talks.upcoming}</span>
-                  )}
-                </div>
-                <h3 class="card__title">{talk.data.title}</h3>
-                <p class="card__desc">
-                  {debut.name} — {debut.location}
-                </p>
+              <a href={`/${lang}/blog/${slugOf(post.id, lang)}`} class="card">
+                <time
+                  class="card__date"
+                  datetime={post.data.pubDate.toISOString()}
+                >
+                  {dateFormatter.format(post.data.pubDate)}
+                </time>
+                <h3 class="card__title">{post.data.title}</h3>
+                <p class="card__desc">{post.data.description}</p>
               </a>
             </li>
-          );
-        })
-      }
-    </ul>
-  </section>
+          ))
+        }
+      </ul>
+    </section>
 
-  <section class="section">
-    <header class="section__header">
-      <h2 class="section__title">{t.home.sections.gallery}</h2>
-      <a href={`/${lang}/blue-screens`} class="section__see-all"
-        >{t.home.seeAll} →</a
-      >
-    </header>
-    <ul class="gallery-grid">
-      {
-        recentPhotos.map((photo) => (
-          <li>
-            <a
-              href={`/${lang}/blue-screens/${slugOf(photo.id, lang)}`}
-              class="gallery-card"
-            >
-              <img
-                src={photo.data.src.replace(
-                  /\/([^/]+)\.[^.]+$/,
-                  "/thumbnails/$1.webp",
+    <section class="section">
+      <header class="section__header">
+        <h2 class="section__title">{t.home.sections.talks}</h2>
+        <a href={`/${lang}/talks`} class="section__see-all">{t.home.seeAll} →</a
+        >
+      </header>
+      <ul class="card-grid">
+        {
+          talks.map((talk) => {
+            const debut = debutEvent(talk.data.events);
+            const upcoming = isUpcoming(talk.data.events);
+            return (
+              <li>
+                <a
+                  href={`/${lang}/talks/${slugOf(talk.id, lang)}`}
+                  class="card"
+                >
+                  <div class="card__meta">
+                    <time
+                      class="card__date"
+                      datetime={debut.date.toISOString()}
+                    >
+                      {dateFormatter.format(debut.date)}
+                    </time>
+                    {upcoming && (
+                      <span class="upcoming-pill">{t.talks.upcoming}</span>
+                    )}
+                  </div>
+                  <h3 class="card__title">{talk.data.title}</h3>
+                  <p class="card__desc">
+                    {debut.name} — {debut.location}
+                  </p>
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </section>
+
+    <section class="section">
+      <header class="section__header">
+        <h2 class="section__title">{t.home.sections.gallery}</h2>
+        <a href={`/${lang}/blue-screens`} class="section__see-all"
+          >{t.home.seeAll} →</a
+        >
+      </header>
+      <ul class="gallery-grid">
+        {
+          recentPhotos.map((photo) => (
+            <li>
+              <a
+                href={`/${lang}/blue-screens/${slugOf(photo.id, lang)}`}
+                class="gallery-card"
+              >
+                <img
+                  src={photo.data.src.replace(
+                    /\/([^/]+)\.[^.]+$/,
+                    "/thumbnails/$1.webp",
+                  )}
+                  alt={photo.data.alt}
+                  width={400}
+                  height={300}
+                  class="gallery-card__img"
+                  loading="lazy"
+                  decoding="async"
+                />
+                {photo.data.location && (
+                  <div class="gallery-card__caption">
+                    <span class="gallery-card__title">
+                      {photo.data.location}
+                    </span>
+                  </div>
                 )}
-                alt={photo.data.alt}
-                width={400}
-                height={300}
-                class="gallery-card__img"
-                loading="lazy"
-                decoding="async"
-              />
-              {photo.data.location && (
-                <div class="gallery-card__caption">
-                  <span class="gallery-card__title">{photo.data.location}</span>
-                </div>
-              )}
-            </a>
-          </li>
-        ))
-      }
-    </ul>
-  </section>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </MainContent>
 </BaseLayout>
 
 <style>
   .hero {
-    position: relative;
     display: flex;
     flex-direction: column;
-    border-block-end: var(--border-size-1) solid var(--border);
-    margin-block-end: var(--size-8);
-    min-block-size: calc(100dvh - ((var(--size-7) * 2) + var(--size-5)));
-    padding-block: var(--size-7);
-  }
-
-  .hero__name-container {
-    display: flex;
-    flex-direction: column;
-    gap: var(--size-5);
-    margin-block: auto var(--size-6);
+    margin-block: 3dvh;
+    margin-inline: auto;
+    max-inline-size: max(30rem, 95vw);
+    min-block-size: calc(92dvh - var(--nav-height));
+    padding-inline: var(--page-padding);
   }
 
   .hero__name {
     width: min-content;
-    margin: 0;
     /* stylelint-disable-next-line defensive-css/no-unsafe-clamp-font-size */
-    font-size: clamp(1.5rem, 10vmax, 12rem);
+    font-size: clamp(3rem, min(18vw, hypot(10vw, 10dvh)), 14rem);
     line-height: 0.8;
+    margin-block: auto var(--size-5);
+    margin-inline: 0;
   }
 
   .hero__avatar {
     max-width: 100%;
+    margin-block-end: var(--size-6);
     object-fit: cover;
   }
 
@@ -205,7 +207,7 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
     color: var(--text-2);
     font-family: var(--font-transitional);
     /* stylelint-disable-next-line defensive-css/no-unsafe-clamp-font-size */
-    font-size: clamp(1.5rem, 6vmax, 10rem);
+    font-size: clamp(2.5rem, 12vw, 6rem);
     line-height: 0.9;
     padding-block-end: 0.2em;
     view-transition-class: text-transition;
@@ -213,10 +215,14 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
 
   .hero__scroll-hint {
     display: block;
+    padding: 0;
+    border: none;
+    background: none;
     color: var(--text-2);
+    cursor: pointer;
     font-family: var(--font-transitional);
     /* stylelint-disable-next-line defensive-css/no-unsafe-clamp-font-size */
-    font-size: clamp(3rem, 10vmax, 8rem);
+    font-size: clamp(4rem, 14vw, 8rem);
     line-height: 1;
     margin-block-start: var(--size-4);
     text-align: end;
@@ -224,58 +230,79 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
 
   @media (width >= 48rem) {
     .hero {
-      position: relative;
-      align-items: center;
-      gap: var(--size-1);
-      min-block-size: calc(100dvh - (var(--size-9) * 2));
-      padding-block: var(--size-9);
-      padding-inline: 10vw;
+      display: grid;
+      grid-template-columns: [left-start] min-content [left-end right-start] 1fr [right-end];
+      grid-template-rows: [name-top] auto [name-bottom image-top] 1fr [image-bottom tagline-top] auto [tagline-bottom];
+      padding-block: var(--size-5);
+      padding-inline: var(--page-padding);
     }
 
-    .hero__name-container {
-      position: absolute;
-      top: var(--size-1);
-      left: min(
-        calc((100vw - var(--layout-width)) / -2 + var(--size-5)),
-        var(--size-5)
-      );
-      max-width: min-content;
-      gap: 0;
+    .hero__name {
+      grid-area: 1 / 1;
+      margin-block: 0;
     }
 
     .hero__avatar {
       position: relative;
       left: var(--size-2);
-      margin-block-start: var(--size-5);
-    }
-
-    .hero__bottom {
-      display: contents;
+      width: 100%;
+      align-self: start;
+      grid-area: 2 / 1;
+      margin-block: var(--size-5) 0;
     }
 
     .hero__tagline {
-      position: absolute;
-      right: min(
-        calc((100vw - var(--layout-width)) / -2 + var(--size-5)),
-        var(--size-5)
-      );
-      bottom: calc(var(--size-7) - 0.2em);
       width: min-content;
       /* stylelint-disable-next-line defensive-css/no-unsafe-clamp-font-size */
-      font-size: clamp(2rem, 8vmax, 10rem);
+      font-size: clamp(3rem, 10dvmin, 12rem);
+      grid-column: left-start / right-end;
+      grid-row: image-top / tagline-bottom;
+      place-self: end end;
       text-align: end;
       view-transition-class: text-transition-right;
     }
 
     .hero__scroll-hint {
-      position: absolute;
-      bottom: var(--size-5);
-      left: min(
-        calc((100vw - var(--layout-width)) / -2 + var(--size-5)),
-        var(--size-5)
-      );
+      align-self: end;
+      /* stylelint-disable-next-line defensive-css/no-unsafe-clamp-font-size */
+      font-size: clamp(3rem, 10dvmin, 10rem);
+      grid-area: 3 / 1;
       margin-block-start: 0;
+      text-align: start;
     }
+  }
+
+  /* ── Bio (wider than --layout-width) ───────────────── */
+  .bio {
+    position: relative;
+    inline-size: min(100%, 100rem);
+    margin-inline: auto;
+    padding-block-start: var(--size-3);
+    padding-inline: var(--page-padding);
+
+    p {
+      font-weight: var(--font-weight-5);
+
+      @media (width >= 48rem) {
+        font-size: clamp(1rem, 3vw, 1.75rem);
+        max-inline-size: 75%;
+
+        &:nth-child(even) {
+          margin-block-start: var(--size-9);
+          margin-inline-start: auto;
+          text-align: end;
+        }
+      }
+    }
+  }
+
+  /* Separator: hero | bio — sits on bio because bio is the narrower */
+  .bio::before {
+    position: absolute;
+    border-block-start: var(--border-size-1) solid var(--border);
+    content: "";
+    inset-block-start: 0;
+    inset-inline: var(--page-padding);
   }
 
   /* ── Sections ──────────────────────────────────────── */
@@ -289,6 +316,20 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
       margin-block-end: 0;
       padding-block-end: 0;
     }
+  }
+
+  /* Separator: bio | main content — sits on first section because MainContent is the narrower */
+  .section:first-child {
+    position: relative;
+    padding-block-start: var(--size-8);
+  }
+
+  .section:first-child::before {
+    position: absolute;
+    border-block-start: var(--border-size-1) solid var(--border);
+    content: "";
+    inset-block-start: 0;
+    inset-inline: 0;
   }
 
   .section__header {
@@ -323,7 +364,10 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
   .card-grid {
     display: grid;
     gap: var(--size-3);
-    grid-template-columns: repeat(auto-fill, [card-start] minmax(min(100%, 260px), 1fr) [card-end]);
+    grid-template-columns: repeat(
+      auto-fill,
+      [card-start] minmax(min(100%, 260px), 1fr) [card-end]
+    );
   }
 
   .card {
@@ -374,7 +418,10 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
   .gallery-grid {
     display: grid;
     gap: 0.75rem;
-    grid-template-columns: repeat(auto-fill, [gallery-start] minmax(min(40dvw, 200px), 1fr) [gallery-end]);
+    grid-template-columns: repeat(
+      auto-fill,
+      [gallery-start] minmax(min(40dvw, 200px), 1fr) [gallery-end]
+    );
   }
 
   .gallery-card {
@@ -406,3 +453,15 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
     font-weight: var(--font-weight-6);
   }
 </style>
+
+<script>
+  const hint = document.querySelector<HTMLButtonElement>(".hero__scroll-hint");
+  const bio = document.getElementById("bio");
+  hint?.addEventListener("click", () => {
+    if (!bio) return;
+    const nav = document.querySelector("nav");
+    const navHeight = nav?.offsetHeight ?? 0;
+    const top = bio.getBoundingClientRect().top + window.scrollY - navHeight;
+    window.scrollTo({ top, behavior: "smooth" });
+  });
+</script>

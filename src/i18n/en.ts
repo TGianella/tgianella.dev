@@ -33,6 +33,7 @@ const en = {
     },
     readMore: "Read more",
     seeAll: "See all",
+    scrollToBio: "Scroll to bio",
   },
   prose: {
     copyLink: "Copy link to section",

@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../../layouts/BaseLayout.astro";
+import MainContent from "../../../layouts/MainContent.astro";
 import {
   useTranslations,
   isUpcoming,
@@ -49,10 +50,11 @@ const eventsSorted = [...talk.data.events].sort(
   canonicalPath={`/talks/${slug}`}
   noindex={talk.data.events.length === 0}
 >
-  <article
-    data-copy-link={t.prose.copyLink}
-    data-link-copied={t.prose.linkCopied}
-  >
+  <MainContent>
+    <article
+      data-copy-link={t.prose.copyLink}
+      data-link-copied={t.prose.linkCopied}
+    >
     <a href={`/${lang}/talks`} class="back-link">{t.talks.backToList}</a>
 
     <header class="talk-header">
@@ -145,7 +147,8 @@ const eventsSorted = [...talk.data.events].sort(
         </ul>
       </aside>
     </div>
-  </article>
+    </article>
+  </MainContent>
 </BaseLayout>
 
 <script>

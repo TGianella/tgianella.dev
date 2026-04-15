@@ -1,0 +1,18 @@
+<div class="content-column">
+  <slot />
+</div>
+
+<style>
+  .content-column {
+    inline-size: min(100%, var(--layout-width));
+    margin-inline: auto;
+    padding-block: var(--size-5) var(--size-7);
+    padding-inline: var(--page-padding);
+  }
+
+  @media (width >= 36rem) {
+    .content-column {
+      padding-block: var(--size-5) var(--size-9);
+    }
+  }
+</style>

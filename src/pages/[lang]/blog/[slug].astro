@@ -1,6 +1,7 @@
 ---
 import { getImage } from "astro:assets";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
+import MainContent from "../../../layouts/MainContent.astro";
 import PersonCard from "../../../components/PersonCard.astro";
 import { useTranslations, locales, type Locale } from "../../../i18n/utils";
 import Icon from "../../../components/Icon.astro";
@@ -41,10 +42,11 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 300));
   canonicalPath={`/blog/${slug}`}
   ogImage={ogImage}
 >
-  <article
-    data-copy-link={t.prose.copyLink}
-    data-link-copied={t.prose.linkCopied}
-  >
+  <MainContent>
+    <article
+      data-copy-link={t.prose.copyLink}
+      data-link-copied={t.prose.linkCopied}
+    >
     <a href={`/${lang}/blog`} class="back-link">{t.blog.backToList}</a>
 
     <header class="post-header">
@@ -122,8 +124,9 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 300));
         <Content />
       </div>
     </div>
-  </article>
-  <Lightbox />
+    </article>
+    <Lightbox />
+  </MainContent>
 </BaseLayout>
 
 <script>

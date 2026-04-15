@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../../layouts/BaseLayout.astro";
+import MainContent from "../../../layouts/MainContent.astro";
 import PhotoMeta from "../../../components/PhotoMeta.astro";
 import {
   useTranslations,
@@ -61,8 +62,9 @@ const dateStr = photo.data.date.toLocaleDateString(lang, {
   canonicalPath={`/blue-screens/${slug}`}
   ogImage={photo.data.src}
 >
-  <article>
-    <header class="photo-header">
+  <MainContent>
+    <article>
+      <header class="photo-header">
       <a href={`/${lang}/blue-screens`} class="back-link"
         >{t.gallery.backToList}</a
       >
@@ -145,7 +147,8 @@ const dateStr = photo.data.date.toLocaleDateString(lang, {
         </div>
       )
     }
-  </article>
+    </article>
+  </MainContent>
 </BaseLayout>
 
 <script>

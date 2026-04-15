@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../../layouts/BaseLayout.astro";
+import MainContent from "../../../layouts/MainContent.astro";
 import PageHeader from "../../../components/PageHeader.astro";
 import {
   useTranslations,
@@ -42,7 +43,8 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "long" });
   description={t.talks.description}
   canonicalPath="/talks"
 >
-  <PageHeader title={t.talks.title} transitionName="talks-title">
+  <MainContent>
+    <PageHeader title={t.talks.title} transitionName="talks-title">
     {t.talks.intro.map((p) => <p>{p}</p>)}
   </PageHeader>
 
@@ -134,6 +136,7 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "long" });
       </div>
     </div>
   </div>
+  </MainContent>
 </BaseLayout>
 
 <script>
