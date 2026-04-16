@@ -1,5 +1,10 @@
 ---
-import { useTranslations, isUpcoming, getDateFormatter, type Locale } from "../i18n/utils";
+import {
+  useTranslations,
+  isUpcoming,
+  getDateFormatter,
+  type Locale,
+} from "../i18n/utils";
 import Pill from "./Pill.astro";
 
 interface Props {
@@ -43,9 +48,11 @@ const upcoming = isUpcoming([event]);
         {event.location}{event.duration && ` · ${event.duration} min`}
       </span>
       {upcoming && <Pill variant="brand">{t.talks.upcoming}</Pill>}
-      {event.scope === "internal" && (
-        <Pill variant="neutral">{t.talks.internalEvent}</Pill>
-      )}
+      {
+        event.scope === "internal" && (
+          <Pill variant="neutral">{t.talks.internalEvent}</Pill>
+        )
+      }
     </div>
   </div>
 
@@ -73,6 +80,7 @@ const upcoming = isUpcoming([event]);
     padding: var(--size-3);
     border-radius: var(--radius-2);
     background: var(--surface-2);
+    box-shadow: var(--shadow-2);
     gap: var(--size-3);
   }
 
@@ -95,7 +103,7 @@ const upcoming = isUpcoming([event]);
     gap: var(--size-2);
   }
 
-.event-card__name {
+  .event-card__name {
     font-size: var(--font-size-1);
     font-weight: var(--font-weight-6);
     text-wrap: balance;

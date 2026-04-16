@@ -3,7 +3,13 @@ import { getImage } from "astro:assets";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import MainContent from "../../../layouts/MainContent.astro";
 import PersonCard from "../../../components/PersonCard.astro";
-import { useTranslations, getDateFormatter, locales, type Locale } from "../../../i18n/utils";
+import TableOfContents from "../../../components/TableOfContents.astro";
+import {
+  useTranslations,
+  getDateFormatter,
+  locales,
+  type Locale,
+} from "../../../i18n/utils";
 import { readingTime } from "../../../content/utils";
 import Icon from "../../../components/Icon.astro";
 import Lightbox from "../../../components/Lightbox.astro";
@@ -26,7 +32,10 @@ export async function getStaticPaths() {
 const { lang, slug } = Astro.params as { lang: Locale; slug: string };
 const { post } = Astro.props;
 const t = useTranslations(lang);
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
+const hasSidebar =
+  post.data.coAuthors.length > 0 ||
+  headings.some((h) => h.depth === 2 || h.depth === 3);
 
 const dateFormatter = getDateFormatter(lang);
 const ogImage = post.data.thumbnail
@@ -47,88 +56,103 @@ const minutes = readingTime(post.body);
       data-copy-link={t.prose.copyLink}
       data-link-copied={t.prose.linkCopied}
     >
-    <a href={`/${lang}/blog`} class="back-link">{t.blog.backToList}</a>
+      <a href={`/${lang}/blog`} class="back-link">{t.blog.backToList}</a>
 
-    <header class="post-header">
-      <div class="post-header__meta">
-        <span class="icon-row">
-          <Icon name="calendar" />
-          <time datetime={post.data.pubDate.toISOString()}
-            >{dateFormatter.format(post.data.pubDate)}</time
-          >
-        </span>
-        <span class="icon-row">
-          <Icon name="clock" />
-          {t.blog.readingTime(minutes)}
-        </span>
-      </div>
+      <header class="post-header">
+        <div class="post-header__meta">
+          <span class="icon-row">
+            <Icon name="calendar" />
+            <time datetime={post.data.pubDate.toISOString()}
+              >{dateFormatter.format(post.data.pubDate)}</time
+            >
+          </span>
+          <span class="icon-row">
+            <Icon name="clock" />
+            {t.blog.readingTime(minutes)}
+          </span>
+        </div>
 
-      <h1 class="post-header__title">{post.data.title}</h1>
-      <p class="post-header__desc">{post.data.description}</p>
+        <h1 class="post-header__title">{post.data.title}</h1>
+        <p class="post-header__desc">{post.data.description}</p>
 
-      {
-        post.data.tags.length > 0 && (
-          <ul class="tag-list" aria-label={t.blog.tags}>
-            {post.data.tags.map((tag) => (
-              <li class="tag">{tag}</li>
-            ))}
-          </ul>
-        )
-      }
-
-      {
-        post.data.updatedDate && (
-          <p class="post-header__updated">
-            {t.blog.updatedOn} {dateFormatter.format(post.data.updatedDate)}
-          </p>
-        )
-      }
-    </header>
-
-    <div class="post-body">
-      {
-        post.data.coAuthors.length > 0 && (
-          <aside class="coauthors-sidebar">
-            <p class="coauthors-sidebar__label">{t.blog.writtenWith}</p>
-            <div class="coauthors-sidebar__list">
-              {post.data.coAuthors.map((a) => (
-                <PersonCard name={a.name} picture={a.picture} url={a.url} />
-              ))}
-            </div>
-          </aside>
-        )
-      }
-
-      <div class="prose">
         {
-          post.data.firstPublishedIn && (
-            <p class="origin-notice">
-              <Icon name="info" />
-              <span>
-                {t.blog.firstPublishedIn}{" "}
-                {post.data.firstPublishedIn.url ? (
-                  <a
-                    href={post.data.firstPublishedIn.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {post.data.firstPublishedIn.name}
-                  </a>
-                ) : (
-                  post.data.firstPublishedIn.name
-                )}
-              </span>
+          post.data.tags.length > 0 && (
+            <ul class="tag-list" aria-label={t.blog.tags}>
+              {post.data.tags.map((tag) => (
+                <li class="tag">{tag}</li>
+              ))}
+            </ul>
+          )
+        }
+
+        {
+          post.data.updatedDate && (
+            <p class="post-header__updated">
+              {t.blog.updatedOn} {dateFormatter.format(post.data.updatedDate)}
             </p>
           )
         }
-        <Content />
+      </header>
+
+      <div class="post-body">
+        {
+          hasSidebar && (
+            <aside class="post-sidebar">
+              {post.data.coAuthors.length > 0 && (
+                <div class="coauthors-sidebar">
+                  <p class="coauthors-sidebar__label">{t.blog.writtenWith}</p>
+                  <div class="coauthors-sidebar__list">
+                    {post.data.coAuthors.map((a) => (
+                      <PersonCard
+                        name={a.name}
+                        picture={a.picture}
+                        url={a.url}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+              <TableOfContents
+                headings={headings}
+                label={t.blog.tableOfContents}
+              />
+            </aside>
+          )
+        }
+
+        <div class="prose">
+          {
+            post.data.firstPublishedIn && (
+              <p class="origin-notice">
+                <Icon name="info" />
+                <span>
+                  {t.blog.firstPublishedIn}{" "}
+                  {post.data.firstPublishedIn.url ? (
+                    <a
+                      href={post.data.firstPublishedIn.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {post.data.firstPublishedIn.name}
+                    </a>
+                  ) : (
+                    post.data.firstPublishedIn.name
+                  )}
+                </span>
+              </p>
+            )
+          }
+          <Content />
+        </div>
       </div>
-    </div>
     </article>
     <Lightbox
       labelDialog={t.a11y.imagePreview}
       labelClose={t.a11y.close}
       labelZoom={t.a11y.imageZoom}
+      labelPrev={t.a11y.prevImage}
+      labelNext={t.a11y.nextImage}
+      navigate={true}
     />
   </MainContent>
 </BaseLayout>
@@ -136,11 +160,14 @@ const minutes = readingTime(post.body);
 <script>
   import "../../../scripts/heading-anchors";
   import "../../../scripts/blog-scroll";
+  import "../../../scripts/toc-highlight";
 </script>
 
 <style>
   article {
     container-type: inline-size;
+    overflow-clip-margin: 10px;
+    overflow-x: clip;
   }
 
   .back-link {
@@ -188,18 +215,28 @@ const minutes = readingTime(post.body);
 
   .post-body {
     display: grid;
-    align-items: start;
     gap: var(--size-4) var(--size-8);
     grid-template-columns: [content-start] 1fr [content-end];
   }
 
+  .post-sidebar {
+    min-inline-size: 0;
+  }
+
   @media (width >= 48rem) {
     .post-body {
-      grid-template-columns: [content-start] 1fr [content-end aside-start] auto [aside-end];
+      grid-template-columns: [content-start] 1fr [content-end aside-start] 14rem [aside-end];
     }
 
     .prose {
+      align-self: start;
       order: -1;
+    }
+
+    .post-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--size-5);
     }
   }
 
@@ -234,7 +271,7 @@ const minutes = readingTime(post.body);
 
   .origin-notice {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
     padding: var(--size-3) var(--size-4);
     border-radius: var(--radius-2);
@@ -248,5 +285,4 @@ const minutes = readingTime(post.body);
       flex-shrink: 0;
     }
   }
-
 </style>

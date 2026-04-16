@@ -24,6 +24,8 @@ const fr: Translations = {
     imagePreview: "Aperçu de l'image",
     close: "Fermer",
     imageZoom: "Zoom",
+    prevImage: "Image précédente",
+    nextImage: "Image suivante",
   },
   home: {
     bio: [
@@ -60,6 +62,7 @@ const fr: Translations = {
     backToList: "← Retour au blog",
     firstPublishedIn: "Publié initialement dans",
     writtenWith: "Écrit avec",
+    tableOfContents: "Table des matières",
   },
   talks: {
     title: "Conférences",

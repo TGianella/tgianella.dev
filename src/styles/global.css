@@ -338,16 +338,19 @@ a {
 .prose h2 {
   font-size: var(--font-size-5);
   margin-block: var(--size-7) var(--size-5);
+  scroll-margin-top: calc(var(--nav-height) + var(--size-4));
 }
 
 .prose h3 {
   font-size: var(--font-size-4);
   margin-block: var(--size-5) var(--size-3);
+  scroll-margin-top: calc(var(--nav-height) + var(--size-4));
 }
 
 .prose h4 {
   font-size: var(--font-size-3);
   margin-block: var(--size-5) var(--size-3);
+  scroll-margin-top: calc(var(--nav-height) + var(--size-4));
 }
 
 .prose a {

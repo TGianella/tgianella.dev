@@ -22,6 +22,8 @@ const en = {
     imagePreview: "Image preview",
     close: "Close",
     imageZoom: "Zoom",
+    prevImage: "Previous image",
+    nextImage: "Next image",
   },
   home: {
     bio: [
@@ -58,6 +60,7 @@ const en = {
     backToList: "← Back to blog",
     firstPublishedIn: "First published in",
     writtenWith: "Written with",
+    tableOfContents: "Table of contents",
   },
   talks: {
     title: "Talks",

@@ -3,18 +3,67 @@ interface Props {
   labelDialog?: string;
   labelClose?: string;
   labelZoom?: string;
+  labelPrev?: string;
+  labelNext?: string;
+  selector?: string;
+  navigate?: boolean;
 }
 
 const {
   labelDialog = "Image preview",
   labelClose = "Close",
   labelZoom = "Zoom",
+  labelPrev = "Previous image",
+  labelNext = "Next image",
+  selector = ".prose img",
+  navigate = false,
 } = Astro.props;
 ---
 
-<dialog class="lbx" aria-label={labelDialog} data-label-zoom={labelZoom}>
+<dialog
+  class="lbx"
+  aria-label={labelDialog}
+  data-label-zoom={labelZoom}
+  data-selector={selector}
+>
   <button class="lbx__close" aria-label={labelClose}>✕</button>
+  {
+    navigate && (
+      <button class="lbx__nav lbx__nav--prev" aria-label={labelPrev}>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+      </button>
+    )
+  }
   <img class="lbx__img" src="" alt="" />
+  {
+    navigate && (
+      <button class="lbx__nav lbx__nav--next" aria-label={labelNext}>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+      </button>
+    )
+  }
 </dialog>
 
 <script>
@@ -30,11 +79,32 @@ const {
 
     const lbxImg = dialog.querySelector<HTMLImageElement>(".lbx__img");
     const closeBtn = dialog.querySelector<HTMLButtonElement>(".lbx__close");
+    const prevBtn = dialog.querySelector<HTMLButtonElement>(".lbx__nav--prev");
+    const nextBtn = dialog.querySelector<HTMLButtonElement>(".lbx__nav--next");
     if (!lbxImg || !closeBtn) return;
 
     const labelZoom = dialog.dataset.labelZoom ?? "Zoom";
+    const selector = dialog.dataset.selector ?? ".prose img";
+    const canNavigate = !!(prevBtn && nextBtn);
 
-    document.querySelectorAll<HTMLImageElement>(".prose img").forEach((img) => {
+    const images: HTMLImageElement[] = [];
+    let currentIndex = 0;
+
+    function updateNav() {
+      if (!canNavigate) return;
+      prevBtn!.hidden = currentIndex === 0;
+      nextBtn!.hidden = currentIndex === images.length - 1;
+    }
+
+    function showImage(index: number) {
+      currentIndex = index;
+      lbxImg.src = images[index].src;
+      lbxImg.alt = images[index].alt;
+      updateNav();
+    }
+
+    document.querySelectorAll<HTMLImageElement>(selector).forEach((img, i) => {
+      images.push(img);
       img.tabIndex = 0;
       img.setAttribute("role", "button");
       img.setAttribute(
@@ -42,8 +112,7 @@ const {
         img.alt ? `${img.alt} (${labelZoom})` : labelZoom,
       );
       const open = () => {
-        lbxImg.src = img.src;
-        lbxImg.alt = img.alt;
+        showImage(i);
         dialog.showModal();
       };
       img.addEventListener("click", open, { signal });
@@ -58,6 +127,65 @@ const {
         { signal },
       );
     });
+
+    if (canNavigate) {
+      prevBtn.addEventListener(
+        "click",
+        () => {
+          if (currentIndex > 0) {
+            showImage(currentIndex - 1);
+            if (prevBtn!.hidden) nextBtn!.focus();
+          }
+        },
+        { signal },
+      );
+      nextBtn.addEventListener(
+        "click",
+        () => {
+          if (currentIndex < images.length - 1) {
+            showImage(currentIndex + 1);
+            if (nextBtn!.hidden) prevBtn!.focus();
+          }
+        },
+        { signal },
+      );
+      dialog.addEventListener(
+        "keydown",
+        (e) => {
+          if (e.key === "ArrowLeft" && currentIndex > 0) {
+            e.preventDefault();
+            showImage(currentIndex - 1);
+          } else if (
+            e.key === "ArrowRight" &&
+            currentIndex < images.length - 1
+          ) {
+            e.preventDefault();
+            showImage(currentIndex + 1);
+          }
+        },
+        { signal },
+      );
+    }
+
+    dialog.addEventListener(
+      "keydown",
+      (e) => {
+        if (e.key !== "Tab") return;
+        const focusable = (
+          [closeBtn, prevBtn, nextBtn] as (HTMLButtonElement | null)[]
+        ).filter((btn): btn is HTMLButtonElement => btn !== null && !btn.hidden);
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      },
+      { signal },
+    );
 
     closeBtn.addEventListener("click", () => dialog.close(), { signal });
     dialog.addEventListener(
@@ -149,7 +277,7 @@ const {
     display: grid;
     border: 1px solid oklch(100% 0 0deg / 25%);
     border-radius: var(--radius-round);
-    background: oklch(100% 0 0deg / 15%);
+    background: oklch(0% 0 0deg / 60%);
     block-size: 2.75rem;
     color: white;
     cursor: pointer;
@@ -162,13 +290,57 @@ const {
     transition: background var(--duration-quick-2);
 
     &:focus-visible {
-      background: oklch(100% 0 0deg / 28%);
+      background: oklch(0% 0 0deg / 80%);
     }
 
     @media (hover: hover) {
       &:hover {
-        background: oklch(100% 0 0deg / 28%);
+        background: oklch(0% 0 0deg / 80%);
       }
     }
+  }
+
+  .lbx__nav {
+    position: absolute;
+    display: grid;
+    border: 1px solid oklch(100% 0 0deg / 25%);
+    border-radius: var(--radius-round);
+    background: oklch(0% 0 0deg / 60%);
+    block-size: 2.75rem;
+    color: white;
+    cursor: pointer;
+    inline-size: 2.75rem;
+    inset-block-start: 50%;
+    place-items: center;
+    transform: translateY(-50%);
+    transition: background var(--duration-quick-2);
+
+    &:focus-visible {
+      background: oklch(0% 0 0deg / 80%);
+    }
+
+    @media (hover: hover) {
+      &:hover {
+        background: oklch(0% 0 0deg / 80%);
+      }
+    }
+
+    & svg {
+      display: block;
+      block-size: 1.25rem;
+      inline-size: 1.25rem;
+    }
+  }
+
+  .lbx__nav[hidden] {
+    display: none;
+  }
+
+  .lbx__nav--prev {
+    inset-inline-start: var(--size-4);
+  }
+
+  .lbx__nav--next {
+    inset-inline-end: var(--size-4);
   }
 </style>

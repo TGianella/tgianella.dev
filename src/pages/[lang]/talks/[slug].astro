@@ -55,98 +55,102 @@ const eventsSorted = [...talk.data.events].sort(
       data-copy-link={t.prose.copyLink}
       data-link-copied={t.prose.linkCopied}
     >
-    <a href={`/${lang}/talks`} class="back-link">{t.talks.backToList}</a>
+      <a href={`/${lang}/talks`} class="back-link">{t.talks.backToList}</a>
 
-    <header class="talk-header">
-      <div class="talk-header__top">
-        <h1 class="talk-header__title">{talk.data.title}</h1>
+      <header class="talk-header">
+        <div class="talk-header__top">
+          <h1 class="talk-header__title">{talk.data.title}</h1>
+
+          {
+            !upcoming && (
+              <div class="talk-header__actions">
+                {videoId && (
+                  <a href="#video" class="btn btn--primary">
+                    {t.talks.watchTalk} ↓
+                  </a>
+                )}
+                {talk.data.slides && (
+                  <a
+                    href={talk.data.slides}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="btn btn--secondary"
+                  >
+                    {t.talks.viewSlides} ↗
+                  </a>
+                )}
+              </div>
+            )
+          }
+        </div>
 
         {
-          !upcoming && (
-            <div class="talk-header__actions">
-              {videoId && (
-                <a href="#video" class="btn btn--primary">
-                  {t.talks.watchTalk} ↓
-                </a>
-              )}
-              {talk.data.slides && (
-                <a
-                  href={talk.data.slides}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="btn btn--secondary"
-                >
-                  {t.talks.viewSlides} ↗
-                </a>
-              )}
+          talk.data.tags.length > 0 && (
+            <div class="talk-header__tags">
+              <ul class="tag-list">
+                {talk.data.tags.map((tag) => (
+                  <li class="tag">{tag}</li>
+                ))}
+              </ul>
             </div>
           )
         }
-      </div>
-
-      {
-        talk.data.tags.length > 0 && (
-          <div class="talk-header__tags">
-            <ul class="tag-list">
-              {talk.data.tags.map((tag) => (
-                <li class="tag">{tag}</li>
-              ))}
-            </ul>
-          </div>
-        )
-      }
-
-      {
-        talk.data.coSpeakers.length > 0 && (
-          <div class="talk-header__cospeakers">
-            {talk.data.coSpeakers.map((s) => (
-              <PersonCard
-                name={s.name}
-                picture={s.picture}
-                url={s.url}
-                label={t.talks.with}
-              />
-            ))}
-          </div>
-        )
-      }
-    </header>
-
-    <div class="talk-layout">
-      <div class="talk-main">
-        <section class="abstract">
-          {
-            talk.data.abstract
-              .split("\n")
-              .filter((p) => p.trim())
-              .map((p) => <p>{p}</p>)
-          }
-        </section>
 
         {
-          videoId && !upcoming && (
-            <section id="video" class="video-section">
-              <VideoEmbed
-                videoId={videoId}
-                title={talk.data.title}
-                timestamp={videoTimestamp}
-              />
-            </section>
+          talk.data.coSpeakers.length > 0 && (
+            <div class="talk-header__cospeakers">
+              {talk.data.coSpeakers.map((s) => (
+                <PersonCard
+                  name={s.name}
+                  picture={s.picture}
+                  url={s.url}
+                  label={t.talks.with}
+                />
+              ))}
+            </div>
           )
         }
+      </header>
 
-        <div class="prose">
-          <Content />
+      <div class="talk-layout">
+        <div class="talk-main">
+          <section class="abstract">
+            {
+              talk.data.abstract
+                .split("\n")
+                .filter((p) => p.trim())
+                .map((p) => <p>{p}</p>)
+            }
+          </section>
+
+          {
+            videoId && !upcoming && (
+              <section id="video" class="video-section">
+                <VideoEmbed
+                  videoId={videoId}
+                  title={talk.data.title}
+                  timestamp={videoTimestamp}
+                />
+              </section>
+            )
+          }
+
+          <div class="prose">
+            <Content />
+          </div>
         </div>
-      </div>
 
-      <aside class="events-sidebar">
-        <h2 class="events-sidebar__heading">{t.talks.events}</h2>
-        <ul class="event-list">
-          {eventsSorted.map((event) => <EventCard event={event} lang={lang} />)}
-        </ul>
-      </aside>
-    </div>
+        <aside class="events-sidebar">
+          <h2 class="events-sidebar__heading">{t.talks.events}</h2>
+          <ul class="event-list">
+            {
+              eventsSorted.map((event) => (
+                <EventCard event={event} lang={lang} />
+              ))
+            }
+          </ul>
+        </aside>
+      </div>
     </article>
   </MainContent>
 </BaseLayout>
@@ -172,7 +176,9 @@ const eventsSorted = [...talk.data.events].sort(
     grid-template-areas:
       "top top"
       "tags cospeakers";
-    grid-template-columns: [main-start] minmax(min-content, 1fr) [main-end meta-start] auto [meta-end];
+    grid-template-columns:
+      [main-start] minmax(min-content, 1fr)
+      [main-end meta-start] auto [meta-end];
     margin-block-end: var(--size-5);
     padding-block-end: var(--size-5);
   }
@@ -227,6 +233,7 @@ const eventsSorted = [...talk.data.events].sort(
     align-items: center;
     padding: var(--size-2) var(--size-3);
     border-radius: var(--radius-2);
+    box-shadow: var(--shadow-1);
     font-size: var(--font-size-1);
     font-weight: var(--font-weight-6);
     gap: var(--size-1);
@@ -250,7 +257,6 @@ const eventsSorted = [...talk.data.events].sort(
   }
 
   .btn--secondary {
-    border: var(--border-size-1) solid var(--border);
     background: var(--surface-2);
     color: var(--text-1);
   }

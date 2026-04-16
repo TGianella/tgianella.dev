@@ -1,0 +1,112 @@
+---
+import type { MarkdownHeading } from "astro";
+
+interface Props {
+  headings: MarkdownHeading[];
+  label: string;
+}
+
+const { headings, label } = Astro.props;
+const tocHeadings = headings.filter((h) => h.depth === 2);
+---
+
+{
+  tocHeadings.length > 0 && (
+    <nav class="toc" aria-label={label}>
+      <p class="toc__title">{label}</p>
+      <ol class="toc__list">
+        {tocHeadings.map((heading) => (
+          <li class="toc__item">
+            <a
+              href={`#${heading.slug}`}
+              class:list={[
+                "toc__link",
+                { "toc__link--sub": heading.depth === 3 },
+              ]}
+            >
+              {heading.text}
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  )
+}
+
+<style>
+  .toc {
+    display: none;
+    padding: var(--size-3) var(--size-4);
+    border-radius: var(--radius-2);
+    backdrop-filter: blur(12px);
+    background: color-mix(in oklch, var(--surface-2) 70%, transparent);
+    box-shadow: var(--shadow-3);
+  }
+
+  @media (width >= 48rem) {
+    .toc {
+      position: sticky;
+      top: calc(var(--nav-height) + var(--size-4));
+      display: block;
+    }
+  }
+
+  .toc__title {
+    margin: 0 0 var(--size-2);
+    color: var(--text-2);
+    font-family: var(--font-sans);
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-6);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .toc__list {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin: 0;
+    gap: 2px;
+    list-style-type: "";
+
+    li {
+      padding: 0;
+    }
+  }
+
+  .toc__link {
+    display: block;
+    overflow: hidden;
+    border-radius: var(--radius-1);
+    color: var(--text-2);
+    font-family: var(--font-sans);
+    font-size: var(--font-size-0);
+    line-height: var(--font-lineheight-3);
+    padding-block: 1px;
+    text-decoration: none;
+    text-overflow: ellipsis;
+    transition: color var(--duration-quick-2);
+    white-space: nowrap;
+
+    &.toc__link--sub {
+      padding-inline-start: var(--size-3);
+    }
+
+    &.toc__link--active {
+      color: var(--color-brand);
+      font-weight: var(--font-weight-6);
+    }
+
+    &:focus-visible {
+      color: var(--color-brand);
+      outline: 2px solid var(--color-brand);
+      outline-offset: 2px;
+    }
+
+    @media (hover: hover) {
+      &:hover {
+        color: var(--color-brand);
+      }
+    }
+  }
+</style>

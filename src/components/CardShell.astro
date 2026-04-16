@@ -62,16 +62,11 @@ const {
     align-items: center;
     padding: var(--size-4);
     border-radius: var(--radius-2);
-    border-block-end: var(--border-size-1) solid var(--border);
     color: inherit;
     gap: var(--size-3);
     grid-template-columns: [content-start] 1fr [content-end];
     text-decoration: none;
     transition: background var(--duration-quick-2);
-
-    &:last-of-type {
-      border-block-end: none;
-    }
 
     &:focus-visible {
       background: var(--surface-2);
@@ -86,8 +81,8 @@ const {
     @media (hover: hover) {
       &:hover {
         background: var(--surface-2);
-        outline: 2px solid var(--color-brand);
-        outline-offset: 2px;
+        box-shadow: var(--shadow-3);
+        outline: var(--border-size-2) solid var(--color-brand);
       }
 
       &:hover .card__title {
@@ -99,7 +94,9 @@ const {
   @media (width >= 560px) {
     .card {
       gap: var(--size-5);
-      grid-template-columns: [thumb-start] minmax(auto, 16rem) [thumb-end body-start] 1fr [body-end];
+      grid-template-columns:
+        [thumb-start] minmax(auto, 16rem)
+        [thumb-end body-start] 1fr [body-end];
     }
   }
 

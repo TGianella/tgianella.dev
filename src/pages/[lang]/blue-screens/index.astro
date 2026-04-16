@@ -34,36 +34,36 @@ const dateFormatter = getDateFormatter(lang);
     <PageHeader title={t.gallery.title} description={t.gallery.description} />
 
     <ul class="photo-grid">
-    {
-      photos.map((photo) => (
-        <li>
-          <a
-            href={`/${lang}/blue-screens/${slugOf(photo.id, lang)}`}
-            class="photo-card"
-          >
-            <img
-              src={thumbnailUrl(photo.data.src)}
-              alt={photo.data.alt}
-              width={400}
-              height={400}
-              class="photo-card__img"
-              loading="lazy"
-              decoding="async"
-            />
-            {(photo.data.location || photo.data.date) && (
-              <div class="photo-card__overlay">
-                <span class="photo-card__meta">
-                  {photo.data.location && <span>{photo.data.location}</span>}
-                  {photo.data.date && (
-                    <span>{dateFormatter.format(photo.data.date)}</span>
-                  )}
-                </span>
-              </div>
-            )}
-          </a>
-        </li>
-      ))
-    }
+      {
+        photos.map((photo) => (
+          <li>
+            <a
+              href={`/${lang}/blue-screens/${slugOf(photo.id, lang)}`}
+              class="photo-card"
+            >
+              <img
+                src={thumbnailUrl(photo.data.src)}
+                alt={photo.data.alt}
+                width={400}
+                height={400}
+                class="photo-card__img"
+                loading="lazy"
+                decoding="async"
+              />
+              {(photo.data.location || photo.data.date) && (
+                <div class="photo-card__overlay">
+                  <span class="photo-card__meta">
+                    {photo.data.location && <span>{photo.data.location}</span>}
+                    {photo.data.date && (
+                      <span>{dateFormatter.format(photo.data.date)}</span>
+                    )}
+                  </span>
+                </div>
+              )}
+            </a>
+          </li>
+        ))
+      }
     </ul>
   </MainContent>
 </BaseLayout>
@@ -74,7 +74,9 @@ const dateFormatter = getDateFormatter(lang);
     gap: var(--size-2);
     grid-template-columns: repeat(
       auto-fill,
-      [photo-start] minmax(min(160px, calc((100% - 2 * var(--size-2)) / 3)), 1fr) [photo-end]
+      [photo-start]
+        minmax(min(160px, calc((100% - 2 * var(--size-2)) / 3)), 1fr)
+        [photo-end]
     );
   }
 
@@ -91,6 +93,7 @@ const dateFormatter = getDateFormatter(lang);
       var(--surface-2) 75%
     );
     background-size: 200% 100%;
+    box-shadow: var(--shadow-3);
 
     @media (prefers-reduced-motion: no-preference) {
       animation: photo-shimmer 1.5s infinite;
