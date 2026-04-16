@@ -45,97 +45,101 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "long" });
 >
   <MainContent>
     <PageHeader title={t.talks.title} transitionName="talks-title">
-    {t.talks.intro.map((p) => <p>{p}</p>)}
-  </PageHeader>
+      {t.talks.intro.map((p) => <p>{p}</p>)}
+    </PageHeader>
 
-  <div>
-    <div role="tablist" class="tab-list" aria-label={t.talks.title}>
-      <button
-        role="tab"
-        id="tab-list"
-        aria-selected="true"
-        aria-controls="panel-list"
-        tabindex="-1"
+    <div>
+      <div role="tablist" class="tab-list" aria-label={t.talks.title}>
+        <button
+          role="tab"
+          id="tab-list"
+          aria-selected="true"
+          aria-controls="panel-list"
+          tabindex="-1"
+        >
+          {t.talks.listTab}
+        </button>
+        <button
+          role="tab"
+          id="tab-timeline"
+          aria-selected="false"
+          aria-controls="panel-timeline"
+          tabindex="0"
+        >
+          {t.talks.timelineTab}
+        </button>
+      </div>
+
+      <div role="tabpanel" id="panel-list" aria-labelledby="tab-list">
+        <ul class="talk-list">
+          {
+            talks.map((talk) => (
+              <li>
+                <TalkCard
+                  talk={talk.data}
+                  lang={lang}
+                  slug={slugOf(talk.id, lang)}
+                />
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div
+        role="tabpanel"
+        id="panel-timeline"
+        aria-labelledby="tab-timeline"
+        hidden
       >
-        {t.talks.listTab}
-      </button>
-      <button
-        role="tab"
-        id="tab-timeline"
-        aria-selected="false"
-        aria-controls="panel-timeline"
-        tabindex="0"
-      >
-        {t.talks.timelineTab}
-      </button>
-    </div>
-
-    <div role="tabpanel" id="panel-list" aria-labelledby="tab-list">
-      <ul class="talk-list">
-        {
-          talks.map((talk) => (
-            <li>
-              <TalkCard
-                talk={talk.data}
-                lang={lang}
-                slug={slugOf(talk.id, lang)}
-              />
-            </li>
-          ))
-        }
-      </ul>
-    </div>
-
-    <div
-      role="tabpanel"
-      id="panel-timeline"
-      aria-labelledby="tab-timeline"
-      hidden
-    >
-      <div class="timeline">
-        {
-          timeline.map(({ year, events }) => (
-            <section class="timeline__year">
-              <h2 class="timeline__year-heading">{year}</h2>
-              <ol class="timeline__events">
-                {events.map((item) => (
-                  <li class="timeline__event">
-                    <time
-                      class="timeline__date"
-                      datetime={item.date.toISOString()}
-                    >
-                      {dateFormatter.format(item.date)}
-                    </time>
-                    <div class="timeline__details">
-                      <div class="timeline__event-header">
-                        <span class="timeline__event-name">{item.name}</span>
-                        <span class="timeline__location">{item.location}</span>
-                        {item.upcoming && (
-                          <span class="upcoming-pill">{t.talks.upcoming}</span>
-                        )}
+        <div class="timeline">
+          {
+            timeline.map(({ year, events }) => (
+              <section class="timeline__year">
+                <h2 class="timeline__year-heading">{year}</h2>
+                <ol class="timeline__events">
+                  {events.map((item) => (
+                    <li class="timeline__event">
+                      <time
+                        class="timeline__date"
+                        datetime={item.date.toISOString()}
+                      >
+                        {dateFormatter.format(item.date)}
+                      </time>
+                      <div class="timeline__details">
+                        <div class="timeline__event-header">
+                          <span class="timeline__event-name">{item.name}</span>
+                          <span class="timeline__location">
+                            {item.location}
+                          </span>
+                          {item.upcoming && (
+                            <span class="upcoming-pill">
+                              {t.talks.upcoming}
+                            </span>
+                          )}
+                        </div>
+                        <ul class="timeline__talks">
+                          {item.talks.map((talk) => (
+                            <li>
+                              <a
+                                href={`/${lang}/talks/${talk.slug}`}
+                                class="timeline__talk-link"
+                              >
+                                {talk.title}
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
                       </div>
-                      <ul class="timeline__talks">
-                        {item.talks.map((talk) => (
-                          <li>
-                            <a
-                              href={`/${lang}/talks/${talk.slug}`}
-                              class="timeline__talk-link"
-                            >
-                              {talk.title}
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </li>
-                ))}
-              </ol>
-            </section>
-          ))
-        }
+                    </li>
+                  ))}
+                </ol>
+              </section>
+            ))
+          }
+        </div>
       </div>
     </div>
-  </div>
   </MainContent>
 </BaseLayout>
 
@@ -300,7 +304,7 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "long" });
   }
 
   [role="tab"]:not([aria-selected="true"]) {
-    z-index: 2;
+    z-index: var(--layer-3);
   }
 
   .talk-list {

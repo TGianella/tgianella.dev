@@ -456,13 +456,13 @@ html[data-vt-swapping] {
 
 /* Named element z-ordering */
 ::view-transition-group(site-nav) {
-  z-index: var(--layer-2);
+  z-index: var(--layer-3);
 }
 
 ::view-transition-group(.nav-elevated),
 ::view-transition-group(.text-transition-right),
 ::view-transition-group(lang-thumb) {
-  z-index: calc(var(--layer-2) + 1);
+  z-index: calc(var(--layer-3) + 1);
 }
 
 /* Nav stays fixed during transitions */
