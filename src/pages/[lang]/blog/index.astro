@@ -9,6 +9,7 @@ import {
   slugOf,
   type Locale,
 } from "../../../i18n/utils";
+import { publishedPosts } from "../../../content/utils";
 import { getCollection } from "astro:content";
 
 export const getStaticPaths = getLocaleStaticPaths;
@@ -16,11 +17,9 @@ export const getStaticPaths = getLocaleStaticPaths;
 const { lang } = Astro.params as { lang: Locale };
 const t = useTranslations(lang);
 
-const posts = (
-  await getCollection("blog", ({ id }) => id.startsWith(`${lang}/`))
-)
-  .filter((p) => !p.data.draft)
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const posts = publishedPosts(
+  await getCollection("blog", ({ id }) => id.startsWith(`${lang}/`)),
+);
 ---
 
 <BaseLayout

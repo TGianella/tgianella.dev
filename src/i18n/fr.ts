@@ -19,6 +19,12 @@ const fr: Translations = {
     toLight: "Passer en mode clair",
     toDark: "Passer en mode sombre",
   },
+  a11y: {
+    skipToMain: "Aller au contenu principal",
+    imagePreview: "Aperçu de l'image",
+    close: "Fermer",
+    imageZoom: "Zoom",
+  },
   home: {
     bio: [
       "Passionné par toutes les technologies du web, je façonne des interfaces performantes, accessibles et intuitives. Étant extrêmement curieux, je suis toujours à la recherche de nouvelles choses à apprendre, et vous trouverez sur ce site des articles et conférences sur certains sujets qui ont retenu mon attention.",
@@ -35,6 +41,9 @@ const fr: Translations = {
     },
     readMore: "Lire la suite",
     seeAll: "Voir tout",
+    seeAllBlog: "Voir tous les articles",
+    seeAllTalks: "Voir toutes les conférences",
+    seeAllGallery: "Voir toutes les photos",
     scrollToBio: "Défiler vers la bio",
   },
   prose: {

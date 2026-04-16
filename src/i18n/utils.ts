@@ -1,5 +1,5 @@
-import en from "./en";
-import fr from "./fr";
+import en from "./en.ts";
+import fr from "./fr.ts";
 
 export const locales = ["en", "fr"] as const;
 export type Locale = (typeof locales)[number];

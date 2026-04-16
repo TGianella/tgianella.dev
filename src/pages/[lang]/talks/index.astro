@@ -5,6 +5,7 @@ import PageHeader from "../../../components/PageHeader.astro";
 import {
   useTranslations,
   getLocaleStaticPaths,
+  getDateFormatter,
   slugOf,
   isUpcoming,
   type Locale,
@@ -34,7 +35,7 @@ const talks = (
 });
 
 const timeline = buildTimeline(talks, lang);
-const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "long" });
+const dateFormatter = getDateFormatter(lang);
 ---
 
 <BaseLayout
@@ -142,6 +143,29 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "long" });
     </div>
   </MainContent>
 </BaseLayout>
+
+<!-- Inline script runs synchronously during HTML parsing, before first paint,
+     preventing a flash of the wrong tab on hard refresh with ?tab=timeline. -->
+<script is:inline>
+  (function () {
+    if (new URL(location.href).searchParams.get("tab") === "timeline") {
+      var listPanel = document.getElementById("panel-list");
+      var timelinePanel = document.getElementById("panel-timeline");
+      var tabList = document.getElementById("tab-list");
+      var tabTimeline = document.getElementById("tab-timeline");
+      if (listPanel) listPanel.hidden = true;
+      if (timelinePanel) timelinePanel.removeAttribute("hidden");
+      if (tabList) {
+        tabList.setAttribute("aria-selected", "false");
+        tabList.tabIndex = 0;
+      }
+      if (tabTimeline) {
+        tabTimeline.setAttribute("aria-selected", "true");
+        tabTimeline.tabIndex = -1;
+      }
+    }
+  })();
+</script>
 
 <script>
   function applyTabStateFromUrl() {

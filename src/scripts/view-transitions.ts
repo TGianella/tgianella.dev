@@ -1,44 +1,4 @@
-function stripLocale(pathname: string): string {
-  return pathname.replace(/^\/(en|fr)/, "") || "/";
-}
-
-function getPageWeight(pathname: string): number {
-  const p = stripLocale(pathname);
-  if (p === "/") return 0;
-  if (p === "/blog") return 10;
-  if (p === "/talks") return 20;
-  if (p === "/blue-screens") return 30;
-  if (p.startsWith("/blog/")) return 15;
-  if (p.startsWith("/talks/")) return 25;
-  if (p.startsWith("/blue-screens/")) return 35;
-  return -1;
-}
-
-function resolveDirection(from: URL, to: URL): string {
-  const fromPath = stripLocale(from.pathname);
-  const toPath = stripLocale(to.pathname);
-
-  if (
-    fromPath.startsWith("/blue-screens/") &&
-    toPath.startsWith("/blue-screens/") &&
-    fromPath !== toPath
-  ) {
-    const prevHref =
-      document.querySelector<HTMLAnchorElement>(".photo-arrow--prev")?.pathname;
-    const nextHref =
-      document.querySelector<HTMLAnchorElement>(".photo-arrow--next")?.pathname;
-    if (to.pathname === nextHref) return "forward";
-    if (to.pathname === prevHref) return "back";
-    return "none";
-  }
-
-  const fromW = getPageWeight(from.pathname);
-  const toW = getPageWeight(to.pathname);
-  if (fromW !== -1 && toW !== -1 && fromW !== toW) {
-    return toW > fromW ? "forward" : "back";
-  }
-  return "none";
-}
+import { stripLocale, resolveDirection } from "./view-transition-utils";
 
 let pendingLangSwitch = false;
 
@@ -62,14 +22,19 @@ document.addEventListener("astro:before-preparation", (e) => {
   const toPath = stripLocale(event.to.pathname);
   pendingLangSwitch =
     fromPath === toPath && event.from.pathname !== event.to.pathname;
-  console.log("###", { pendingLangSwitch, fromPath, toPath, event });
 
   if (pendingLangSwitch) {
     event.direction = "none";
     setVtNames(true); // old-state snapshot: named elements animate individually
   } else {
     setVtNames(false); // clear any names left from a previous lang switch
-    event.direction = resolveDirection(event.from, event.to);
+    const galleryNav = {
+      prevHref: document.querySelector<HTMLAnchorElement>(".photo-arrow--prev")
+        ?.pathname,
+      nextHref: document.querySelector<HTMLAnchorElement>(".photo-arrow--next")
+        ?.pathname,
+    };
+    event.direction = resolveDirection(event.from, event.to, galleryNav);
   }
 });
 

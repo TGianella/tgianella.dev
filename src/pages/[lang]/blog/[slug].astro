@@ -3,7 +3,8 @@ import { getImage } from "astro:assets";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import MainContent from "../../../layouts/MainContent.astro";
 import PersonCard from "../../../components/PersonCard.astro";
-import { useTranslations, locales, type Locale } from "../../../i18n/utils";
+import { useTranslations, getDateFormatter, locales, type Locale } from "../../../i18n/utils";
+import { readingTime } from "../../../content/utils";
 import Icon from "../../../components/Icon.astro";
 import Lightbox from "../../../components/Lightbox.astro";
 import { getCollection, render } from "astro:content";
@@ -27,12 +28,11 @@ const { post } = Astro.props;
 const t = useTranslations(lang);
 const { Content } = await render(post);
 
-const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "long" });
+const dateFormatter = getDateFormatter(lang);
 const ogImage = post.data.thumbnail
   ? (await getImage({ src: post.data.thumbnail })).src
   : undefined;
-const wordCount = post.body?.split(/\s+/).length ?? 0;
-const readingTime = Math.max(1, Math.ceil(wordCount / 300));
+const minutes = readingTime(post.body);
 ---
 
 <BaseLayout
@@ -59,7 +59,7 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 300));
         </span>
         <span class="icon-row">
           <Icon name="clock" />
-          {t.blog.readingTime(readingTime)}
+          {t.blog.readingTime(minutes)}
         </span>
       </div>
 
@@ -125,7 +125,11 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 300));
       </div>
     </div>
     </article>
-    <Lightbox />
+    <Lightbox
+      labelDialog={t.a11y.imagePreview}
+      labelClose={t.a11y.close}
+      labelZoom={t.a11y.imageZoom}
+    />
   </MainContent>
 </BaseLayout>
 

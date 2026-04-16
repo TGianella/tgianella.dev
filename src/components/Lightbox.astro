@@ -1,8 +1,19 @@
 ---
+interface Props {
+  labelDialog?: string;
+  labelClose?: string;
+  labelZoom?: string;
+}
+
+const {
+  labelDialog = "Image preview",
+  labelClose = "Close",
+  labelZoom = "Zoom",
+} = Astro.props;
 ---
 
-<dialog class="lbx" aria-label="Image preview">
-  <button class="lbx__close" aria-label="Close">✕</button>
+<dialog class="lbx" aria-label={labelDialog} data-label-zoom={labelZoom}>
+  <button class="lbx__close" aria-label={labelClose}>✕</button>
   <img class="lbx__img" src="" alt="" />
 </dialog>
 
@@ -21,8 +32,15 @@
     const closeBtn = dialog.querySelector<HTMLButtonElement>(".lbx__close");
     if (!lbxImg || !closeBtn) return;
 
+    const labelZoom = dialog.dataset.labelZoom ?? "Zoom";
+
     document.querySelectorAll<HTMLImageElement>(".prose img").forEach((img) => {
       img.tabIndex = 0;
+      img.setAttribute("role", "button");
+      img.setAttribute(
+        "aria-label",
+        img.alt ? `${img.alt} (${labelZoom})` : labelZoom,
+      );
       const open = () => {
         lbxImg.src = img.src;
         lbxImg.alt = img.alt;
@@ -81,8 +99,13 @@
   }
 
   .lbx::backdrop {
-    animation: lbx-backdrop-in var(--duration-quick-2) ease;
     background: oklch(0% 0 0deg / 88%);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .lbx::backdrop {
+      animation: lbx-backdrop-in var(--duration-quick-2) ease;
+    }
   }
 
   @keyframes lbx-backdrop-in {
@@ -98,10 +121,15 @@
   .lbx__img {
     display: block;
     border-radius: var(--radius-2);
-    animation: lbx-img-in var(--duration-moderate-1) ease;
     max-block-size: 85dvh;
     max-inline-size: min(90vw, 960px);
     object-fit: contain;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .lbx__img {
+      animation: lbx-img-in var(--duration-moderate-1) ease;
+    }
   }
 
   @keyframes lbx-img-in {
@@ -122,11 +150,11 @@
     border: 1px solid oklch(100% 0 0deg / 25%);
     border-radius: var(--radius-round);
     background: oklch(100% 0 0deg / 15%);
-    block-size: 2.25rem;
+    block-size: 2.75rem;
     color: white;
     cursor: pointer;
     font-size: var(--font-size-2);
-    inline-size: 2.25rem;
+    inline-size: 2.75rem;
     inset-block-start: var(--size-4);
     inset-inline-end: var(--size-4);
     line-height: 1;

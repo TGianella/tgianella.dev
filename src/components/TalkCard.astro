@@ -1,7 +1,7 @@
 ---
 import { getImage } from "astro:assets";
 import type { ImageMetadata } from "astro";
-import { useTranslations, isUpcoming, type Locale } from "../i18n/utils";
+import { useTranslations, isUpcoming, getDateFormatter, type Locale } from "../i18n/utils";
 import { debutEvent } from "../content/utils";
 import CardShell from "./CardShell.astro";
 import Icon from "./Icon.astro";
@@ -25,11 +25,12 @@ interface Props {
 
 const { talk, lang, slug } = Astro.props;
 const t = useTranslations(lang);
-const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "long" });
+const dateFormatter = getDateFormatter(lang);
 
 const upcoming = isUpcoming(talk.events);
 
-const debut = debutEvent(talk.events);
+// Callers guarantee non-empty events (talks index filters events.length > 0)
+const debut = debutEvent(talk.events)!;
 
 const fallbackSrc = `https://picsum.photos/seed/${slug}/320/180`;
 const thumbSrc = talk.thumbnail

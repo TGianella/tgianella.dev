@@ -1,7 +1,8 @@
 ---
 import { getImage } from "astro:assets";
 import type { ImageMetadata } from "astro";
-import { useTranslations, type Locale } from "../i18n/utils";
+import { useTranslations, getDateFormatter, type Locale } from "../i18n/utils";
+import { readingTime } from "../content/utils";
 import CardShell from "./CardShell.astro";
 import Icon from "./Icon.astro";
 
@@ -21,10 +22,9 @@ interface Props {
 
 const { post, lang, slug } = Astro.props;
 const t = useTranslations(lang);
-const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "long" });
+const dateFormatter = getDateFormatter(lang);
 
-const wordCount = post.body?.split(/\s+/).length ?? 0;
-const readingTime = Math.max(1, Math.ceil(wordCount / 300));
+const minutes = readingTime(post.body);
 
 const thumbSrc = post.thumbnail
   ? (await getImage({ src: post.thumbnail, width: 320, height: 180 })).src
@@ -48,7 +48,7 @@ const thumbSrc = post.thumbnail
     </span>
     <span class="icon-row">
       <Icon name="clock" />
-      {t.blog.readingTime(readingTime)}
+      {t.blog.readingTime(minutes)}
     </span>
   </p>
 </CardShell>

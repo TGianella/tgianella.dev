@@ -9,7 +9,12 @@ import {
   type Locale,
 } from "../../i18n/utils";
 import { getCollection } from "astro:content";
-import { debutEvent } from "../../content/utils";
+import {
+  debutEvent,
+  publishedPosts,
+  sortByDate,
+  thumbnailUrl,
+} from "../../content/utils";
 import Portrait from "../../assets/portrait-theo-gianella-hero.webp";
 
 export const getStaticPaths = getLocaleStaticPaths;
@@ -17,15 +22,15 @@ export const getStaticPaths = getLocaleStaticPaths;
 const { lang } = Astro.params as { lang: Locale };
 const t = useTranslations(lang);
 
-const posts = (
-  await getCollection("blog", ({ id }) => id.startsWith(`${lang}/`))
-)
-  .filter((p) => !p.data.draft)
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-  .slice(0, 3);
+const posts = publishedPosts(
+  await getCollection("blog", ({ id }) => id.startsWith(`${lang}/`)),
+).slice(0, 3);
 
 const talks = (
-  await getCollection("talks", ({ id }) => id.startsWith(`${lang}/`))
+  await getCollection(
+    "talks",
+    ({ id, data }) => id.startsWith(`${lang}/`) && data.events.length > 0,
+  )
 )
   .sort((a, b) => {
     const aMin = Math.min(...a.data.events.map((e) => e.date.valueOf()));
@@ -34,16 +39,9 @@ const talks = (
   })
   .slice(0, 3);
 
-const recentPhotos = (
-  await getCollection("gallery", ({ id }) => id.startsWith(`${lang}/`))
-)
-  .sort((a, b) => {
-    if (!a.data.date && !b.data.date) return 0;
-    if (!a.data.date) return 1;
-    if (!b.data.date) return -1;
-    return b.data.date.valueOf() - a.data.date.valueOf();
-  })
-  .slice(0, 4);
+const recentPhotos = sortByDate(
+  await getCollection("gallery", ({ id }) => id.startsWith(`${lang}/`)),
+).slice(0, 4);
 
 const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
 ---
@@ -53,7 +51,8 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
     <h1 class="hero__name">{t.seo.siteName}</h1>
     <img
       src={Portrait.src}
-      alt={t.seo.siteName}
+      alt=""
+      role="presentation"
       class="hero__avatar"
       width="3813"
       height="1870"
@@ -70,7 +69,13 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
     <section class="section">
       <header class="section__header">
         <h2 class="section__title">{t.home.sections.blog}</h2>
-        <a href={`/${lang}/blog`} class="section__see-all">{t.home.seeAll} →</a>
+        <a
+          href={`/${lang}/blog`}
+          class="section__see-all"
+          aria-label={t.home.seeAllBlog}
+        >
+          {t.home.seeAll}<span aria-hidden="true"> →</span>
+        </a>
       </header>
       <ul class="card-grid">
         {
@@ -95,13 +100,19 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
     <section class="section">
       <header class="section__header">
         <h2 class="section__title">{t.home.sections.talks}</h2>
-        <a href={`/${lang}/talks`} class="section__see-all">{t.home.seeAll} →</a
+        <a
+          href={`/${lang}/talks`}
+          class="section__see-all"
+          aria-label={t.home.seeAllTalks}
         >
+          {t.home.seeAll}<span aria-hidden="true"> →</span>
+        </a>
       </header>
       <ul class="card-grid">
         {
           talks.map((talk) => {
-            const debut = debutEvent(talk.data.events);
+            // Query above guarantees events.length > 0
+            const debut = debutEvent(talk.data.events)!;
             const upcoming = isUpcoming(talk.data.events);
             return (
               <li>
@@ -135,9 +146,13 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
     <section class="section">
       <header class="section__header">
         <h2 class="section__title">{t.home.sections.gallery}</h2>
-        <a href={`/${lang}/blue-screens`} class="section__see-all"
-          >{t.home.seeAll} →</a
+        <a
+          href={`/${lang}/blue-screens`}
+          class="section__see-all"
+          aria-label={t.home.seeAllGallery}
         >
+          {t.home.seeAll}<span aria-hidden="true"> →</span>
+        </a>
       </header>
       <ul class="gallery-grid">
         {
@@ -148,10 +163,7 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
                 class="gallery-card"
               >
                 <img
-                  src={photo.data.src.replace(
-                    /\/([^/]+)\.[^.]+$/,
-                    "/thumbnails/$1.webp",
-                  )}
+                  src={thumbnailUrl(photo.data.src)}
                   alt={photo.data.alt}
                   width={400}
                   height={300}
@@ -226,6 +238,7 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
     font-size: clamp(4rem, 14vw, 8rem);
     line-height: 1;
     margin-block-start: var(--size-4);
+    max-inline-size: fit-content;
     text-align: end;
   }
 

@@ -9,9 +9,10 @@ pnpm dev          # dev server at localhost:4321
 pnpm build        # production build to ./dist/
 pnpm preview      # preview the production build
 pnpm astro check  # TypeScript + Astro type checking
+pnpm test          # run unit tests (node:test)
 ```
 
-There are no tests.
+Tests use Node's built-in test runner (`node:test`) and live next to the code they test (`*.test.ts`).
 
 ## Architecture
 

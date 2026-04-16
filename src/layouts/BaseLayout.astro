@@ -48,6 +48,7 @@ const pageTitle = title ? `${title} — ${t.seo.siteName}` : t.seo.siteName;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
 
     <!-- Primary -->
     <title>{pageTitle}</title>
@@ -125,29 +126,12 @@ const pageTitle = title ? `${title} — ${t.seo.siteName}` : t.seo.siteName;
       href={`/${lang}/rss.xml`}
     />
 
-    <script is:inline>
-      function applyStoredTheme() {
-        try {
-          const theme = localStorage.getItem("theme");
-          const expiry = localStorage.getItem("theme-expiry");
-          if (theme && expiry && Date.now() < Number(expiry)) {
-            document.documentElement.setAttribute("data-theme", theme);
-          } else {
-            localStorage.removeItem("theme");
-            localStorage.removeItem("theme-expiry");
-            document.documentElement.removeAttribute("data-theme");
-          }
-        } catch {
-          // localStorage unavailable in some privacy modes; safe to ignore
-        }
-      }
-      applyStoredTheme();
-      document.addEventListener("astro:after-swap", applyStoredTheme);
-    </script>
+    <script is:inline src="/theme.js"></script>
 
     <ClientRouter />
   </head>
   <body>
+    <a href="#main-content" class="skip-link">{t.a11y.skipToMain}</a>
     <Nav lang={lang} currentPath={currentPath} />
 
     <main id="main-content">

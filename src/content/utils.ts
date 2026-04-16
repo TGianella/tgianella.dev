@@ -1,4 +1,26 @@
-import { slugOf, isUpcoming, type Locale } from "../i18n/utils";
+import { slugOf, isUpcoming, type Locale } from "../i18n/utils.ts";
+
+export const WORDS_PER_MINUTE = 300;
+
+/** Estimates reading time in minutes from raw MDX body text. Returns at least 1. */
+export function readingTime(body: string | undefined): number {
+  const wordCount = body?.split(/\s+/).length ?? 0;
+  return Math.max(1, Math.ceil(wordCount / WORDS_PER_MINUTE));
+}
+
+/** Transforms a gallery photo source URL to its thumbnail WebP variant. */
+export function thumbnailUrl(src: string): string {
+  return src.replace(/\/([^/]+)\.[^.]+$/, "/thumbnails/$1.webp");
+}
+
+/** Filters out drafts and sorts by pubDate descending. */
+export function publishedPosts<
+  T extends { data: { draft?: boolean; pubDate: Date } },
+>(posts: T[]): T[] {
+  return posts
+    .filter((p) => !p.data.draft)
+    .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+}
 
 /** Sorts content entries by `data.date` descending (undated entries sort last) */
 export function sortByDate<T extends { data: { date?: Date } }>(
@@ -22,7 +44,7 @@ export type RawEvent = {
 /** Returns the debut event for a talk: earliest national, then regional, then internal.
  *  Ignores upcoming events when past events exist, so a talk already given at a regional
  *  conference doesn't show an upcoming national event as its debut. */
-export function debutEvent(events: RawEvent[]): RawEvent {
+export function debutEvent(events: RawEvent[]): RawEvent | undefined {
   const now = new Date();
   const pool = events.some((e) => e.date <= now)
     ? events.filter((e) => e.date <= now)

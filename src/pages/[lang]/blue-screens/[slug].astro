@@ -4,6 +4,7 @@ import MainContent from "../../../layouts/MainContent.astro";
 import PhotoMeta from "../../../components/PhotoMeta.astro";
 import {
   useTranslations,
+  getDateFormatter,
   locales,
   slugOf,
   type Locale,
@@ -28,7 +29,7 @@ export async function getStaticPaths() {
     const sorted = sortByDate(langPhotos);
     for (let i = 0; i < sorted.length; i++) {
       const photo = sorted[i];
-      const slug = photo.id.split("/").slice(1).join("/");
+      const slug = slugOf(photo.id, lang);
       paths.push({
         params: { lang, slug },
         props: {
@@ -48,11 +49,7 @@ const t = useTranslations(lang);
 const { Content } = await render(photo);
 
 const hasContent = !!photo.body?.trim();
-const dateStr = photo.data.date.toLocaleDateString(lang, {
-  year: "numeric",
-  month: "long",
-  day: "numeric",
-});
+const dateStr = getDateFormatter(lang).format(photo.data.date);
 ---
 
 <BaseLayout

@@ -12,7 +12,8 @@
     "astro": "astro",
     "lint": "eslint .",
     "lint:style": "stylelint \"src/**/*.{css,astro}\"",
-    "format": "prettier . --write"
+    "format": "prettier . --write",
+    "test": "node --experimental-strip-types --test 'src/**/*.test.ts'"
   },
   "dependencies": {
     "@astrojs/mdx": "^5.0.3",

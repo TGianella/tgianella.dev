@@ -363,10 +363,12 @@ const alternatePath = getLocalizedPath(
     inset: 0;
   }
 
-  .theme-toggle.is-switching .theme-toggle__icon {
-    transition:
-      opacity var(--duration-quick-2),
-      transform var(--duration-quick-2);
+  @media (prefers-reduced-motion: no-preference) {
+    .theme-toggle.is-switching .theme-toggle__icon {
+      transition:
+        opacity var(--duration-quick-2),
+        transform var(--duration-quick-2);
+    }
   }
 
   /* Default: sun visible, moon rotated away */
@@ -487,9 +489,14 @@ const alternatePath = getLocalizedPath(
     height: var(--border-size-2);
     border-radius: var(--radius-1);
     background: currentcolor;
-    transition:
-      transform var(--duration-moderate-1),
-      opacity var(--duration-moderate-1);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .hamburger__bar {
+      transition:
+        transform var(--duration-moderate-1),
+        opacity var(--duration-moderate-1);
+    }
   }
 
   .nav:has(#mobile-menu:popover-open) .hamburger__bar:nth-child(1) {
@@ -517,9 +524,7 @@ const alternatePath = getLocalizedPath(
     border-block-end: var(--border-size-1) solid var(--border);
     box-shadow: var(--shadow-2);
     opacity: 0;
-    transform: translateY(-0.5rem);
     transition:
-      transform var(--duration-moderate-1) ease,
       opacity var(--duration-moderate-1) ease,
       display var(--duration-moderate-1) allow-discrete,
       overlay var(--duration-moderate-1) allow-discrete;
@@ -527,13 +532,33 @@ const alternatePath = getLocalizedPath(
 
   .nav__mobile:popover-open {
     opacity: 1;
-    transform: translateY(0);
   }
 
   @starting-style {
     .nav__mobile:popover-open {
       opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .nav__mobile {
       transform: translateY(-0.5rem);
+      transition:
+        transform var(--duration-moderate-1) ease,
+        opacity var(--duration-moderate-1) ease,
+        display var(--duration-moderate-1) allow-discrete,
+        overlay var(--duration-moderate-1) allow-discrete;
+    }
+
+    .nav__mobile:popover-open {
+      transform: translateY(0);
+    }
+
+    @starting-style {
+      .nav__mobile:popover-open {
+        opacity: 0;
+        transform: translateY(-0.5rem);
+      }
     }
   }
 

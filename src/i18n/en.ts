@@ -17,6 +17,12 @@ const en = {
     toLight: "Switch to light mode",
     toDark: "Switch to dark mode",
   },
+  a11y: {
+    skipToMain: "Skip to main content",
+    imagePreview: "Image preview",
+    close: "Close",
+    imageZoom: "Zoom",
+  },
   home: {
     bio: [
       "Passionate about the web platform as a whole, I love giving shape to performant, accessible and beautiful web experiences. Being extremely curious, I'm always on the lookout for new things to learn, and you will find on this website articles and talks about some topics that caught my interest.",
@@ -33,6 +39,9 @@ const en = {
     },
     readMore: "Read more",
     seeAll: "See all",
+    seeAllBlog: "See all blog posts",
+    seeAllTalks: "See all talks",
+    seeAllGallery: "See all gallery photos",
     scrollToBio: "Scroll to bio",
   },
   prose: {
