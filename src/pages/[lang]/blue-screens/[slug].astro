@@ -63,88 +63,88 @@ const dateStr = getDateFormatter(lang).format(photo.data.date);
   <MainContent>
     <article>
       <header class="photo-header">
-      <a href={`/${lang}/blue-screens`} class="back-link"
-        >{t.gallery.backToList}</a
-      >
-      <PhotoMeta
-        date={photo.data.date}
-        location={photo.data.location}
-        lang={lang}
-      />
-    </header>
-
-    <div class="photo-stage">
-      <div
-        class="photo-hero-wrap"
-        style={`--w: ${photo.data.width}; --h: ${photo.data.height};`}
-      >
-        <img
-          src={photo.data.src}
-          alt={photo.data.alt}
-          width={photo.data.width}
-          height={photo.data.height}
-          class="photo-hero"
-          loading="eager"
-          decoding="async"
+        <a href={`/${lang}/blue-screens`} class="back-link"
+          >{t.gallery.backToList}</a
+        >
+        <PhotoMeta
+          date={photo.data.date}
+          location={photo.data.location}
+          lang={lang}
         />
+      </header>
+
+      <div class="photo-stage">
+        <div
+          class="photo-hero-wrap"
+          style={`--w: ${photo.data.width}; --h: ${photo.data.height};`}
+        >
+          <img
+            src={photo.data.src}
+            alt={photo.data.alt}
+            width={photo.data.width}
+            height={photo.data.height}
+            class="photo-hero"
+            loading="eager"
+            decoding="async"
+          />
+        </div>
+
+        {
+          prevPhoto && (
+            <a
+              href={`/${lang}/blue-screens/${slugOf(prevPhoto.id, lang)}`}
+              class="photo-arrow photo-arrow--prev"
+              aria-label={prevPhoto.data.alt}
+              aria-keyshortcuts="ArrowLeft"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            </a>
+          )
+        }
+
+        {
+          nextPhoto && (
+            <a
+              href={`/${lang}/blue-screens/${slugOf(nextPhoto.id, lang)}`}
+              class="photo-arrow photo-arrow--next"
+              aria-label={nextPhoto.data.alt}
+              aria-keyshortcuts="ArrowRight"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </a>
+          )
+        }
       </div>
 
       {
-        prevPhoto && (
-          <a
-            href={`/${lang}/blue-screens/${slugOf(prevPhoto.id, lang)}`}
-            class="photo-arrow photo-arrow--prev"
-            aria-label={prevPhoto.data.alt}
-            aria-keyshortcuts="ArrowLeft"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
-            >
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-          </a>
+        hasContent && (
+          <div class="prose">
+            <Content />
+          </div>
         )
       }
-
-      {
-        nextPhoto && (
-          <a
-            href={`/${lang}/blue-screens/${slugOf(nextPhoto.id, lang)}`}
-            class="photo-arrow photo-arrow--next"
-            aria-label={nextPhoto.data.alt}
-            aria-keyshortcuts="ArrowRight"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
-            >
-              <polyline points="9 18 15 12 9 6" />
-            </svg>
-          </a>
-        )
-      }
-    </div>
-
-    {
-      hasContent && (
-        <div class="prose">
-          <Content />
-        </div>
-      )
-    }
     </article>
     <Lightbox
       selector=".photo-hero"

@@ -2,6 +2,10 @@ export function stripLocale(pathname: string): string {
   return pathname.replace(/^\/(en|fr)/, "") || "/";
 }
 
+/** Assigns a numeric weight to each route to determine slide direction.
+ *  Navigating to a heavier page slides forward, lighter slides back.
+ *  Detail pages sit between their parent and the next section so that
+ *  "blog -> article" and "article -> talks" both slide forward. */
 export function getPageWeight(pathname: string): number {
   const p = stripLocale(pathname);
   if (p === "/") return 0;

@@ -33,12 +33,16 @@ describe("readingTime", () => {
   });
 
   it("rounds up to next minute", () => {
-    const body = Array(WORDS_PER_MINUTE + 1).fill("word").join(" ");
+    const body = Array(WORDS_PER_MINUTE + 1)
+      .fill("word")
+      .join(" ");
     assert.equal(readingTime(body), 2);
   });
 
   it("returns correct value for 600-word text", () => {
-    const body = Array(WORDS_PER_MINUTE * 2).fill("word").join(" ");
+    const body = Array(WORDS_PER_MINUTE * 2)
+      .fill("word")
+      .join(" ");
     assert.equal(readingTime(body), 2);
   });
 });
@@ -78,11 +82,7 @@ describe("thumbnailUrl", () => {
 // ── publishedPosts ──────────────────────────────────
 
 describe("publishedPosts", () => {
-  const makePost = (
-    title: string,
-    pubDate: Date,
-    draft: boolean = false,
-  ) => ({
+  const makePost = (title: string, pubDate: Date, draft: boolean = false) => ({
     data: { title, pubDate, draft },
   });
 
@@ -167,10 +167,7 @@ describe("debutEvent", () => {
     mock.timers.reset();
   });
 
-  const event = (
-    scope: RawEvent["scope"],
-    date: string,
-  ): RawEvent => ({
+  const event = (scope: RawEvent["scope"], date: string): RawEvent => ({
     date: new Date(date),
     name: `${scope} event`,
     location: "Test City",
@@ -251,11 +248,10 @@ describe("buildTimeline", () => {
     mock.timers.reset();
   });
 
-  const makeTalk = (
-    id: string,
-    title: string,
-    events: RawEvent[],
-  ) => ({ id, data: { title, events } });
+  const makeTalk = (id: string, title: string, events: RawEvent[]) => ({
+    id,
+    data: { title, events },
+  });
 
   const makeEvent = (
     date: string,

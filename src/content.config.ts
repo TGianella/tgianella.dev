@@ -17,7 +17,7 @@ const blog = defineCollection({
         .array(
           z.object({
             name: z.string(),
-            url: z.string().url().optional(),
+            url: z.url().optional(),
             picture: z.string().optional(),
           }),
         )
@@ -25,7 +25,7 @@ const blog = defineCollection({
       firstPublishedIn: z
         .object({
           name: z.string(),
-          url: z.string().url().optional(),
+          url: z.url().optional(),
         })
         .optional(),
     }),
@@ -44,19 +44,19 @@ const talks = defineCollection({
         .array(
           z.object({
             name: z.string(),
-            url: z.string().url().optional(),
+            url: z.url().optional(),
             picture: z.string().optional(), // image URL
           }),
         )
         .default([]),
-      slides: z.string().url().optional(),
+      slides: z.url().optional(),
       featuredVideo: z.string().optional(), // YouTube ID — manually chosen
       events: z
         .array(
           z.object({
             date: z.coerce.date(),
             name: z.string(),
-            url: z.string().url().optional(),
+            url: z.url().optional(),
             location: z.string(),
             scope: z
               .enum(["internal", "regional", "national"])

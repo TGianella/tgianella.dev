@@ -1,4 +1,7 @@
 ---
+// Standalone page: doesn't use BaseLayout or the i18n system because a 404 is
+// served for any unmatched route regardless of locale. An inline script below
+// detects /fr in the URL and swaps the text to French at runtime.
 import en from "../i18n/en";
 import "../styles/global.css";
 ---
@@ -34,7 +37,7 @@ import "../styles/global.css";
           document.querySelector("h1").textContent = "Page introuvable";
           document.querySelector(".desc").textContent =
             "La page que vous cherchez n\u2019existe pas ou a \u00e9t\u00e9 d\u00e9plac\u00e9e.";
-          var link = document.querySelector(".back-home");
+          const link = document.querySelector(".back-home");
           link.textContent = "Retour \u00e0 l\u2019accueil";
           link.href = "/fr/";
         });

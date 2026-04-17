@@ -1,6 +1,11 @@
 import rss from "@astrojs/rss";
 import { getCollection } from "astro:content";
-import { useTranslations, slugOf, locales, type Locale } from "../../i18n/utils";
+import {
+  useTranslations,
+  slugOf,
+  locales,
+  type Locale,
+} from "../../i18n/utils";
 import { publishedPosts } from "../../content/utils";
 import type { APIContext } from "astro";
 

@@ -37,6 +37,10 @@
 }
 
 /* ─── Animatable color tokens ────────────────────────── */
+
+/* @property registers these as typed <color> values so browsers can
+   interpolate them during transitions (unregistered custom properties
+   would snap between values instead of smoothly animating). */
 @property --color-brand {
   inherits: true;
   initial-value: transparent;
@@ -87,12 +91,12 @@
   @media (prefers-reduced-motion: no-preference) {
     transition:
       --color-brand var(--duration-gentle-1),
-      --text-1      var(--duration-gentle-1),
-      --text-2      var(--duration-gentle-1),
-      --surface-1   var(--duration-gentle-1),
-      --surface-2   var(--duration-gentle-1),
-      --surface-3   var(--duration-gentle-1),
-      --border      var(--duration-gentle-1);
+      --text-1 var(--duration-gentle-1),
+      --text-2 var(--duration-gentle-1),
+      --surface-1 var(--duration-gentle-1),
+      --surface-2 var(--duration-gentle-1),
+      --surface-3 var(--duration-gentle-1),
+      --border var(--duration-gentle-1);
   }
 
   --nav-height: 3.5rem;
@@ -231,13 +235,13 @@ a {
   color: var(--surface-1);
   font-weight: var(--font-weight-6);
   text-decoration: none;
-  translate: 0 calc(-100% - var(--size-2));
   transition: translate var(--duration-quick-2);
+  translate: 0 calc(-100% - var(--size-2));
 
   &:focus-visible {
-    translate: 0 0;
     outline: 2px solid var(--color-brand);
     outline-offset: 2px;
+    translate: 0 0;
   }
 }
 

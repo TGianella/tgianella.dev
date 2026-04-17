@@ -29,10 +29,12 @@ document.addEventListener("astro:before-preparation", (e) => {
   } else {
     setVtNames(false); // clear any names left from a previous lang switch
     const galleryNav = {
-      prevHref: document.querySelector<HTMLAnchorElement>(".photo-arrow--prev")
-        ?.pathname,
-      nextHref: document.querySelector<HTMLAnchorElement>(".photo-arrow--next")
-        ?.pathname,
+      prevHref:
+        document.querySelector<HTMLAnchorElement>(".photo-arrow--prev")
+          ?.pathname,
+      nextHref:
+        document.querySelector<HTMLAnchorElement>(".photo-arrow--next")
+          ?.pathname,
     };
     event.direction = resolveDirection(event.from, event.to, galleryNav);
   }

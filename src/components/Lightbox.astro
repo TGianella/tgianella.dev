@@ -98,8 +98,8 @@ const {
 
     function showImage(index: number) {
       currentIndex = index;
-      lbxImg.src = images[index].src;
-      lbxImg.alt = images[index].alt;
+      lbxImg!.src = images[index].src;
+      lbxImg!.alt = images[index].alt;
       updateNav();
     }
 
@@ -173,7 +173,9 @@ const {
         if (e.key !== "Tab") return;
         const focusable = (
           [closeBtn, prevBtn, nextBtn] as (HTMLButtonElement | null)[]
-        ).filter((btn): btn is HTMLButtonElement => btn !== null && !btn.hidden);
+        ).filter(
+          (btn): btn is HTMLButtonElement => btn !== null && !btn.hidden,
+        );
         const first = focusable[0];
         const last = focusable[focusable.length - 1];
         if (e.shiftKey && document.activeElement === first) {
