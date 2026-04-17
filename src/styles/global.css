@@ -108,7 +108,10 @@
   --vt-slide: 40%; /* overridden to 10% on wider screens below */
 
   /* Derived semantic colors */
-  --color-brand-tint: color-mix(in oklch, var(--color-brand) 12%, transparent);
+  --color-brand-tint: light-dark(
+    color-mix(in oklch, var(--color-brand) 15%, white),
+    color-mix(in oklch, var(--color-brand) 12%, transparent)
+  );
 
   /* Tokens — declared once, light-dark() picks the right value */
   --color-brand: light-dark(var(--indigo-8), var(--yellow-7));
