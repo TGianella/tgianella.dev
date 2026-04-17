@@ -2,6 +2,7 @@
 import { ClientRouter } from "astro:transitions";
 import Nav from "../components/Nav.astro";
 import SocialLinks from "../components/SocialLinks.astro";
+import DevHud from "../components/DevHud.astro";
 import {
   useTranslations,
   getLocalizedPath,
@@ -131,12 +132,18 @@ const pageTitle = title ? `${title} — ${t.seo.siteName}` : t.seo.siteName;
     <ClientRouter />
   </head>
   <body>
+    <canvas
+      id="gol-canvas"
+      transition:persist="gol-canvas"
+      aria-hidden="true"></canvas>
     <a href="#main-content" class="skip-link">{t.a11y.skipToMain}</a>
     <Nav lang={lang} currentPath={currentPath} />
 
     <main id="main-content">
       <slot />
     </main>
+
+    <DevHud />
 
     <footer class="footer">
       <div class="footer__inner">
@@ -153,6 +160,7 @@ const pageTitle = title ? `${title} — ${t.seo.siteName}` : t.seo.siteName;
 <script>
   import "../scripts/view-transitions";
   import "../scripts/scroll-preservation";
+  import "../scripts/gol-bootstrap";
 </script>
 
 <style>
