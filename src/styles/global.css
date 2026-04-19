@@ -239,7 +239,7 @@ a {
   font-weight: var(--font-weight-6);
   text-decoration: none;
   transition: translate var(--duration-quick-2);
-  translate: 0 calc(-100% - var(--size-2));
+  translate: 0 calc(-100% - var(--size-3));
 
   &:focus-visible {
     outline: 2px solid var(--color-brand);
@@ -495,7 +495,6 @@ html[data-vt-swapping] {
 }
 
 ::view-transition-group(.nav-elevated),
-::view-transition-group(.text-transition-right),
 ::view-transition-group(lang-thumb) {
   z-index: calc(var(--layer-3) + 1);
 }

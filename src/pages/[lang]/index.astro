@@ -238,6 +238,7 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
     font-size: clamp(4rem, 14vw, 8rem);
     line-height: 1;
     margin-block-start: var(--size-4);
+    max-block-size: fit-content;
     max-inline-size: fit-content;
     text-align: end;
   }
@@ -291,7 +292,7 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
   /* ── Bio (wider than --layout-width) ───────────────── */
   .bio {
     position: relative;
-    inline-size: min(100%, 100rem);
+    inline-size: min(90vw, 100%, 100rem);
     margin-inline: auto;
     padding-block-start: var(--size-3);
     padding-inline: var(--page-padding);
