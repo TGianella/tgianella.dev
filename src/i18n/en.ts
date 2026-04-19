@@ -17,6 +17,13 @@ const en = {
     toLight: "Switch to light mode",
     toDark: "Switch to dark mode",
   },
+  gol: {
+    enable: "Animate the background grid",
+    disable: "Stop animating the background grid",
+    reducedMotion: "Disabled because you prefer reduced motion",
+    hudMinimize: "Minimize stats",
+    hudExpand: "Expand stats",
+  },
   a11y: {
     skipToMain: "Skip to main content",
     imagePreview: "Image preview",

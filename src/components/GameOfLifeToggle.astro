@@ -1,0 +1,146 @@
+---
+import { useTranslations, type Locale } from "../i18n/utils";
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<button
+  class="gol-toggle"
+  type="button"
+  aria-pressed="false"
+  aria-label={t.gol.enable}
+  data-label-enable={t.gol.enable}
+  data-label-disable={t.gol.disable}
+  data-label-reduced={t.gol.reducedMotion}
+>
+  <svg
+    class="gol-toggle__icon"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <rect x="3" y="3" width="6" height="6" rx="1"></rect>
+    <rect x="15" y="3" width="6" height="6" rx="1"></rect>
+    <rect x="9" y="9" width="6" height="6" rx="1"></rect>
+    <rect x="3" y="15" width="6" height="6" rx="1"></rect>
+    <rect x="15" y="15" width="6" height="6" rx="1"></rect>
+  </svg>
+</button>
+
+<script>
+  import type { GolApi } from "../gol";
+
+  const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
+
+  async function loadApi(): Promise<GolApi> {
+    const mod = await import("../gol");
+    return mod.install();
+  }
+
+  function setPressed(btn: HTMLButtonElement, pressed: boolean) {
+    btn.setAttribute("aria-pressed", String(pressed));
+    const enable = btn.dataset.labelEnable!;
+    const disable = btn.dataset.labelDisable!;
+    btn.setAttribute("aria-label", pressed ? disable : enable);
+  }
+
+  function applyReducedMotion(btn: HTMLButtonElement) {
+    const reduced = window.matchMedia(REDUCED_MOTION).matches;
+    if (reduced) {
+      btn.setAttribute("disabled", "");
+      btn.setAttribute("aria-label", btn.dataset.labelReduced!);
+      btn.setAttribute("title", btn.dataset.labelReduced!);
+      btn.setAttribute("aria-pressed", "false");
+    } else {
+      btn.removeAttribute("disabled");
+      btn.removeAttribute("title");
+      setPressed(btn, window.__gol?.isEnabled() === true);
+    }
+  }
+
+  function bind() {
+    const btn = document.querySelector<HTMLButtonElement>(".gol-toggle");
+    if (!btn) return;
+
+    applyReducedMotion(btn);
+    // Restore pressed state after SPA swap.
+    if (window.__gol) setPressed(btn, window.__gol.isEnabled());
+
+    btn.addEventListener("click", async () => {
+      if (btn.hasAttribute("disabled")) return;
+      const api = window.__gol ?? (await loadApi());
+      if (api.isEnabled()) {
+        api.disable();
+        setPressed(btn, false);
+      } else {
+        await api.enable();
+        setPressed(btn, api.isEnabled());
+      }
+    });
+  }
+
+  if (!("__golToggleMqlBound" in window)) {
+    (
+      window as unknown as { __golToggleMqlBound: boolean }
+    ).__golToggleMqlBound = true;
+    window.matchMedia(REDUCED_MOTION).addEventListener("change", () => {
+      const btn = document.querySelector<HTMLButtonElement>(".gol-toggle");
+      if (btn) applyReducedMotion(btn);
+    });
+  }
+
+  document.addEventListener("astro:page-load", bind);
+</script>
+
+<style>
+  .gol-toggle {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    padding: var(--size-2);
+    border: none;
+    border-radius: var(--radius-round);
+    background: none;
+    color: var(--text-2);
+    cursor: pointer;
+    transition:
+      color var(--duration-quick-2),
+      background var(--duration-quick-2);
+  }
+
+  .gol-toggle:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
+
+  @media (hover: hover) {
+    .gol-toggle:hover:not([disabled]) {
+      background: var(--surface-3);
+      color: var(--text-1);
+    }
+  }
+
+  .gol-toggle[aria-pressed="true"] {
+    color: var(--color-brand);
+  }
+
+  .gol-toggle[disabled] {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+
+  .gol-toggle__icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+</style>

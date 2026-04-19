@@ -1,6 +1,6 @@
 export const CELL_SIZE = 40;
 
-export type EngineName = "poc-static" | "poc-walker" | "ts" | "wasm";
+export type EngineName = "ts" | "wasm";
 export type RendererName = "canvas2d";
 
 export type Cells = Uint8Array;
@@ -21,6 +21,17 @@ export interface Engine {
   resize(cols: number, rows: number): void;
   step(): void;
   snapshot(): Cells;
+  /**
+   * Overwrite a rectangular region (row-major) with `src`. Used to seed
+   * newly-revealed rows after a layout grow without disturbing existing cells.
+   */
+  paintRegion(
+    startCol: number,
+    startRow: number,
+    regionCols: number,
+    regionRows: number,
+    src: Cells,
+  ): void;
   destroy(): void;
 }
 
@@ -28,7 +39,12 @@ export interface Renderer {
   readonly name: RendererName;
   attach(canvas: HTMLCanvasElement): void;
   setGrid(size: GridSize, cellSize: number): void;
-  draw(cells: Cells, scrollY: number, viewport: Viewport, cellColor: string): void;
+  draw(
+    cells: Cells,
+    scrollY: number,
+    viewport: Viewport,
+    cellColor: string,
+  ): void;
   clear(): void;
   detach(): void;
 }

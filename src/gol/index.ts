@@ -21,7 +21,7 @@ export function install(): GolApi {
 
   const controller = new Controller();
   const api: GolApi = {
-    enable: (opts) => controller.enable({ engine: opts?.engine ?? "poc-walker" }),
+    enable: (opts) => controller.enable({ engine: opts?.engine ?? "wasm" }),
     disable: () => controller.disable(),
     isEnabled: () => controller.isEnabled(),
     swapEngine: (name) => controller.swapEngine(name),

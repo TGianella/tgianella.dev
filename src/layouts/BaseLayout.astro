@@ -132,10 +132,8 @@ const pageTitle = title ? `${title} — ${t.seo.siteName}` : t.seo.siteName;
     <ClientRouter />
   </head>
   <body>
-    <canvas
-      id="gol-canvas"
-      transition:persist="gol-canvas"
-      aria-hidden="true"></canvas>
+    <canvas id="gol-canvas" transition:persist="gol-canvas" aria-hidden="true"
+    ></canvas>
     <a href="#main-content" class="skip-link">{t.a11y.skipToMain}</a>
     <Nav lang={lang} currentPath={currentPath} />
 
@@ -143,7 +141,7 @@ const pageTitle = title ? `${title} — ${t.seo.siteName}` : t.seo.siteName;
       <slot />
     </main>
 
-    <DevHud />
+    <DevHud lang={lang} />
 
     <footer class="footer">
       <div class="footer__inner">
@@ -160,7 +158,6 @@ const pageTitle = title ? `${title} — ${t.seo.siteName}` : t.seo.siteName;
 <script>
   import "../scripts/view-transitions";
   import "../scripts/scroll-preservation";
-  import "../scripts/gol-bootstrap";
 </script>
 
 <style>

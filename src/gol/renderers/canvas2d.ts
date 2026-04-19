@@ -55,7 +55,10 @@ export class Canvas2DRenderer implements Renderer {
 
     // Which logical rows intersect the viewport?
     const firstRow = Math.max(0, Math.floor(scrollY / size));
-    const lastRow = Math.min(rows - 1, Math.ceil((scrollY + viewport.h) / size));
+    const lastRow = Math.min(
+      rows - 1,
+      Math.ceil((scrollY + viewport.h) / size),
+    );
     if (firstRow > lastRow) return;
 
     for (let row = firstRow; row <= lastRow; row++) {

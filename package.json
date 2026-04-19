@@ -8,6 +8,7 @@
   "scripts": {
     "prepare": "simple-git-hooks",
     "dev": "astro dev",
+    "build:wasm": "node scripts/build-wasm.mjs",
     "build": "astro build",
     "preview": "astro preview",
     "serve": "astro build && astro preview",

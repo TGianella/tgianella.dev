@@ -14,6 +14,11 @@ pnpm astro check  # TypeScript + Astro type checking
 pnpm test         # run unit tests (node:test)
 pnpm lint         # ESLint
 pnpm lint:style   # Stylelint
+pnpm build:wasm   # local-only: rebuild vendor/gol-wasm/gol.{js,wasm} from
+                  # the wasm-game-of-life Rust crate. Requires rustup +
+                  # wasm-pack. Not part of `pnpm build` — artifacts are
+                  # committed to the repo so CI doesn't need Rust. Run
+                  # after touching the crate.
 ```
 
 Tests use Node's built-in test runner (`node:test`) and live next to the code
@@ -92,6 +97,13 @@ Requires `lang`, `description`, optional `title` and `canonicalPath`.
   blocked.
 - The 404 page is standalone (no BaseLayout) and uses an inline script for
   French translation. See comment in `src/pages/404.astro`.
+- `vendor/gol-wasm/` holds the prebuilt Rust artifacts (`gol.js` +
+  `gol_bg.wasm`), committed to the repo. They live outside `src/` to
+  keep generated code separate from authored code, and outside `public/`
+  because Vite cannot `import` from `public/`. `src/gol/engines/index.ts`
+  silently falls back to the TS engine if those files are missing (e.g.
+  fresh clone before `pnpm build:wasm` has been run). CSP includes
+  `'wasm-unsafe-eval'` for wasm instantiation.
 
 ## JetBrains MCP (WebStorm)
 

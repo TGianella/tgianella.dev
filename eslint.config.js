@@ -5,7 +5,7 @@ import { defineConfig } from "eslint/config";
 import eslintPluginAstro from "eslint-plugin-astro";
 
 export default defineConfig([
-  { ignores: ["**/*.d.ts", ".astro/", "dist/"] },
+  { ignores: ["**/*.d.ts", ".astro/", "dist/", "vendor/"] },
   {
     files: ["**/*.{js,mjs,cjs,ts,mts,cts}"],
     plugins: { js },

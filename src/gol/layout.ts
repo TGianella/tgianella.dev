@@ -8,17 +8,17 @@ export interface LayoutSnapshot {
   dpr: number;
 }
 
-export type LayoutListener = (snapshot: LayoutSnapshot) => void;
+export type LayoutListener = (
+  snapshot: LayoutSnapshot,
+  previous: LayoutSnapshot,
+) => void;
 
 export function readLayout(): LayoutSnapshot {
   const viewport: Viewport = {
     w: window.innerWidth,
     h: window.innerHeight,
   };
-  const docHeight = Math.max(
-    document.documentElement.scrollHeight,
-    viewport.h,
-  );
+  const docHeight = Math.max(document.documentElement.scrollHeight, viewport.h);
   const cols = Math.ceil(viewport.w / CELL_SIZE);
   const rows = Math.ceil(docHeight / CELL_SIZE);
   return {
@@ -65,9 +65,10 @@ export class LayoutObserver {
   /** Manually re-read after e.g. astro:after-swap. */
   refresh() {
     const next = readLayout();
-    if (!sameGrid(next, this.last) || next.viewport.h !== this.last.viewport.h) {
+    const prev = this.last;
+    if (!sameGrid(next, prev) || next.viewport.h !== prev.viewport.h) {
       this.last = next;
-      this.onChange(next);
+      this.onChange(next, prev);
     } else {
       this.last = next;
     }
@@ -79,12 +80,13 @@ export class LayoutObserver {
     requestAnimationFrame(() => {
       this.rafPending = false;
       const next = readLayout();
+      const prev = this.last;
       const changed =
-        !sameGrid(next, this.last) ||
-        next.viewport.h !== this.last.viewport.h ||
-        next.dpr !== this.last.dpr;
+        !sameGrid(next, prev) ||
+        next.viewport.h !== prev.viewport.h ||
+        next.dpr !== prev.dpr;
       this.last = next;
-      if (changed) this.onChange(next);
+      if (changed) this.onChange(next, prev);
     });
   };
 
@@ -93,8 +95,9 @@ export class LayoutObserver {
     this.scrollRafPending = true;
     requestAnimationFrame(() => {
       this.scrollRafPending = false;
-      this.last = { ...this.last, scrollY: window.scrollY };
-      this.onScroll(this.last);
+      const prev = this.last;
+      this.last = { ...prev, scrollY: window.scrollY };
+      this.onScroll(this.last, prev);
     });
   };
 }

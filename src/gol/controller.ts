@@ -1,8 +1,11 @@
 import { getEngine } from "./engines";
 import { getRenderer } from "./renderers";
 import { LayoutObserver, readLayout, type LayoutSnapshot } from "./layout";
+import { random } from "./patterns";
 import { Scheduler } from "./scheduler";
 import { ThemeObserver, readCellColor } from "./theme";
+
+const SEED_DENSITY = 0.15;
 
 function makeColorProbe(): HTMLDivElement {
   const probe = document.createElement("div");
@@ -47,7 +50,7 @@ export class Controller {
       onFrame: () => this.emitStats(),
     });
     this.layout = new LayoutObserver(
-      (snap) => this.handleLayoutChange(snap),
+      (snap, prev) => this.handleLayoutChange(snap, prev),
       () => this.handleScroll(),
     );
     this.theme = new ThemeObserver(() => {
@@ -67,6 +70,17 @@ export class Controller {
 
   async enable(opts: ControllerOptions): Promise<void> {
     if (this.running) return;
+    if (
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      if (import.meta.env.DEV) {
+        console.info(
+          "[gol] reduced-motion preference active; enable() is a no-op.",
+        );
+      }
+      return;
+    }
 
     const canvas = this.getOrCreateCanvas();
     canvas.style.display = "block";
@@ -80,7 +94,11 @@ export class Controller {
     this.renderer.setGrid(snap.grid, CELL_SIZE);
 
     this.engine = await getEngine(opts.engine);
-    await this.engine.init(snap.grid.cols, snap.grid.rows);
+    await this.engine.init(
+      snap.grid.cols,
+      snap.grid.rows,
+      random(snap.grid.cols, snap.grid.rows, SEED_DENSITY),
+    );
 
     this.layout.start();
     this.theme.start();
@@ -134,7 +152,7 @@ export class Controller {
     let alive = 0;
     if (cells) for (let i = 0; i < cells.length; i++) if (cells[i]) alive++;
     return {
-      engine: this.engine?.name ?? "poc-static",
+      engine: this.engine?.name ?? "ts",
       fps: this.scheduler.getFps(),
       cells: { cols: snap.grid.cols, rows: snap.grid.rows, alive },
       scrollY: snap.scrollY,
@@ -177,10 +195,40 @@ export class Controller {
     this.cellColor = readCellColor(this.colorProbe);
   }
 
-  private handleLayoutChange(snap: LayoutSnapshot) {
+  private handleLayoutChange(snap: LayoutSnapshot, prev: LayoutSnapshot) {
     if (!this.engine) return;
     this.renderer.setGrid(snap.grid, CELL_SIZE);
     this.engine.resize(snap.grid.cols, snap.grid.rows);
+
+    // Seed newly-revealed regions (grown cols or rows) with random cells so
+    // the universe stays alive as the document lengthens or the viewport
+    // widens. Existing cells are preserved by the resize's overlap copy.
+    const grewCols = snap.grid.cols > prev.grid.cols;
+    const grewRows = snap.grid.rows > prev.grid.rows;
+    if (grewRows) {
+      const regionCols = snap.grid.cols;
+      const regionRows = snap.grid.rows - prev.grid.rows;
+      this.engine.paintRegion(
+        0,
+        prev.grid.rows,
+        regionCols,
+        regionRows,
+        random(regionCols, regionRows, SEED_DENSITY),
+      );
+    }
+    if (grewCols) {
+      const regionCols = snap.grid.cols - prev.grid.cols;
+      const regionRows = Math.min(prev.grid.rows, snap.grid.rows);
+      if (regionRows > 0) {
+        this.engine.paintRegion(
+          prev.grid.cols,
+          0,
+          regionCols,
+          regionRows,
+          random(regionCols, regionRows, SEED_DENSITY),
+        );
+      }
+    }
     this.redraw();
   }
 
