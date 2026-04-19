@@ -20,8 +20,8 @@
     "pre-commit": "npx nano-staged"
   },
   "nano-staged": {
-    "*.{js,ts,mjs,cjs,astro,mdx}": "eslint --fix",
-    "*.{css,astro}": "stylelint --fix",
+    "*.{js,ts,mjs,cjs,astro,mdx}": "eslint",
+    "*.{css,astro}": "stylelint",
     "*.{js,ts,mjs,cjs,astro,mdx,css,json,md}": "prettier --check",
     "*.astro": "bash -c 'pnpm astro check'",
     "*.ts": [

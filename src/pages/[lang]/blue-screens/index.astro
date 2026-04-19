@@ -70,13 +70,13 @@ const dateFormatter = getDateFormatter(lang);
 
 <style>
   .photo-grid {
+    --photo-min: min(160px, calc((100% - 2 * var(--size-2)) / 3));
+
     display: grid;
     gap: var(--size-2);
     grid-template-columns: repeat(
       auto-fill,
-      [photo-start]
-        minmax(min(160px, calc((100% - 2 * var(--size-2)) / 3)), 1fr)
-        [photo-end]
+      [photo-start] minmax(var(--photo-min), 1fr) [photo-end]
     );
   }
 

@@ -149,10 +149,10 @@ const dateFormatter = getDateFormatter(lang);
 <script is:inline>
   (function () {
     if (new URL(location.href).searchParams.get("tab") === "timeline") {
-      var listPanel = document.getElementById("panel-list");
-      var timelinePanel = document.getElementById("panel-timeline");
-      var tabList = document.getElementById("tab-list");
-      var tabTimeline = document.getElementById("tab-timeline");
+      const listPanel = document.getElementById("panel-list");
+      const timelinePanel = document.getElementById("panel-timeline");
+      const tabList = document.getElementById("tab-list");
+      const tabTimeline = document.getElementById("tab-timeline");
       if (listPanel) listPanel.hidden = true;
       if (timelinePanel) timelinePanel.removeAttribute("hidden");
       if (tabList) {
