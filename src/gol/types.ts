@@ -1,7 +1,6 @@
 export const CELL_SIZE = 40;
 
 export type EngineName = "ts" | "wasm";
-export type RendererName = "canvas2d";
 
 export type Cells = Uint8Array;
 
@@ -36,9 +35,8 @@ export interface Engine {
 }
 
 export interface Renderer {
-  readonly name: RendererName;
   attach(canvas: HTMLCanvasElement): void;
-  setGrid(size: GridSize, cellSize: number): void;
+  setGrid(size: GridSize): void;
   draw(
     cells: Cells,
     scrollY: number,

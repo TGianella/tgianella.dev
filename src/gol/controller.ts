@@ -1,5 +1,5 @@
 import { getEngine } from "./engines";
-import { getRenderer } from "./renderers";
+import { Canvas2DRenderer } from "./renderers/canvas2d";
 import { LayoutObserver, readLayout, type LayoutSnapshot } from "./layout";
 import { random } from "./patterns";
 import { Scheduler } from "./scheduler";
@@ -14,13 +14,7 @@ function makeColorProbe(): HTMLDivElement {
     "position:absolute;width:0;height:0;overflow:hidden;pointer-events:none;color:var(--text-1);";
   return probe;
 }
-import {
-  CELL_SIZE,
-  type ControllerStats,
-  type Engine,
-  type EngineName,
-  type Renderer,
-} from "./types";
+import type { ControllerStats, Engine, EngineName, Renderer } from "./types";
 
 const CANVAS_ID = "gol-canvas";
 const ROOT_ATTR = "data-gol";
@@ -42,7 +36,7 @@ export class Controller {
   private readonly statsListeners = new Set<(s: ControllerStats) => void>();
 
   constructor() {
-    this.renderer = getRenderer("canvas2d");
+    this.renderer = new Canvas2DRenderer();
     this.scheduler = new Scheduler({
       fps: TICK_HZ,
       onTick: () => this.tick(),
@@ -90,7 +84,7 @@ export class Controller {
     this.cellColor = readCellColor(this.colorProbe);
 
     const snap = readLayout();
-    this.renderer.setGrid(snap.grid, CELL_SIZE);
+    this.renderer.setGrid(snap.grid);
 
     this.engine = await getEngine(opts.engine);
     await this.engine.init(
@@ -181,7 +175,7 @@ export class Controller {
 
   private handleLayoutChange(snap: LayoutSnapshot, prev: LayoutSnapshot) {
     if (!this.engine) return;
-    this.renderer.setGrid(snap.grid, CELL_SIZE);
+    this.renderer.setGrid(snap.grid);
     this.engine.resize(snap.grid.cols, snap.grid.rows);
 
     // Seed newly-revealed regions (grown cols or rows) with random cells so

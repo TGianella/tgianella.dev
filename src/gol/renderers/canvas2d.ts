@@ -1,20 +1,18 @@
-import type {
-  Cells,
-  GridSize,
-  Renderer,
-  RendererName,
-  Viewport,
+import {
+  CELL_SIZE,
+  type Cells,
+  type GridSize,
+  type Renderer,
+  type Viewport,
 } from "../types";
 
 const CELL_ALPHA = 0.35;
 
 export class Canvas2DRenderer implements Renderer {
-  readonly name: RendererName = "canvas2d";
   private canvas: HTMLCanvasElement | null = null;
   private ctx: CanvasRenderingContext2D | null = null;
   private dpr = 1;
   private viewport: Viewport = { w: 0, h: 0 };
-  private cellSize = 40;
   private grid: GridSize = { cols: 0, rows: 0 };
 
   attach(canvas: HTMLCanvasElement) {
@@ -29,9 +27,8 @@ export class Canvas2DRenderer implements Renderer {
     this.ctx = null;
   }
 
-  setGrid(size: GridSize, cellSize: number) {
+  setGrid(size: GridSize) {
     this.grid = size;
-    this.cellSize = cellSize;
   }
 
   draw(cells: Cells, scrollY: number, viewport: Viewport, cellColor: string) {
@@ -47,7 +44,7 @@ export class Canvas2DRenderer implements Renderer {
 
     const ctx = this.ctx;
     const { cols, rows } = this.grid;
-    const size = this.cellSize;
+    const size = CELL_SIZE;
 
     ctx.clearRect(0, 0, viewport.w, viewport.h);
     ctx.globalAlpha = CELL_ALPHA;
