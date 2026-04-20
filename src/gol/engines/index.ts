@@ -5,9 +5,8 @@ export async function getEngine(name: EngineName): Promise<Engine> {
   if (name === "wasm") {
     try {
       const mod = await import("./wasm");
-      // Eagerly load the wasm binary here so any failure (fetch, CSP block,
-      // instantiation error) surfaces before we return — letting us swap in
-      // the TS fallback without the caller ever seeing the error.
+      // Force instantiation here so fetch/CSP/instantiation failures surface
+      // before we commit to returning the wasm engine.
       await mod.loadWasm();
       return new mod.WasmEngine();
     } catch (err) {

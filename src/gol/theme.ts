@@ -1,18 +1,10 @@
-/**
- * Reads the resolved color of an element. Cannot use getPropertyValue on a
- * custom property (e.g. `--text-1`) because that returns its declared value
- * (literal `light-dark(...)` / `color-mix(...)` text) which canvas.fillStyle
- * cannot parse. Reading `color` on an element that *uses* the token forces the
- * browser to resolve it to an rgb/oklch value the canvas accepts.
- */
+// Custom properties like `--text-1` declare as `light-dark(...)` text, which
+// canvas.fillStyle can't parse — reading `color` on an element that *uses*
+// the token forces resolution to an rgb/oklch value the canvas accepts.
 export function readCellColor(el: HTMLElement): string {
   return getComputedStyle(el).color || "currentColor";
 }
 
-/**
- * Off-screen `<div>` that inherits `color: var(--text-1)`. Exists solely to
- * give {@link readCellColor} an attached element to read from.
- */
 export function makeColorProbe(): HTMLDivElement {
   const probe = document.createElement("div");
   probe.setAttribute("aria-hidden", "true");

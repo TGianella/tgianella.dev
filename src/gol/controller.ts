@@ -37,15 +37,8 @@ export class Controller {
       (snap, prev) => this.handleLayoutChange(snap, prev),
       () => this.handleScroll(),
     );
-    this.theme = new ThemeObserver(() => {
-      // Don't read the color here: `--text-1` is registered via @property and
-      // transitions over `--duration-gentle-1` on theme swap. The observer fires
-      // synchronously on the attribute change, before the interpolation has
-      // advanced — reading now would latch the OLD theme's color. Instead
-      // redraw() re-reads on every frame, so cells naturally follow the
-      // transition curve and settle on the target color.
-      this.redraw();
-    });
+    // See README "Theme transitions" for why we redraw instead of caching.
+    this.theme = new ThemeObserver(() => this.redraw());
   }
 
   isEnabled(): boolean {
@@ -161,9 +154,6 @@ export class Controller {
     this.renderer.setGrid(snap.grid);
     this.engine.resize(snap.grid.cols, snap.grid.rows);
 
-    // Seed newly-revealed regions (grown cols or rows) with random cells so
-    // the universe stays alive as the document lengthens or the viewport
-    // widens. Existing cells are preserved by the resize's overlap copy.
     const grewCols = snap.grid.cols > prev.grid.cols;
     const grewRows = snap.grid.rows > prev.grid.rows;
     if (grewRows) {

@@ -86,6 +86,10 @@ Requires `lang`, `description`, optional `title` and `canonicalPath`.
 - **Theme** -- Three-layer system: blocking `public/theme.js` for FOUC
   prevention, CSS `light-dark()` + `@property` for animated color transitions,
   Nav script for toggle logic with 1-week localStorage expiry.
+- **Background Game of Life** -- Opt-in background animation wired into
+  `BaseLayout.astro` via `GameOfLifeToggle` + `DevHud`. Self-contained in
+  `src/gol/`. See `src/gol/README.md` for module layout, lifecycle, and
+  extension points.
 
 ### Gotchas
 
@@ -97,13 +101,10 @@ Requires `lang`, `description`, optional `title` and `canonicalPath`.
   blocked.
 - The 404 page is standalone (no BaseLayout) and uses an inline script for
   French translation. See comment in `src/pages/404.astro`.
-- `vendor/gol-wasm/` holds the prebuilt Rust artifacts (`gol.js` +
-  `gol_bg.wasm`), committed to the repo. They live outside `src/` to
-  keep generated code separate from authored code, and outside `public/`
-  because Vite cannot `import` from `public/`. `src/gol/engines/index.ts`
-  silently falls back to the TS engine if those files are missing (e.g.
-  fresh clone before `pnpm build:wasm` has been run). CSP includes
-  `'wasm-unsafe-eval'` for wasm instantiation.
+- `vendor/gol-wasm/` holds prebuilt Rust artifacts committed to the repo so
+  CI doesn't need Rust. `src/gol/engines/index.ts` falls back to the TS
+  engine if they're missing. Rebuild with `pnpm build:wasm`. See
+  `src/gol/README.md` for details.
 
 ## JetBrains MCP (WebStorm)
 

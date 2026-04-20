@@ -1,15 +1,5 @@
 import type { Cells, Engine, EngineName } from "../types";
 
-/**
- * Thin TypeScript surface for the wasm-game-of-life `Universe`. Produced by
- * `pnpm build:wasm` (wasm-pack `--target web --out-name gol`) into
- * `vendor/gol-wasm/`, which is committed to the repo so CI doesn't need
- * Rust. We import from there instead of `public/` because Vite bundles
- * source-code imports but treats `public/` as opaque static assets.
- *
- * We only rely on the methods we call; wasm-bindgen emits more than this but
- * the contract here is the one the controller depends on.
- */
 interface WasmUniverse {
   tick(): void;
   width(): number;
@@ -22,10 +12,8 @@ interface WasmUniverse {
 
 interface WasmModule {
   default: (input?: unknown) => Promise<{ memory: WebAssembly.Memory }>;
-  // `Universe::new` is a plain `pub fn`, not `#[wasm_bindgen(constructor)]`,
-  // so wasm-bindgen emits it as a static factory method. Using `new` on the
-  // class would produce an object with no `__wbg_ptr` and the next call into
-  // Rust would panic with "null pointer passed to rust".
+  // Universe::new is a plain `pub fn`, so wasm-bindgen emits a static factory.
+  // Calling `new` on the class would produce an object with no __wbg_ptr.
   Universe: {
     new: (blank: boolean, width: number, height: number) => WasmUniverse;
   };
@@ -38,11 +26,9 @@ let loadPromise: Promise<{
 
 export async function loadWasm() {
   if (!loadPromise) {
+    // Dynamic imports code-split the wasm chunk out of the main bundle; `?url`
+    // asks Vite to emit gol_bg.wasm as a hashed asset and hand back its URL.
     loadPromise = (async () => {
-      // Both imports are dynamic so the wasm chunk is code-split out of the
-      // main bundle and only fetched after the user toggles the feature on.
-      // The `?url` query asks Vite to emit gol_bg.wasm as a hashed asset and
-      // give us back its final URL; we hand that to the wasm-bindgen init().
       const [glue, wasmUrlMod] = await Promise.all([
         import("../../../vendor/gol-wasm/gol.js"),
         import("../../../vendor/gol-wasm/gol_bg.wasm?url"),
@@ -51,8 +37,7 @@ export async function loadWasm() {
       const { memory } = await module.default(wasmUrlMod.default);
       return { module, memory };
     })();
-    // Don't latch a permanent failure; allow future retries after e.g. a
-    // temporary network hiccup.
+    // Don't latch a permanent failure; allow retry after a transient error.
     loadPromise.catch(() => {
       loadPromise = null;
     });
@@ -94,9 +79,8 @@ export class WasmEngine implements Engine {
     if (!this.universe || !this.memory) return new Uint8Array();
     const ptr = this.universe.cells();
     const len = this.cols * this.rows;
-    // Zero-copy view; slice() to detach from the underlying buffer so the
-    // controller can hold onto the snapshot without risking invalidation when
-    // wasm memory grows (wasm grow detaches ArrayBuffers).
+    // slice() detaches from wasm memory so a grow (which detaches the backing
+    // ArrayBuffer) doesn't invalidate snapshots held by the controller.
     return new Uint8Array(this.memory.buffer, ptr, len).slice();
   }
 

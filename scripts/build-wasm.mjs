@@ -1,13 +1,8 @@
 #!/usr/bin/env node
-/**
- * Build the wasm-game-of-life crate with wasm-pack and drop the artifacts into
- * vendor/gol-wasm/ so Vite owns bundling (`public/` would be served as-is but
- * cannot be `import`-ed from source code).
- *
- * Controlled by the WASM_GOL_CRATE env var (default: sibling path below);
- * skipped gracefully when wasm-pack is missing so CI / first-time clones
- * without the Rust toolchain still succeed with the silent TS fallback.
- */
+// Build the wasm-game-of-life crate with wasm-pack and drop the artifacts into
+// vendor/gol-wasm/. See src/gol/README.md for the WASM build notes.
+// Crate path is controlled by WASM_GOL_CRATE (default: sibling path below).
+// Skipped gracefully when the crate or wasm-pack is missing.
 import { execFileSync, spawnSync } from "node:child_process";
 import { cpSync, existsSync, mkdirSync, readdirSync, rmSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";

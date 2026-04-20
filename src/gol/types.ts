@@ -20,10 +20,7 @@ export interface Engine {
   resize(cols: number, rows: number): void;
   step(): void;
   snapshot(): Cells;
-  /**
-   * Overwrite a rectangular region (row-major) with `src`. Used to seed
-   * newly-revealed rows after a layout grow without disturbing existing cells.
-   */
+  /** Overwrite a rectangular region (row-major). Out-of-bounds writes clip. */
   paintRegion(
     startCol: number,
     startRow: number,

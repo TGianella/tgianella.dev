@@ -1,12 +1,6 @@
 import type { Cells, Engine, EngineName } from "../types";
 
-/**
- * Conway's Game of Life on a torus (wraparound at all four edges).
- *
- * Double-buffered: `read` holds the current generation, `write` receives the
- * next. After each `step()` the buffers are swapped, avoiding per-tick
- * allocation.
- */
+/** Conway's Game of Life on a torus. Double-buffered: swap after each step. */
 export class TsEngine implements Engine {
   readonly name: EngineName = "ts";
   private cols = 0;
@@ -82,11 +76,6 @@ export class TsEngine implements Engine {
     return this.read;
   }
 
-  /**
-   * Overwrite a rectangular region with `src` (row-major). Out-of-bounds writes
-   * are clipped silently. Used by the controller to seed newly-revealed rows
-   * after a resize without touching existing cells.
-   */
   paintRegion(
     startCol: number,
     startRow: number,
