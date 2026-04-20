@@ -1,6 +1,5 @@
 ---
 import { useTranslations, getLocalizedPath, type Locale } from "../i18n/utils";
-import GameOfLifeToggle from "./GameOfLifeToggle.astro";
 
 interface Props {
   lang: Locale;
@@ -62,8 +61,6 @@ const alternatePath = getLocalizedPath(cleanCurrentPath, alternateLang);
         ))
       }
     </ul>
-
-    <GameOfLifeToggle lang={lang} />
 
     <button
       class="theme-toggle"

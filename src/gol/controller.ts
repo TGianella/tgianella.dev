@@ -128,6 +128,7 @@ export class Controller {
       CANVAS_ID,
     ) as HTMLCanvasElement | null;
     if (canvas) canvas.style.display = "";
+    this.emitStats();
   }
 
   async swapEngine(name: EngineName): Promise<void> {

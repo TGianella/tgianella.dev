@@ -1,6 +1,7 @@
 ---
 import { ClientRouter } from "astro:transitions";
 import Nav from "../components/Nav.astro";
+import GameOfLifeToggle from "../components/GameOfLifeToggle.astro";
 import SocialLinks from "../components/SocialLinks.astro";
 import DevHud from "../components/DevHud.astro";
 import {
@@ -136,6 +137,7 @@ const pageTitle = title ? `${title} — ${t.seo.siteName}` : t.seo.siteName;
     ></canvas>
     <a href="#main-content" class="skip-link">{t.a11y.skipToMain}</a>
     <Nav lang={lang} currentPath={currentPath} />
+    <GameOfLifeToggle lang={lang} />
 
     <main id="main-content">
       <slot />

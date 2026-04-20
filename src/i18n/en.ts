@@ -21,8 +21,13 @@ const en = {
     enable: "Animate the background grid",
     disable: "Stop animating the background grid",
     reducedMotion: "Disabled because you prefer reduced motion",
+    hudTitle: "Game of life",
     hudMinimize: "Minimize stats",
     hudExpand: "Expand stats",
+    hudEngine: "engine",
+    hudFps: "fps",
+    hudGrid: "grid",
+    hudAlive: "alive",
   },
   a11y: {
     skipToMain: "Skip to main content",
