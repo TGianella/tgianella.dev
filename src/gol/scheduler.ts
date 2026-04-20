@@ -46,8 +46,11 @@ export class Scheduler {
     if (document.hidden) {
       cancelAnimationFrame(this.rafId);
     } else if (this.running) {
-      this.lastTick = performance.now();
-      this.loop(this.lastTick);
+      const now = performance.now();
+      this.lastTick = now;
+      this.lastFpsSample = now;
+      this.frameCount = 0;
+      this.loop(now);
     }
   };
 

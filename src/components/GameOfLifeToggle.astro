@@ -72,7 +72,6 @@ const t = useTranslations(lang);
     if (!btn) return;
 
     applyReducedMotion(btn);
-    // Restore pressed state after SPA swap.
     if (window.__gol) setPressed(btn, window.__gol.isEnabled());
 
     btn.addEventListener("click", async () => {
@@ -88,15 +87,10 @@ const t = useTranslations(lang);
     });
   }
 
-  if (!("__golToggleMqlBound" in window)) {
-    (
-      window as unknown as { __golToggleMqlBound: boolean }
-    ).__golToggleMqlBound = true;
-    window.matchMedia(REDUCED_MOTION).addEventListener("change", () => {
-      const btn = document.querySelector<HTMLButtonElement>(".gol-toggle");
-      if (btn) applyReducedMotion(btn);
-    });
-  }
+  window.matchMedia(REDUCED_MOTION).addEventListener("change", () => {
+    const btn = document.querySelector<HTMLButtonElement>(".gol-toggle");
+    if (btn) applyReducedMotion(btn);
+  });
 
   document.addEventListener("astro:page-load", bind);
 </script>

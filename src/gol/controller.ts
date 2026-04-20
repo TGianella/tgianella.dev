@@ -67,7 +67,6 @@ export class Controller {
     }
 
     const canvas = this.getOrCreateCanvas();
-    canvas.style.display = "block";
     this.renderer.attach(canvas);
 
     this.colorProbe = makeColorProbe();
@@ -108,10 +107,6 @@ export class Controller {
     this.colorProbe?.remove();
     this.colorProbe = null;
     document.documentElement.removeAttribute(ROOT_ATTR);
-    const canvas = document.getElementById(
-      CANVAS_ID,
-    ) as HTMLCanvasElement | null;
-    if (canvas) canvas.style.display = "";
     this.emitStats();
   }
 
@@ -143,8 +138,8 @@ export class Controller {
   }
 
   private redraw() {
-    if (!this.engine) return;
-    this.refreshCellColor();
+    if (!this.engine || !this.colorProbe) return;
+    this.cellColor = readCellColor(this.colorProbe);
     const snap = this.layout.current;
     this.renderer.draw(
       this.engine.snapshot(),
@@ -154,16 +149,11 @@ export class Controller {
     );
   }
 
-  private refreshCellColor() {
-    // Astro's ClientRouter replaces <body>'s contents on SPA swap, which
-    // detaches the probe. getComputedStyle on a disconnected element returns
-    // a default that would freeze the cells at the wrong color forever.
-    if (!this.colorProbe || !this.colorProbe.isConnected) {
-      this.colorProbe?.remove();
-      this.colorProbe = makeColorProbe();
-      document.body.appendChild(this.colorProbe);
-    }
-    this.cellColor = readCellColor(this.colorProbe);
+  private reattachColorProbeIfDetached() {
+    if (this.colorProbe?.isConnected) return;
+    this.colorProbe?.remove();
+    this.colorProbe = makeColorProbe();
+    document.body.appendChild(this.colorProbe);
   }
 
   private handleLayoutChange(snap: LayoutSnapshot, prev: LayoutSnapshot) {
@@ -208,6 +198,7 @@ export class Controller {
   }
 
   private readonly handleAfterSwap = () => {
+    this.reattachColorProbeIfDetached();
     this.layout.refresh();
     this.redraw();
   };
