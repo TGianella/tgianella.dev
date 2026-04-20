@@ -50,7 +50,7 @@ export interface Renderer {
 export interface ControllerStats {
   engine: EngineName;
   fps: number;
-  cells: { cols: number; rows: number; alive: number };
+  cells: GridSize & { alive: number };
   scrollY: number;
   docHeight: number;
 }

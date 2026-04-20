@@ -8,7 +8,7 @@ export interface LayoutSnapshot {
   dpr: number;
 }
 
-export type LayoutListener = (
+export type LayoutChangeListener = (
   snapshot: LayoutSnapshot,
   previous: LayoutSnapshot,
 ) => void;
@@ -30,15 +30,24 @@ export function readLayout(): LayoutSnapshot {
   };
 }
 
+function hasLayoutChanged(a: LayoutSnapshot, b: LayoutSnapshot): boolean {
+  return (
+    a.grid.cols !== b.grid.cols ||
+    a.grid.rows !== b.grid.rows ||
+    a.viewport.h !== b.viewport.h ||
+    a.dpr !== b.dpr
+  );
+}
+
 export class LayoutObserver {
-  private readonly onChange: LayoutListener;
-  private readonly onScroll: LayoutListener;
+  private readonly onChange: LayoutChangeListener;
+  private readonly onScroll: () => void;
   private resizeObserver: ResizeObserver | null = null;
   private rafPending = false;
   private scrollRafPending = false;
   private last: LayoutSnapshot;
 
-  constructor(onChange: LayoutListener, onScroll: LayoutListener) {
+  constructor(onChange: LayoutChangeListener, onScroll: () => void) {
     this.onChange = onChange;
     this.onScroll = onScroll;
     this.last = readLayout();
@@ -62,16 +71,12 @@ export class LayoutObserver {
     return this.last;
   }
 
-  /** Manually re-read after e.g. astro:after-swap. */
+  /** Manually re-read, e.g. after astro:after-swap. */
   refresh() {
     const next = readLayout();
     const prev = this.last;
-    if (!sameGrid(next, prev) || next.viewport.h !== prev.viewport.h) {
-      this.last = next;
-      this.onChange(next, prev);
-    } else {
-      this.last = next;
-    }
+    this.last = next;
+    if (hasLayoutChanged(next, prev)) this.onChange(next, prev);
   }
 
   private readonly scheduleChange = () => {
@@ -81,12 +86,8 @@ export class LayoutObserver {
       this.rafPending = false;
       const next = readLayout();
       const prev = this.last;
-      const changed =
-        !sameGrid(next, prev) ||
-        next.viewport.h !== prev.viewport.h ||
-        next.dpr !== prev.dpr;
       this.last = next;
-      if (changed) this.onChange(next, prev);
+      if (hasLayoutChanged(next, prev)) this.onChange(next, prev);
     });
   };
 
@@ -95,13 +96,8 @@ export class LayoutObserver {
     this.scrollRafPending = true;
     requestAnimationFrame(() => {
       this.scrollRafPending = false;
-      const prev = this.last;
-      this.last = { ...prev, scrollY: window.scrollY };
-      this.onScroll(this.last, prev);
+      this.last = { ...this.last, scrollY: window.scrollY };
+      this.onScroll();
     });
   };
-}
-
-function sameGrid(a: LayoutSnapshot, b: LayoutSnapshot): boolean {
-  return a.grid.cols === b.grid.cols && a.grid.rows === b.grid.rows;
 }

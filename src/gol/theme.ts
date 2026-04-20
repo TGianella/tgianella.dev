@@ -1,23 +1,32 @@
-export type ColorListener = () => void;
-
 /**
- * Reads the resolved color of an element. We cannot use getPropertyValue on a
+ * Reads the resolved color of an element. Cannot use getPropertyValue on a
  * custom property (e.g. `--text-1`) because that returns its declared value
  * (literal `light-dark(...)` / `color-mix(...)` text) which canvas.fillStyle
  * cannot parse. Reading `color` on an element that *uses* the token forces the
- * browser to resolve it to an rgb/oklch value we can hand to the canvas.
+ * browser to resolve it to an rgb/oklch value the canvas accepts.
  */
 export function readCellColor(el: HTMLElement): string {
-  const resolved = getComputedStyle(el).color;
-  return resolved || "currentColor";
+  return getComputedStyle(el).color || "currentColor";
+}
+
+/**
+ * Off-screen `<div>` that inherits `color: var(--text-1)`. Exists solely to
+ * give {@link readCellColor} an attached element to read from.
+ */
+export function makeColorProbe(): HTMLDivElement {
+  const probe = document.createElement("div");
+  probe.setAttribute("aria-hidden", "true");
+  probe.style.cssText =
+    "position:absolute;width:0;height:0;overflow:hidden;pointer-events:none;color:var(--text-1);";
+  return probe;
 }
 
 export class ThemeObserver {
-  private readonly onColor: ColorListener;
+  private readonly onColor: () => void;
   private mo: MutationObserver | null = null;
   private mql: MediaQueryList | null = null;
 
-  constructor(onColor: ColorListener) {
+  constructor(onColor: () => void) {
     this.onColor = onColor;
   }
 

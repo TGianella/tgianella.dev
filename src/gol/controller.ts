@@ -3,22 +3,13 @@ import { Canvas2DRenderer } from "./renderers/canvas2d";
 import { LayoutObserver, readLayout, type LayoutSnapshot } from "./layout";
 import { random } from "./patterns";
 import { Scheduler } from "./scheduler";
-import { ThemeObserver, readCellColor } from "./theme";
-
-const SEED_DENSITY = 0.15;
-
-function makeColorProbe(): HTMLDivElement {
-  const probe = document.createElement("div");
-  probe.setAttribute("aria-hidden", "true");
-  probe.style.cssText =
-    "position:absolute;width:0;height:0;overflow:hidden;pointer-events:none;color:var(--text-1);";
-  return probe;
-}
+import { ThemeObserver, makeColorProbe, readCellColor } from "./theme";
 import type { ControllerStats, Engine, EngineName, Renderer } from "./types";
 
 const CANVAS_ID = "gol-canvas";
 const ROOT_ATTR = "data-gol";
 const TICK_HZ = 10;
+const SEED_DENSITY = 0.15;
 
 export interface ControllerOptions {
   engine: EngineName;
@@ -33,7 +24,7 @@ export class Controller {
   private colorProbe: HTMLDivElement | null = null;
   private cellColor: string = "currentColor";
   private running = false;
-  private readonly statsListeners = new Set<(s: ControllerStats) => void>();
+  private statsListener: ((stats: ControllerStats) => void) | null = null;
 
   constructor() {
     this.renderer = new Canvas2DRenderer();
@@ -139,8 +130,10 @@ export class Controller {
   }
 
   onStats(listener: (stats: ControllerStats) => void): () => void {
-    this.statsListeners.add(listener);
-    return () => this.statsListeners.delete(listener);
+    this.statsListener = listener;
+    return () => {
+      if (this.statsListener === listener) this.statsListener = null;
+    };
   }
 
   private tick() {
@@ -231,8 +224,6 @@ export class Controller {
   }
 
   private emitStats() {
-    if (this.statsListeners.size === 0) return;
-    const stats = this.getStats();
-    this.statsListeners.forEach((l) => l(stats));
+    this.statsListener?.(this.getStats());
   }
 }
