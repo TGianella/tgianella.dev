@@ -11,7 +11,6 @@ export interface GolApi {
   enable(opts?: Partial<ControllerOptions>): Promise<void>;
   disable(): void;
   isEnabled(): boolean;
-  swapEngine(name: EngineName): Promise<void>;
   getStats(): ControllerStats;
   onStats(listener: (stats: ControllerStats) => void): () => void;
 }
@@ -24,7 +23,6 @@ export function install(): GolApi {
     enable: (opts) => controller.enable({ engine: opts?.engine ?? "wasm" }),
     disable: () => controller.disable(),
     isEnabled: () => controller.isEnabled(),
-    swapEngine: (name) => controller.swapEngine(name),
     getStats: () => controller.getStats(),
     onStats: (listener) => controller.onStats(listener),
   };

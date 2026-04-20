@@ -38,10 +38,6 @@ export class Scheduler {
     document.removeEventListener("visibilitychange", this.handleVisibility);
   }
 
-  requestFrame() {
-    if (!this.running) this.onFrame?.();
-  }
-
   getFps(): number {
     return this.fpsValue;
   }

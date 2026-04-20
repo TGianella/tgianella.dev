@@ -39,7 +39,6 @@ export class Controller {
   private colorProbe: HTMLDivElement | null = null;
   private cellColor: string = "currentColor";
   private running = false;
-  private swapInFlight = false;
   private readonly statsListeners = new Set<(s: ControllerStats) => void>();
 
   constructor() {
@@ -129,22 +128,6 @@ export class Controller {
     ) as HTMLCanvasElement | null;
     if (canvas) canvas.style.display = "";
     this.emitStats();
-  }
-
-  async swapEngine(name: EngineName): Promise<void> {
-    if (this.swapInFlight || !this.engine) return;
-    this.swapInFlight = true;
-    try {
-      const snap = this.layout.current;
-      const seed = this.engine.snapshot();
-      const next = await getEngine(name);
-      await next.init(snap.grid.cols, snap.grid.rows, seed);
-      this.engine.destroy();
-      this.engine = next;
-      this.redraw();
-    } finally {
-      this.swapInFlight = false;
-    }
   }
 
   getStats(): ControllerStats {
