@@ -484,13 +484,16 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
 </style>
 
 <script>
-  const hint = document.querySelector<HTMLButtonElement>(".hero__scroll-hint");
-  const bio = document.getElementById("bio");
-  hint?.addEventListener("click", () => {
-    if (!bio) return;
-    const nav = document.querySelector("nav");
-    const navHeight = nav?.offsetHeight ?? 0;
-    const top = bio.getBoundingClientRect().top + window.scrollY - navHeight;
-    window.scrollTo({ top, behavior: "smooth" });
+  document.addEventListener("astro:page-load", () => {
+    const hint =
+      document.querySelector<HTMLButtonElement>(".hero__scroll-hint");
+    const bio = document.getElementById("bio");
+    hint?.addEventListener("click", () => {
+      if (!bio) return;
+      const nav = document.querySelector("nav");
+      const navHeight = nav?.offsetHeight ?? 0;
+      const top = bio.getBoundingClientRect().top + window.scrollY - navHeight;
+      window.scrollTo({ top, behavior: "smooth" });
+    });
   });
 </script>
