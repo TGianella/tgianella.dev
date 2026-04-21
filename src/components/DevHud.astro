@@ -193,7 +193,7 @@ const t = useTranslations(lang);
     position: fixed;
     z-index: 9999;
     right: 0.75rem;
-    bottom: 0.75rem;
+    bottom: var(--size-9);
     display: none;
     flex-direction: column;
     padding: 0.5rem 0.75rem;
@@ -324,6 +324,10 @@ const t = useTranslations(lang);
   }
 
   @media (hover: hover) {
+    .dev-hud {
+      bottom: 0.75rem;
+    }
+
     .dev-hud__collapse:hover {
       border-color: var(--color-brand);
       background: var(--surface-3);

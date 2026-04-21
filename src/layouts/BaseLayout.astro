@@ -143,7 +143,7 @@ const pageTitle = title ? `${title} — ${t.seo.siteName}` : t.seo.siteName;
       <slot />
     </main>
 
-    <DevHud lang={lang} />
+    {import.meta.env.DEV && <DevHud lang={lang} />}
 
     <footer class="footer">
       <div class="footer__inner">

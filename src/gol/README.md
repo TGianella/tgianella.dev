@@ -17,7 +17,7 @@ automaton rules does not require edits outside of `src/gol/` and
                 BaseLayout.astro   declares <canvas> + mounts the two UI bits
                   ├── <canvas #gol-canvas transition:persist>
                   ├── <GameOfLifeToggle>  calls install() on first click
-                  └── <DevHud>            reads stats via onStats()
+                  └── <DevHud>            reads stats via onStats() — dev-only
 
                              │ (both touch the module only via)
                              ▼
@@ -77,11 +77,16 @@ On `enable()`: guards on `matchMedia("(prefers-reduced-motion: reduce)")`,
 finds or creates `<canvas id="gol-canvas">`, attaches the renderer, mounts
 an off-DOM color probe so the renderer can read `--text-1`, snapshots
 layout, initialises the engine with a `random` seed, starts observers and
-the scheduler, subscribes to `astro:after-swap`, and sets
-`data-gol="on"` on `<html>` so site CSS can react.
+the scheduler, subscribes to `astro:before-swap` + `astro:after-swap` via
+a single `AbortController`, and sets `data-gol="on"` on `<html>` so site
+CSS can react.
 
-On `disable()`: symmetric teardown, removes the `<html data-gol>` flag,
-and emits a zeroed stats frame so overlays (like `DevHud`) can clear.
+On `disable()`: tears down observers, aborts the swap-event listeners,
+destroys the engine and color probe, removes the `<html data-gol>` flag,
+emits a zeroed stats frame so overlays (like `DevHud`) can clear, and
+schedules the renderer `detach()` after `FADE_OUT_MS` so the last frame
+stays visible while the CSS opacity transition plays (see "Fade
+transition" below).
 
 Key internal methods:
 
@@ -95,6 +100,11 @@ Key internal methods:
 - **`handleAfterSwap()`** — Astro soft-navigation hook. The color probe
   may have been torn out along with the swapped body; reattach, refresh
   layout, redraw.
+- **`handleBeforeSwap(e)`** — runs _before_ Astro commits the new
+  document. Pre-sets `data-gol="on"` on `e.newDocument.documentElement`
+  so the `ClientRouter`'s attribute diff is a no-op; without this the
+  canvas opacity transition would fire on every soft nav (see "Fade
+  transition" below).
 - **`getStats()` / `onStats()`** — pull-and-push stats for overlays.
 
 ### `scheduler.ts` — the clock
@@ -251,7 +261,10 @@ controller every tick plus on scroll/layout events.
   resizes the backing store when it changes (e.g. dragging the window
   between monitors).
 - **`clear()` / `detach()`** — reset state on disable so the canvas
-  doesn't keep a stale frame.
+  doesn't keep a stale frame. `detach()` also shrinks the backing store
+  to `0 × 0` so the GPU texture (viewport × dpr, can be ~10 MB) isn't
+  retained while GoL is off. The `<canvas>` node itself persists across
+  navs via `transition:persist`; only the bitmap is released.
 
 Replacing Canvas 2D with WebGL/WebGPU means implementing the `Renderer`
 interface in `types.ts` and changing one `new Canvas2DRenderer()` in
@@ -269,10 +282,14 @@ triggers `Controller.enable()`:
    transitions).
 3. Attach the renderer, mount the theme color probe, take a layout snapshot,
    and ask the engine factory for the requested engine.
-4. Start the layout + theme observers, subscribe to `astro:after-swap`, set
-   `data-gol="on"` on `<html>`, and start the scheduler.
+4. Start the layout + theme observers, subscribe to `astro:before-swap` +
+   `astro:after-swap` (via one `AbortController`), set `data-gol="on"`
+   on `<html>`, and start the scheduler.
 
-`disable()` is the symmetric teardown. Both are idempotent.
+`disable()` is the symmetric teardown. Both are idempotent. On
+`disable()` the renderer's `detach()` is deferred by `FADE_OUT_MS` so
+the last simulation frame stays visible while the CSS opacity
+transition plays (see "Fade transition" below).
 
 ## Integration notes
 
@@ -307,6 +324,40 @@ stopping the scheduler, so tabs in the background don't burn CPU.
 **Astro soft nav.** On `astro:after-swap` the controller reattaches the
 color probe if it was torn out of the new DOM, refreshes the layout
 snapshot, and redraws. The canvas itself survives via `transition:persist`.
+The controller also listens to `astro:before-swap` and pre-sets
+`data-gol="on"` on the incoming document's `<html>`; `ClientRouter`
+copies `<html>` attributes from the new page onto the live one, so
+without this pre-set the runtime-set flag would be wiped mid-nav and
+the canvas opacity transition would fire on every navigation.
+`before-swap` is used instead of `after-swap` because `handleAfterSwap`
+calls `layout.refresh()` → `readLayout()` → reads `scrollHeight`, which
+forces a style recalc that would observe the missing attribute before
+it could be restored.
+
+**Fade transition.** `#gol-canvas` fades between `opacity: 0` and
+`opacity: 1` driven by `:root[data-gol="on"]` (in
+`src/styles/global.css`). The transition is gated by
+`@media (prefers-reduced-motion: no-preference)` and uses
+`--duration-moderate-2` (260 ms). `disable()` defers
+`renderer.detach()` by the same `FADE_OUT_MS` constant so the last
+simulation frame stays painted while CSS fades it out; tearing down
+the bitmap synchronously would make cells pop off instead. `enable()`
+clears any pending fade-out timer so a rapid off→on flip resumes
+cleanly instead of detaching mid-transition.
+
+**Toggle presentation.** `GameOfLifeToggle.astro` renders one `<button>`
+with two CSS dressings. Hover-capable viewports get the slide-out tab
+anchored to the top-right (hidden until `:hover` or `:focus-visible`).
+Hoverless viewports get a small muted icon in the bottom-right corner —
+~36×36 hit target, no tab chrome — so touch users can reach it without
+putting a decorative control in the reading flow. The split lives in the
+component's `<style>` block, gated by `@media (hover: hover)`.
+
+**DevHud is dev-only.** `BaseLayout.astro` wraps `<DevHud />` in
+`import.meta.env.DEV`, so it's tree-shaken out of production builds. The
+component itself is unchanged — it's still there in `pnpm dev` for
+engine/fps/grid/alive-cell debugging. Production users never see it and
+never load its script.
 
 ## Extension points
 

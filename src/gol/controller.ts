@@ -1,3 +1,4 @@
+import type { TransitionBeforeSwapEvent } from "astro:transitions/client";
 import { getEngine } from "./engines";
 import { Canvas2DRenderer } from "./renderers/canvas2d";
 import { LayoutObserver, readLayout, type LayoutSnapshot } from "./layout";
@@ -10,6 +11,9 @@ const CANVAS_ID = "gol-canvas";
 const ROOT_ATTR = "data-gol";
 const TICK_HZ = 10;
 const SEED_DENSITY = 0.15;
+// Matches `transition: opacity var(--duration-moderate-2)` on #gol-canvas
+// in src/styles/global.css. Keep in sync if that token changes.
+const FADE_OUT_MS = 260;
 
 export interface ControllerOptions {
   engine: EngineName;
@@ -25,6 +29,8 @@ export class Controller {
   private cellColor: string = "currentColor";
   private running = false;
   private statsListener: ((stats: ControllerStats) => void) | null = null;
+  private fadeOutTimer: number | null = null;
+  private swapListeners: AbortController | null = null;
 
   constructor() {
     this.renderer = new Canvas2DRenderer();
@@ -47,6 +53,10 @@ export class Controller {
 
   async enable(opts: ControllerOptions): Promise<void> {
     if (this.running) return;
+    if (this.fadeOutTimer !== null) {
+      clearTimeout(this.fadeOutTimer);
+      this.fadeOutTimer = null;
+    }
     if (
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -78,7 +88,14 @@ export class Controller {
 
     this.layout.start();
     this.theme.start();
-    document.addEventListener("astro:after-swap", this.handleAfterSwap);
+    this.swapListeners = new AbortController();
+    const { signal } = this.swapListeners;
+    document.addEventListener("astro:after-swap", this.handleAfterSwap, {
+      signal,
+    });
+    document.addEventListener("astro:before-swap", this.handleBeforeSwap, {
+      signal,
+    });
     document.documentElement.setAttribute(ROOT_ATTR, "on");
 
     this.running = true;
@@ -92,15 +109,22 @@ export class Controller {
     this.scheduler.stop();
     this.layout.stop();
     this.theme.stop();
-    document.removeEventListener("astro:after-swap", this.handleAfterSwap);
-    this.renderer.clear();
-    this.renderer.detach();
+    this.swapListeners?.abort();
+    this.swapListeners = null;
     this.engine?.destroy();
     this.engine = null;
     this.colorProbe?.remove();
     this.colorProbe = null;
     document.documentElement.removeAttribute(ROOT_ATTR);
     this.emitStats();
+
+    // Keep the last frame on the canvas while CSS fades it to opacity 0;
+    // detaching now would make cells vanish before the fade plays.
+    if (this.fadeOutTimer !== null) clearTimeout(this.fadeOutTimer);
+    this.fadeOutTimer = window.setTimeout(() => {
+      this.fadeOutTimer = null;
+      this.renderer.detach();
+    }, FADE_OUT_MS);
   }
 
   getStats(): ControllerStats {
@@ -191,6 +215,14 @@ export class Controller {
     this.reattachColorProbeIfDetached();
     this.layout.refresh();
     this.redraw();
+  };
+
+  // Astro's ClientRouter copies <html> attributes from the incoming page
+  // onto the live <html>, wiping the runtime-set data-gol="on". Pre-set it
+  // on the new document so the swap diff is empty and the canvas opacity
+  // transition isn't triggered every soft nav.
+  private readonly handleBeforeSwap = (e: TransitionBeforeSwapEvent) => {
+    e.newDocument.documentElement.setAttribute(ROOT_ATTR, "on");
   };
 
   private getOrCreateCanvas(): HTMLCanvasElement {

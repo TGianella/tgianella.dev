@@ -22,7 +22,13 @@ export class Canvas2DRenderer implements Renderer {
   }
 
   detach() {
-    this.clear();
+    if (this.canvas) {
+      // Shrink the backing store so the GPU texture (viewport × dpr, can be
+      // ~10MB) isn't retained while GoL is off. The node itself persists
+      // across navs via `transition:persist`.
+      this.canvas.width = 0;
+      this.canvas.height = 0;
+    }
     this.canvas = null;
     this.ctx = null;
   }
