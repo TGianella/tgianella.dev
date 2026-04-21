@@ -10,6 +10,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
+    "serve": "astro build && astro preview",
     "astro": "astro",
     "lint": "eslint .",
     "lint:style": "stylelint \"src/**/*.{css,astro}\"",

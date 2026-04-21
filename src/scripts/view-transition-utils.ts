@@ -7,7 +7,10 @@ export function stripLocale(pathname: string): string {
  *  Detail pages sit between their parent and the next section so that
  *  "blog -> article" and "article -> talks" both slide forward. */
 export function getPageWeight(pathname: string): number {
-  const p = stripLocale(pathname);
+  const cleanPathname = pathname.endsWith("/")
+    ? pathname.slice(0, -1)
+    : pathname;
+  const p = stripLocale(cleanPathname);
   if (p === "/") return 0;
   if (p === "/blog") return 10;
   if (p === "/talks") return 20;

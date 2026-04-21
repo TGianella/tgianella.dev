@@ -7,7 +7,22 @@ interface Props {
 }
 
 const { lang, currentPath } = Astro.props;
+
 const t = useTranslations(lang);
+const isHomepage = currentPath === "/en/" || currentPath === "/fr/";
+let cleanCurrentPath = currentPath;
+
+if (currentPath.endsWith("/") && !isHomepage) {
+  cleanCurrentPath = currentPath.slice(0, -1);
+}
+
+const isCurrentPage = (href: string) => {
+  if (href === "/en/" || href === "/fr/") {
+    return isHomepage;
+  }
+
+  return cleanCurrentPath.includes(href);
+};
 
 const links = [
   { href: getLocalizedPath("/", lang), label: t.nav.home, key: "home" },
@@ -22,7 +37,7 @@ const links = [
 
 const alternateLang = t.langSwitcher.lang as Locale;
 const alternatePath = getLocalizedPath(
-  currentPath.replace(/^\/(en|fr)/, "") || "/",
+  cleanCurrentPath.replace(/^\/(en|fr)/, "") || "/",
   alternateLang,
 );
 ---
@@ -41,7 +56,7 @@ const alternatePath = getLocalizedPath(
               href={href}
               class="nav__link"
               data-vt-name={`nav-${key}`}
-              aria-current={currentPath === href ? "page" : undefined}
+              aria-current={isCurrentPage(href) ? "page" : undefined}
             >
               {label}
             </a>
@@ -136,7 +151,7 @@ const alternatePath = getLocalizedPath(
             <a
               href={href}
               class="nav__mobile-link"
-              aria-current={currentPath === href ? "page" : undefined}
+              aria-current={isCurrentPage(href) ? "page" : undefined}
             >
               {label}
             </a>
