@@ -123,7 +123,7 @@ const pageTitle = title ? `${title} — ${t.seo.siteName}` : t.seo.siteName;
       rel="alternate"
       type="application/rss+xml"
       title={`${t.seo.siteName} — Blog (${lang.toUpperCase()})`}
-      href={`/${lang}/rss.xml`}
+      href={getLocalizedPath("/rss.xml", lang)}
     />
 
     <script is:inline src="/theme.js"></script>

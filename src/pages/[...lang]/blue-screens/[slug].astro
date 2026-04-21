@@ -5,6 +5,7 @@ import PhotoMeta from "../../../components/PhotoMeta.astro";
 import Lightbox from "../../../components/Lightbox.astro";
 import {
   useTranslations,
+  getLocalizedPath,
   getDateFormatter,
   locales,
   slugOf,
@@ -18,19 +19,21 @@ export async function getStaticPaths() {
 
   const byLang = new Map<Locale, typeof allPhotos>();
   for (const photo of allPhotos) {
-    const [lang] = photo.id.split("/");
-    if (!locales.includes(lang as Locale)) continue;
-    const list = byLang.get(lang as Locale) ?? [];
+    const [contentLang] = photo.id.split("/");
+    if (!locales.includes(contentLang as Locale)) continue;
+    const list = byLang.get(contentLang as Locale) ?? [];
     list.push(photo);
-    byLang.set(lang as Locale, list);
+    byLang.set(contentLang as Locale, list);
   }
 
   const paths = [];
-  for (const [lang, langPhotos] of byLang) {
+  for (const [contentLang, langPhotos] of byLang) {
     const sorted = sortByDate(langPhotos);
+    // Default locale (en) uses `undefined` so the [...lang] segment collapses.
+    const lang = contentLang === "en" ? undefined : contentLang;
     for (let i = 0; i < sorted.length; i++) {
       const photo = sorted[i];
-      const slug = slugOf(photo.id, lang);
+      const slug = slugOf(photo.id, contentLang);
       paths.push({
         params: { lang, slug },
         props: {
@@ -44,7 +47,8 @@ export async function getStaticPaths() {
   return paths;
 }
 
-const { lang, slug } = Astro.params as { lang: Locale; slug: string };
+const lang: Locale = (Astro.params.lang as Locale | undefined) ?? "en";
+const { slug } = Astro.params as { slug: string };
 const { photo, prevPhoto, nextPhoto } = Astro.props;
 const t = useTranslations(lang);
 const { Content } = await render(photo);
@@ -63,7 +67,7 @@ const dateStr = getDateFormatter(lang).format(photo.data.date);
   <MainContent>
     <article>
       <header class="photo-header">
-        <a href={`/${lang}/blue-screens`} class="back-link"
+        <a href={getLocalizedPath("/blue-screens", lang)} class="back-link"
           >{t.gallery.backToList}</a
         >
         <PhotoMeta
@@ -92,7 +96,10 @@ const dateStr = getDateFormatter(lang).format(photo.data.date);
         {
           prevPhoto && (
             <a
-              href={`/${lang}/blue-screens/${slugOf(prevPhoto.id, lang)}`}
+              href={getLocalizedPath(
+                `/blue-screens/${slugOf(prevPhoto.id, lang)}`,
+                lang,
+              )}
               class="photo-arrow photo-arrow--prev"
               aria-label={prevPhoto.data.alt}
               aria-keyshortcuts="ArrowLeft"
@@ -116,7 +123,10 @@ const dateStr = getDateFormatter(lang).format(photo.data.date);
         {
           nextPhoto && (
             <a
-              href={`/${lang}/blue-screens/${slugOf(nextPhoto.id, lang)}`}
+              href={getLocalizedPath(
+                `/blue-screens/${slugOf(nextPhoto.id, lang)}`,
+                lang,
+              )}
               class="photo-arrow photo-arrow--next"
               aria-label={nextPhoto.data.alt}
               aria-keyshortcuts="ArrowRight"

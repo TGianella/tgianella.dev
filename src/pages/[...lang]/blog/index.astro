@@ -14,7 +14,7 @@ import { getCollection } from "astro:content";
 
 export const getStaticPaths = getLocaleStaticPaths;
 
-const { lang } = Astro.params as { lang: Locale };
+const lang: Locale = (Astro.params.lang as Locale | undefined) ?? "en";
 const t = useTranslations(lang);
 
 const posts = publishedPosts(

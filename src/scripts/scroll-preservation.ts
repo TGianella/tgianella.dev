@@ -5,7 +5,7 @@ type ScrollStrategy = {
 };
 
 function stripLocale(pathname: string) {
-  return pathname.replace(/^\/(en|fr)/, "") || "/";
+  return pathname.replace(/^\/fr(?=\/|$)/, "") || "/";
 }
 
 const strategies: ScrollStrategy[] = [];

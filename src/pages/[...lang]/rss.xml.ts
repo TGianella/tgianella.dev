@@ -2,6 +2,7 @@ import rss from "@astrojs/rss";
 import { getCollection } from "astro:content";
 import {
   useTranslations,
+  getLocalizedPath,
   slugOf,
   locales,
   type Locale,
@@ -10,11 +11,13 @@ import { publishedPosts } from "../../content/utils";
 import type { APIContext } from "astro";
 
 export function getStaticPaths() {
-  return locales.map((lang) => ({ params: { lang } }));
+  return locales.map((lang) => ({
+    params: { lang: lang === "en" ? undefined : lang },
+  }));
 }
 
 export async function GET(context: APIContext) {
-  const lang = context.params.lang as Locale;
+  const lang: Locale = (context.params.lang as Locale | undefined) ?? "en";
   const t = useTranslations(lang);
 
   const posts = publishedPosts(
@@ -31,7 +34,7 @@ export async function GET(context: APIContext) {
         title: post.data.title,
         description: post.data.description,
         pubDate: post.data.pubDate,
-        link: `/${lang}/blog/${slug}/`,
+        link: `${getLocalizedPath(`/blog/${slug}`, lang)}/`,
       };
     }),
     customData: `<language>${lang === "en" ? "en-US" : "fr-FR"}</language>`,

@@ -1,5 +1,5 @@
 ---
-import { useTranslations, type Locale } from "../i18n/utils";
+import { useTranslations, getLocalizedPath, type Locale } from "../i18n/utils";
 
 interface Props {
   lang: Locale;
@@ -42,7 +42,11 @@ const t = useTranslations(lang);
       ></path>
     </svg>
   </a>
-  <a href={`/${lang}/rss.xml`} aria-label={t.home.rss} class="social-link">
+  <a
+    href={getLocalizedPath("/rss.xml", lang)}
+    aria-label={t.home.rss}
+    class="social-link"
+  >
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"

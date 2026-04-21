@@ -9,7 +9,7 @@ interface Props {
 const { lang, currentPath } = Astro.props;
 
 const t = useTranslations(lang);
-const isHomepage = currentPath === "/en/" || currentPath === "/fr/";
+const isHomepage = currentPath === "/" || currentPath === "/fr/";
 let cleanCurrentPath = currentPath;
 
 if (currentPath.endsWith("/") && !isHomepage) {
@@ -17,7 +17,7 @@ if (currentPath.endsWith("/") && !isHomepage) {
 }
 
 const isCurrentPage = (href: string) => {
-  if (href === "/en/" || href === "/fr/") {
+  if (href === "/" || href === "/fr/") {
     return isHomepage;
   }
 
@@ -36,10 +36,7 @@ const links = [
 ];
 
 const alternateLang = t.langSwitcher.lang as Locale;
-const alternatePath = getLocalizedPath(
-  cleanCurrentPath.replace(/^\/(en|fr)/, "") || "/",
-  alternateLang,
-);
+const alternatePath = getLocalizedPath(cleanCurrentPath, alternateLang);
 ---
 
 <nav class="nav" aria-label={t.nav.mainNavLabel}>

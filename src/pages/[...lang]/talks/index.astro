@@ -5,6 +5,7 @@ import PageHeader from "../../../components/PageHeader.astro";
 import {
   useTranslations,
   getLocaleStaticPaths,
+  getLocalizedPath,
   getDateFormatter,
   slugOf,
   isUpcoming,
@@ -16,7 +17,7 @@ import { buildTimeline } from "../../../content/utils";
 
 export const getStaticPaths = getLocaleStaticPaths;
 
-const { lang } = Astro.params as { lang: Locale };
+const lang: Locale = (Astro.params.lang as Locale | undefined) ?? "en";
 const t = useTranslations(lang);
 
 const talks = (
@@ -123,7 +124,10 @@ const dateFormatter = getDateFormatter(lang);
                           {item.talks.map((talk) => (
                             <li>
                               <a
-                                href={`/${lang}/talks/${talk.slug}`}
+                                href={getLocalizedPath(
+                                  `/talks/${talk.slug}`,
+                                  lang,
+                                )}
                                 class="timeline__talk-link"
                               >
                                 {talk.title}

@@ -3,6 +3,7 @@ import BaseLayout from "../../../layouts/BaseLayout.astro";
 import MainContent from "../../../layouts/MainContent.astro";
 import {
   useTranslations,
+  getLocalizedPath,
   isUpcoming,
   locales,
   type Locale,
@@ -15,8 +16,9 @@ import VideoEmbed from "../../../components/VideoEmbed.astro";
 export async function getStaticPaths() {
   const talks = await getCollection("talks");
   return talks.flatMap((talk) => {
-    const [lang, ...slugParts] = talk.id.split("/");
-    if (!locales.includes(lang as Locale)) return [];
+    const [contentLang, ...slugParts] = talk.id.split("/");
+    if (!locales.includes(contentLang as Locale)) return [];
+    const lang = contentLang === "en" ? undefined : contentLang;
     return [
       {
         params: { lang, slug: slugParts.join("/") },
@@ -26,7 +28,8 @@ export async function getStaticPaths() {
   });
 }
 
-const { lang, slug } = Astro.params as { lang: Locale; slug: string };
+const lang: Locale = (Astro.params.lang as Locale | undefined) ?? "en";
+const { slug } = Astro.params as { slug: string };
 const { talk } = Astro.props;
 const t = useTranslations(lang);
 const { Content } = await render(talk);
@@ -55,7 +58,9 @@ const eventsSorted = [...talk.data.events].sort(
       data-copy-link={t.prose.copyLink}
       data-link-copied={t.prose.linkCopied}
     >
-      <a href={`/${lang}/talks`} class="back-link">{t.talks.backToList}</a>
+      <a href={getLocalizedPath("/talks", lang)} class="back-link"
+        >{t.talks.backToList}</a
+      >
 
       <header class="talk-header">
         <div class="talk-header__top">

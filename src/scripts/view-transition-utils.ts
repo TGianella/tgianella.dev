@@ -1,5 +1,5 @@
 export function stripLocale(pathname: string): string {
-  return pathname.replace(/^\/(en|fr)/, "") || "/";
+  return pathname.replace(/^\/fr(?=\/|$)/, "") || "/";
 }
 
 /** Assigns a numeric weight to each route to determine slide direction.

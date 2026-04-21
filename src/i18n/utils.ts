@@ -11,9 +11,12 @@ export function useTranslations(lang: Locale) {
 }
 
 export function getLocalizedPath(path: string, lang: Locale): string {
-  // Strip any existing locale prefix, then prepend the target locale
-  const stripped = path.replace(/^\/(en|fr)/, "");
-  return `/${lang}${stripped.startsWith("/") ? "" : "/"}${stripped}`;
+  // Default locale (en) has no prefix; fr is prefixed. Accept pre-localized
+  // inputs too: strip any existing /en or /fr so callers can pass either a
+  // bare path ("/blog") or an already-localized one ("/fr/blog").
+  const bare = path.replace(/^\/(en|fr)(?=\/|$)/, "") || "/";
+  if (lang === "en") return bare;
+  return bare === "/" ? "/fr/" : `/fr${bare}`;
 }
 
 /** Returns the alternate locale for use in hreflang / lang switcher */
@@ -26,9 +29,11 @@ export function slugOf(id: string, lang: Locale): string {
   return id.replace(`${lang}/`, "");
 }
 
-/** Static paths for top-level [lang] routes */
+/** Static paths for top-level [...lang] routes.
+ *  The default locale (en) uses `undefined` so the rest-param segment collapses
+ *  to produce bare URLs like /blog; fr produces /fr/blog. */
 export function getLocaleStaticPaths() {
-  return locales.map((lang) => ({ params: { lang } }));
+  return [{ params: { lang: undefined } }, { params: { lang: "fr" as const } }];
 }
 
 /** Returns a long-style date formatter for the given locale */

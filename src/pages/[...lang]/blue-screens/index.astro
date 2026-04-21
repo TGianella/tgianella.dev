@@ -5,6 +5,7 @@ import PageHeader from "../../../components/PageHeader.astro";
 import {
   useTranslations,
   getLocaleStaticPaths,
+  getLocalizedPath,
   getDateFormatter,
   slugOf,
   type Locale,
@@ -14,7 +15,7 @@ import { getCollection } from "astro:content";
 
 export const getStaticPaths = getLocaleStaticPaths;
 
-const { lang } = Astro.params as { lang: Locale };
+const lang: Locale = (Astro.params.lang as Locale | undefined) ?? "en";
 const t = useTranslations(lang);
 
 const photos = sortByDate(
@@ -38,7 +39,10 @@ const dateFormatter = getDateFormatter(lang);
         photos.map((photo) => (
           <li>
             <a
-              href={`/${lang}/blue-screens/${slugOf(photo.id, lang)}`}
+              href={getLocalizedPath(
+                `/blue-screens/${slugOf(photo.id, lang)}`,
+                lang,
+              )}
               class="photo-card"
             >
               <img

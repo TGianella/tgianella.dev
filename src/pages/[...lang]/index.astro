@@ -4,6 +4,7 @@ import MainContent from "../../layouts/MainContent.astro";
 import {
   useTranslations,
   getLocaleStaticPaths,
+  getLocalizedPath,
   slugOf,
   isUpcoming,
   type Locale,
@@ -19,7 +20,7 @@ import Portrait from "../../assets/portrait-theo-gianella-hero.webp";
 
 export const getStaticPaths = getLocaleStaticPaths;
 
-const { lang } = Astro.params as { lang: Locale };
+const lang: Locale = (Astro.params.lang as Locale | undefined) ?? "en";
 const t = useTranslations(lang);
 
 const posts = publishedPosts(
@@ -70,7 +71,7 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
       <header class="section__header">
         <h2 class="section__title">{t.home.sections.blog}</h2>
         <a
-          href={`/${lang}/blog`}
+          href={getLocalizedPath("/blog", lang)}
           class="section__see-all"
           aria-label={t.home.seeAllBlog}
         >
@@ -81,7 +82,10 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
         {
           posts.map((post) => (
             <li>
-              <a href={`/${lang}/blog/${slugOf(post.id, lang)}`} class="card">
+              <a
+                href={getLocalizedPath(`/blog/${slugOf(post.id, lang)}`, lang)}
+                class="card"
+              >
                 <time
                   class="card__date"
                   datetime={post.data.pubDate.toISOString()}
@@ -101,7 +105,7 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
       <header class="section__header">
         <h2 class="section__title">{t.home.sections.talks}</h2>
         <a
-          href={`/${lang}/talks`}
+          href={getLocalizedPath("/talks", lang)}
           class="section__see-all"
           aria-label={t.home.seeAllTalks}
         >
@@ -117,7 +121,10 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
             return (
               <li>
                 <a
-                  href={`/${lang}/talks/${slugOf(talk.id, lang)}`}
+                  href={getLocalizedPath(
+                    `/talks/${slugOf(talk.id, lang)}`,
+                    lang,
+                  )}
                   class="card"
                 >
                   <div class="card__meta">
@@ -147,7 +154,7 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
       <header class="section__header">
         <h2 class="section__title">{t.home.sections.gallery}</h2>
         <a
-          href={`/${lang}/blue-screens`}
+          href={getLocalizedPath("/blue-screens", lang)}
           class="section__see-all"
           aria-label={t.home.seeAllGallery}
         >
@@ -159,7 +166,10 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
           recentPhotos.map((photo) => (
             <li>
               <a
-                href={`/${lang}/blue-screens/${slugOf(photo.id, lang)}`}
+                href={getLocalizedPath(
+                  `/blue-screens/${slugOf(photo.id, lang)}`,
+                  lang,
+                )}
                 class="gallery-card"
               >
                 <img
@@ -260,7 +270,7 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
     .hero__avatar {
       position: relative;
       left: var(--size-2);
-      width: 100%;
+      width: calc(100% - var(--size-2));
       align-self: start;
       border-radius: var(--radius-1);
       box-shadow: var(--shadow-1);

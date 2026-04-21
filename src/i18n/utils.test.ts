@@ -52,16 +52,28 @@ describe("isUpcoming", () => {
 // ── getLocalizedPath ────────────────────────────────
 
 describe("getLocalizedPath", () => {
-  it("adds locale prefix to a bare path", () => {
+  it("prefixes bare path for fr", () => {
     assert.equal(getLocalizedPath("/blog", "fr"), "/fr/blog");
   });
 
-  it("replaces an existing locale prefix", () => {
+  it("returns bare path unchanged for en (no prefix)", () => {
+    assert.equal(getLocalizedPath("/blog", "en"), "/blog");
+  });
+
+  it("strips /en and applies fr prefix", () => {
     assert.equal(getLocalizedPath("/en/blog", "fr"), "/fr/blog");
   });
 
-  it("handles root path", () => {
-    assert.equal(getLocalizedPath("/", "en"), "/en/");
+  it("strips /fr and returns bare path for en", () => {
+    assert.equal(getLocalizedPath("/fr/blog", "en"), "/blog");
+  });
+
+  it("handles root path for en (returns '/')", () => {
+    assert.equal(getLocalizedPath("/", "en"), "/");
+  });
+
+  it("handles root path for fr (returns '/fr/')", () => {
+    assert.equal(getLocalizedPath("/", "fr"), "/fr/");
   });
 
   it("handles deeply nested path", () => {
@@ -71,8 +83,9 @@ describe("getLocalizedPath", () => {
     );
   });
 
-  it("handles same locale (no-op replacement)", () => {
-    assert.equal(getLocalizedPath("/en/blog", "en"), "/en/blog");
+  it("is idempotent when already matching target locale", () => {
+    assert.equal(getLocalizedPath("/fr/blog", "fr"), "/fr/blog");
+    assert.equal(getLocalizedPath("/blog", "en"), "/blog");
   });
 });
 

@@ -7,6 +7,7 @@ import TableOfContents from "../../../components/TableOfContents.astro";
 import {
   useTranslations,
   getDateFormatter,
+  getLocalizedPath,
   locales,
   type Locale,
 } from "../../../i18n/utils";
@@ -18,8 +19,10 @@ import { getCollection, render } from "astro:content";
 export async function getStaticPaths() {
   const posts = await getCollection("blog");
   return posts.flatMap((post) => {
-    const [lang, ...slugParts] = post.id.split("/");
-    if (!locales.includes(lang as Locale)) return [];
+    const [contentLang, ...slugParts] = post.id.split("/");
+    if (!locales.includes(contentLang as Locale)) return [];
+    // Default locale uses `undefined` so the [...lang] segment collapses.
+    const lang = contentLang === "en" ? undefined : contentLang;
     return [
       {
         params: { lang, slug: slugParts.join("/") },
@@ -29,7 +32,8 @@ export async function getStaticPaths() {
   });
 }
 
-const { lang, slug } = Astro.params as { lang: Locale; slug: string };
+const lang: Locale = (Astro.params.lang as Locale | undefined) ?? "en";
+const { slug } = Astro.params as { slug: string };
 const { post } = Astro.props;
 const t = useTranslations(lang);
 const { Content, headings } = await render(post);
@@ -56,7 +60,9 @@ const minutes = readingTime(post.body);
       data-copy-link={t.prose.copyLink}
       data-link-copied={t.prose.linkCopied}
     >
-      <a href={`/${lang}/blog`} class="back-link">{t.blog.backToList}</a>
+      <a href={getLocalizedPath("/blog", lang)} class="back-link"
+        >{t.blog.backToList}</a
+      >
 
       <header class="post-header">
         <div class="post-header__meta">
