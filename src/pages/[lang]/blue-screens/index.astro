@@ -176,17 +176,18 @@ const dateFormatter = getDateFormatter(lang);
 
 <script>
   function initSkeletons() {
-    document
-      .querySelectorAll<HTMLImageElement>(".photo-card__img")
-      .forEach((img) => {
-        if (img.complete) {
-          img.classList.add("loaded");
-        } else {
-          img.addEventListener("load", () => img.classList.add("loaded"), {
-            once: true,
-          });
-        }
-      });
+    const photoCards =
+      document.querySelectorAll<HTMLImageElement>(".photo-card__img");
+
+    photoCards.forEach((img) => {
+      if (img.complete) {
+        img.classList.add("loaded");
+      } else {
+        img.addEventListener("load", () => img.classList.add("loaded"), {
+          once: true,
+        });
+      }
+    });
   }
 
   document.addEventListener("astro:page-load", initSkeletons);

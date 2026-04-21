@@ -103,7 +103,9 @@ const {
       updateNav();
     }
 
-    document.querySelectorAll<HTMLImageElement>(selector).forEach((img, i) => {
+    const proseImages = document.querySelectorAll<HTMLImageElement>(selector);
+
+    proseImages.forEach((img, i) => {
       images.push(img);
       img.tabIndex = 0;
       img.setAttribute("role", "button");
