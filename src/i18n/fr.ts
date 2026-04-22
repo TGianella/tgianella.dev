@@ -19,6 +19,18 @@ const fr: Translations = {
     toLight: "Passer en mode clair",
     toDark: "Passer en mode sombre",
   },
+  gol: {
+    enable: "Animer la grille en arrière-plan",
+    disable: "Arrêter l'animation de la grille",
+    reducedMotion: "Désactivé parce que vous préférez réduire les animations",
+    hudTitle: "Jeu de la vie",
+    hudMinimize: "Réduire les statistiques",
+    hudExpand: "Agrandir les statistiques",
+    hudEngine: "moteur",
+    hudFps: "fps",
+    hudGrid: "grille",
+    hudAlive: "vivantes",
+  },
   a11y: {
     skipToMain: "Aller au contenu principal",
     imagePreview: "Aperçu de l'image",

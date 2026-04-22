@@ -14,6 +14,11 @@ pnpm astro check  # TypeScript + Astro type checking
 pnpm test         # run unit tests (node:test)
 pnpm lint         # ESLint
 pnpm lint:style   # Stylelint
+pnpm build:wasm   # local-only: rebuild vendor/gol-wasm/gol.{js,wasm} from
+                  # the wasm-game-of-life Rust crate. Requires rustup +
+                  # wasm-pack. Not part of `pnpm build` — artifacts are
+                  # committed to the repo so CI doesn't need Rust. Run
+                  # after touching the crate.
 ```
 
 Tests use Node's built-in test runner (`node:test`) and live next to the code
@@ -81,6 +86,10 @@ Requires `lang`, `description`, optional `title` and `canonicalPath`.
 - **Theme** -- Three-layer system: blocking `public/theme.js` for FOUC
   prevention, CSS `light-dark()` + `@property` for animated color transitions,
   Nav script for toggle logic with 1-week localStorage expiry.
+- **Background Game of Life** -- Opt-in background animation wired into
+  `BaseLayout.astro` via `GameOfLifeToggle` + `DevHud`. Self-contained in
+  `src/gol/`. See `src/gol/README.md` for module layout, lifecycle, and
+  extension points.
 
 ### Gotchas
 
@@ -92,6 +101,10 @@ Requires `lang`, `description`, optional `title` and `canonicalPath`.
   blocked.
 - The 404 page is standalone (no BaseLayout) and uses an inline script for
   French translation. See comment in `src/pages/404.astro`.
+- `vendor/gol-wasm/` holds prebuilt Rust artifacts committed to the repo so
+  CI doesn't need Rust. `src/gol/engines/index.ts` falls back to the TS
+  engine if they're missing. Rebuild with `pnpm build:wasm`. See
+  `src/gol/README.md` for details.
 
 ## JetBrains MCP (WebStorm)
 

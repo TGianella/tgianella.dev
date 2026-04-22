@@ -1,0 +1,337 @@
+---
+import { useTranslations, type Locale } from "../i18n/utils";
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<aside
+  id="gol-dev-hud"
+  class="dev-hud"
+  transition:persist="gol-dev-hud"
+  aria-hidden="true"
+  data-visible="false"
+  data-collapsed="false"
+>
+  <header class="dev-hud__header">
+    <h2 class="dev-hud__title">{t.gol.hudTitle}</h2>
+    <button
+      class="dev-hud__collapse"
+      type="button"
+      aria-label={t.gol.hudMinimize}
+      data-label-minimize={t.gol.hudMinimize}
+      data-label-expand={t.gol.hudExpand}
+      data-role="toggle"
+    >
+      <svg
+        class="dev-hud__collapse-icon"
+        viewBox="0 0 16 16"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path class="dev-hud__collapse-icon-minimize" d="M3 8h10"></path>
+        <path class="dev-hud__collapse-icon-expand" d="M3 8h10M8 3v10"></path>
+      </svg>
+    </button>
+  </header>
+  <div class="dev-hud__body">
+    <div class="dev-hud__row">
+      <span class="dev-hud__label" data-label="engine">{t.gol.hudEngine}</span>
+      <span class="dev-hud__value" data-field="engine">—</span>
+    </div>
+    <div class="dev-hud__row">
+      <span class="dev-hud__label" data-label="fps">{t.gol.hudFps}</span>
+      <span class="dev-hud__value" data-field="fps">—</span>
+    </div>
+    <div class="dev-hud__row">
+      <span class="dev-hud__label" data-label="grid">{t.gol.hudGrid}</span>
+      <span class="dev-hud__value" data-field="grid">—</span>
+    </div>
+    <div class="dev-hud__row">
+      <span class="dev-hud__label" data-label="alive">{t.gol.hudAlive}</span>
+      <span class="dev-hud__value" data-field="alive">—</span>
+    </div>
+  </div>
+</aside>
+
+<script>
+  import type { GolApi } from "../gol";
+  import { useTranslations, locales, type Locale } from "../i18n/utils";
+
+  const STORAGE_KEY = "gol-hud-collapsed";
+
+  function currentLocale(): Locale {
+    const lang = document.documentElement.lang;
+    return (locales as readonly string[]).includes(lang)
+      ? (lang as Locale)
+      : "en";
+  }
+
+  function applyTranslations(hud: HTMLElement) {
+    const t = useTranslations(currentLocale()).gol;
+    const setText = (selector: string, value: string) => {
+      const el = hud.querySelector<HTMLElement>(selector);
+      if (el) el.textContent = value;
+    };
+    setText(".dev-hud__title", t.hudTitle);
+    setText('[data-label="engine"]', t.hudEngine);
+    setText('[data-label="fps"]', t.hudFps);
+    setText('[data-label="grid"]', t.hudGrid);
+    setText('[data-label="alive"]', t.hudAlive);
+
+    const toggle = hud.querySelector<HTMLButtonElement>('[data-role="toggle"]');
+    if (toggle) {
+      toggle.dataset.labelMinimize = t.hudMinimize;
+      toggle.dataset.labelExpand = t.hudExpand;
+      const collapsed = hud.getAttribute("data-collapsed") === "true";
+      toggle.setAttribute(
+        "aria-label",
+        collapsed ? t.hudExpand : t.hudMinimize,
+      );
+    }
+  }
+
+  function initHud() {
+    const hud = document.getElementById("gol-dev-hud");
+    if (!hud) return;
+    // The HUD uses `transition:persist`, so the same DOM node survives view
+    // transitions. Without this guard, every `astro:page-load` would stack
+    // another click listener and another stats subscription on it — causing
+    // the collapse toggle to fire multiple times per click (a no-op on even
+    // counts) and leaking subscriptions.
+    if (hud.dataset.hudInitialized === "true") return;
+    hud.dataset.hudInitialized = "true";
+
+    const fields = {
+      engine: hud.querySelector<HTMLElement>('[data-field="engine"]'),
+      fps: hud.querySelector<HTMLElement>('[data-field="fps"]'),
+      grid: hud.querySelector<HTMLElement>('[data-field="grid"]'),
+      alive: hud.querySelector<HTMLElement>('[data-field="alive"]'),
+    };
+    const toggle = hud.querySelector<HTMLButtonElement>('[data-role="toggle"]');
+
+    const getCollapsed = () => {
+      try {
+        return localStorage.getItem(STORAGE_KEY) === "1";
+      } catch {
+        return false;
+      }
+    };
+    const setCollapsed = (collapsed: boolean) => {
+      hud.setAttribute("data-collapsed", collapsed ? "true" : "false");
+      if (toggle) {
+        const min = toggle.dataset.labelMinimize!;
+        const exp = toggle.dataset.labelExpand!;
+        toggle.setAttribute("aria-label", collapsed ? exp : min);
+      }
+      try {
+        localStorage.setItem(STORAGE_KEY, collapsed ? "1" : "0");
+      } catch {
+        // localStorage disabled; state is still applied in-memory.
+      }
+    };
+    setCollapsed(getCollapsed());
+
+    toggle?.addEventListener("click", () => {
+      setCollapsed(hud.getAttribute("data-collapsed") !== "true");
+    });
+
+    let unsubscribe: (() => void) | null = null;
+    let wasEnabled = false;
+    const bindTo = (api: GolApi) => {
+      if (unsubscribe) unsubscribe();
+      wasEnabled = api.isEnabled();
+      unsubscribe = api.onStats((stats) => {
+        const enabled = api.isEnabled();
+        hud.setAttribute("data-visible", enabled ? "true" : "false");
+        if (enabled && !wasEnabled) setCollapsed(false);
+        wasEnabled = enabled;
+        if (fields.engine) fields.engine.textContent = stats.engine;
+        if (fields.fps) fields.fps.textContent = String(stats.fps);
+        if (fields.grid)
+          fields.grid.textContent = `${stats.cells.cols}×${stats.cells.rows}`;
+        if (fields.alive) fields.alive.textContent = String(stats.cells.alive);
+      });
+    };
+
+    const tryBind = () => {
+      if (window.__gol) {
+        bindTo(window.__gol);
+        return true;
+      }
+      return false;
+    };
+
+    if (!tryBind()) {
+      // Poll briefly for the controller to appear after first enable().
+      const iv = window.setInterval(() => {
+        if (tryBind()) window.clearInterval(iv);
+      }, 200);
+    }
+  }
+
+  function syncHud() {
+    const hud = document.getElementById("gol-dev-hud");
+    if (!hud) return;
+    applyTranslations(hud);
+  }
+
+  document.addEventListener("astro:page-load", initHud);
+  document.addEventListener("astro:page-load", syncHud);
+</script>
+
+<style>
+  .dev-hud {
+    position: fixed;
+    z-index: 9999;
+    right: 0.75rem;
+    bottom: var(--size-9);
+    display: none;
+    flex-direction: column;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-2);
+    backdrop-filter: blur(6px);
+    background: color-mix(in oklch, var(--surface-2) 92%, transparent);
+    box-shadow: var(--shadow-2);
+    color: var(--text-2);
+    font-family: var(--font-mono, ui-monospace), monospace;
+    font-size: 0.75rem;
+    gap: 0.125rem;
+
+    @media (prefers-reduced-motion: no-preference) {
+      view-transition-name: dev-hud;
+    }
+  }
+
+  .dev-hud[data-visible="true"] {
+    display: flex;
+    flex-wrap: nowrap;
+  }
+
+  .dev-hud[data-collapsed="true"] {
+    padding: 0;
+    border: none;
+  }
+
+  .dev-hud__header {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0.25rem;
+    gap: 0.5rem;
+  }
+
+  .dev-hud[data-collapsed="true"] .dev-hud__header {
+    padding-bottom: 0;
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+
+  .dev-hud__title {
+    margin: 0;
+    color: var(--text-1);
+    font-family: inherit;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .dev-hud[data-collapsed="true"] .dev-hud__title {
+    display: none;
+  }
+
+  .dev-hud__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+
+  .dev-hud[data-collapsed="true"] .dev-hud__body {
+    display: none;
+  }
+
+  .dev-hud__row {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .dev-hud__label {
+    color: var(--text-2);
+    opacity: 0.7;
+  }
+
+  .dev-hud__value {
+    color: var(--text-1);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .dev-hud__collapse {
+    display: inline-flex;
+    width: 1.5rem;
+    height: 1.5rem;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-1);
+    background: var(--surface-1);
+    color: var(--text-1);
+    cursor: pointer;
+    font-family: inherit;
+    line-height: 1;
+    transition:
+      background var(--duration-quick-2),
+      color var(--duration-quick-2),
+      border-color var(--duration-quick-2);
+  }
+
+  .dev-hud__collapse-icon {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+
+  .dev-hud__collapse-icon-expand {
+    display: none;
+  }
+
+  .dev-hud[data-collapsed="true"] .dev-hud__collapse-icon-minimize {
+    display: none;
+  }
+
+  .dev-hud[data-collapsed="true"] .dev-hud__collapse-icon-expand {
+    display: inline;
+  }
+
+  .dev-hud__collapse:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
+
+  @media (hover: hover) {
+    .dev-hud {
+      bottom: 0.75rem;
+    }
+
+    .dev-hud__collapse:hover {
+      border-color: var(--color-brand);
+      background: var(--surface-3);
+      color: var(--color-brand);
+    }
+  }
+</style>

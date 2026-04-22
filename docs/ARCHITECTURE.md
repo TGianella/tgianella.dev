@@ -133,6 +133,30 @@ explicit dark. It is implemented across three layers:
 The 1-week expiry ensures that if a user toggles the theme once on a sunny day
 but normally prefers dark mode, they aren't stuck with it forever.
 
+## Background Game of Life
+
+A full-page Conway's Game of Life canvas lives behind the content, opt-in via
+the toggle button in the top-right. The feature is self-contained in
+`src/gol/`: the rest of the site only touches it through `window.__gol`
+(published by `src/gol/index.ts`) and the two Astro components that render the
+toggle and the dev HUD.
+
+Canvas, toggle, and HUD are declared once in `BaseLayout.astro`. The canvas
+carries `transition:persist="gol-canvas"` so Astro's `ClientRouter` keeps the
+same DOM node (and its bitmap) across soft navigations -- without that, every
+page change would flicker the grid.
+
+Engines (Rust/wasm, TypeScript fallback) and the Canvas 2D renderer sit
+behind `Engine` / `Renderer` interfaces in `src/gol/types.ts`, so adding a
+new simulation backend or rendering strategy stays local to `src/gol/`. The
+factory in `src/gol/engines/index.ts` silently falls back to the TS engine
+if wasm fails to fetch or instantiate (e.g. on a fresh clone before
+`pnpm build:wasm` has been run).
+
+See `src/gol/README.md` for the module map, lifecycle, and extension points.
+The CSP in `public/_headers` includes `'wasm-unsafe-eval'` to allow wasm
+instantiation; `prefers-reduced-motion` disables the toggle entirely.
+
 ## 404 page
 
 The 404 page is a standalone page that doesn't use `BaseLayout` or the i18n
