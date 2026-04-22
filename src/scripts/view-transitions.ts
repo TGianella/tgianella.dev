@@ -1,4 +1,5 @@
-import { stripLocale, resolveDirection } from "./view-transition-utils";
+import { resolveDirection } from "./view-transition-utils";
+import { stripLocale } from "../utils/routing";
 
 let pendingLangSwitch = false;
 

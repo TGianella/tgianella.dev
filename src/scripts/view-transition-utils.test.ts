@@ -1,39 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import {
-  stripLocale,
-  getPageWeight,
-  resolveDirection,
-} from "./view-transition-utils.ts";
-
-// ── stripLocale ─────────────────────────────────────
-
-describe("stripLocale", () => {
-  it("strips /fr prefix", () => {
-    assert.equal(stripLocale("/fr/talks"), "/talks");
-  });
-
-  it('returns "/" for bare /fr', () => {
-    assert.equal(stripLocale("/fr"), "/");
-  });
-
-  it("leaves /en paths unchanged (en has no prefix)", () => {
-    assert.equal(stripLocale("/en/blog"), "/en/blog");
-    assert.equal(stripLocale("/en"), "/en");
-  });
-
-  it("does not strip locale in the middle of a path", () => {
-    assert.equal(stripLocale("/blog/fr/post"), "/blog/fr/post");
-  });
-
-  it("returns path unchanged when no locale prefix", () => {
-    assert.equal(stripLocale("/blog"), "/blog");
-  });
-
-  it('handles root "/"', () => {
-    assert.equal(stripLocale("/"), "/");
-  });
-});
+import { getPageWeight, resolveDirection } from "./view-transition-utils.ts";
 
 // ── getPageWeight ───────────────────────────────────
 
@@ -151,5 +118,105 @@ describe("resolveDirection", () => {
       resolveDirection({ pathname: "/talks" }, { pathname: "/blog" }),
       "back",
     );
+  });
+});
+
+// Regression guard: prod serves routes like `/talks/` while `<a href>` values
+// are authored bare. The page-weight / direction helpers must not care which
+// side of the transition carries a trailing slash — otherwise lang-switch VT
+// groups silently fail to form (as they did on prod before this was fixed).
+describe("trailing-slash isometry", () => {
+  /** Returns the same path with and without a trailing slash (root unchanged). */
+  function variants(path: string): string[] {
+    if (path === "/") return ["/"];
+    return path.endsWith("/") ? [path, path.slice(0, -1)] : [path, `${path}/`];
+  }
+
+  describe("getPageWeight", () => {
+    const PATHS = [
+      "/",
+      "/blog",
+      "/blog/my-post",
+      "/talks",
+      "/talks/my-talk",
+      "/blue-screens",
+      "/blue-screens/photo-1",
+      "/fr",
+      "/fr/blog",
+      "/fr/blog/my-post",
+      "/fr/talks",
+      "/fr/blue-screens/photo-1",
+    ];
+
+    for (const path of PATHS) {
+      it(`is invariant for ${path}`, () => {
+        const results = variants(path).map(getPageWeight);
+        assert.equal(
+          new Set(results).size,
+          1,
+          `getPageWeight differs across slash variants: ${JSON.stringify(results)}`,
+        );
+      });
+    }
+  });
+
+  describe("resolveDirection", () => {
+    // [from, to, expected direction]
+    const CASES: Array<[string, string, string]> = [
+      ["/", "/blog", "forward"],
+      ["/blog", "/", "back"],
+      ["/blog", "/talks", "forward"],
+      ["/talks", "/blog", "back"],
+      ["/blog", "/blog/my-post", "forward"],
+      ["/blog/my-post", "/blog", "back"],
+      // Language switches: same logical page, different locale → "none"
+      ["/talks", "/fr/talks", "none"],
+      ["/fr/talks", "/talks", "none"],
+      ["/", "/fr", "none"],
+      ["/fr", "/", "none"],
+    ];
+
+    for (const [from, to, expected] of CASES) {
+      it(`${from} → ${to} resolves to "${expected}" regardless of trailing slashes`, () => {
+        for (const f of variants(from)) {
+          for (const t of variants(to)) {
+            assert.equal(
+              resolveDirection({ pathname: f }, { pathname: t }),
+              expected,
+              `resolveDirection(${f} → ${t}) should be "${expected}"`,
+            );
+          }
+        }
+      });
+    }
+
+    it("gallery direction resolves regardless of trailing slashes on either side", () => {
+      const hrefVariants = ["/blue-screens/photo-2", "/blue-screens/photo-2/"];
+      for (const pathnameVariant of [
+        "/blue-screens/photo-2",
+        "/blue-screens/photo-2/",
+      ]) {
+        for (const hrefVariant of hrefVariants) {
+          assert.equal(
+            resolveDirection(
+              { pathname: "/blue-screens/photo-1" },
+              { pathname: pathnameVariant },
+              { nextHref: hrefVariant },
+            ),
+            "forward",
+            `nextHref=${hrefVariant}, to.pathname=${pathnameVariant}`,
+          );
+          assert.equal(
+            resolveDirection(
+              { pathname: "/blue-screens/photo-3" },
+              { pathname: pathnameVariant },
+              { prevHref: hrefVariant },
+            ),
+            "back",
+            `prevHref=${hrefVariant}, to.pathname=${pathnameVariant}`,
+          );
+        }
+      }
+    });
   });
 });

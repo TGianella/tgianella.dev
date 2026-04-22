@@ -1,12 +1,10 @@
+import { stripLocale } from "../utils/routing";
+
 type ScrollStrategy = {
   condition: (fromPath: string) => boolean;
   /** Captures the current scroll anchor. Returns a restore function, or null if nothing to save. */
   save: () => (() => void) | null;
 };
-
-function stripLocale(pathname: string) {
-  return pathname.replace(/^\/fr(?=\/|$)/, "") || "/";
-}
 
 const strategies: ScrollStrategy[] = [];
 

@@ -1,5 +1,6 @@
 ---
 import { useTranslations, getLocalizedPath, type Locale } from "../i18n/utils";
+import { stripLocale } from "../utils/routing";
 
 interface Props {
   lang: Locale;
@@ -9,19 +10,17 @@ interface Props {
 const { lang, currentPath } = Astro.props;
 
 const t = useTranslations(lang);
-const isHomepage = currentPath === "/" || currentPath === "/fr/";
-let cleanCurrentPath = currentPath;
 
-if (currentPath.endsWith("/") && !isHomepage) {
-  cleanCurrentPath = currentPath.slice(0, -1);
-}
+const normalizedPath = stripLocale(currentPath);
+const isHomepage = normalizedPath === "/";
 
 const isCurrentPage = (href: string) => {
-  if (href === "/" || href === "/fr/") {
-    return isHomepage;
-  }
-
-  return cleanCurrentPath.includes(href);
+  const normalizedHref = stripLocale(href);
+  if (normalizedHref === "/") return isHomepage;
+  return (
+    normalizedPath === normalizedHref ||
+    normalizedPath.startsWith(`${normalizedHref}/`)
+  );
 };
 
 const links = [
@@ -36,7 +35,7 @@ const links = [
 ];
 
 const alternateLang = t.langSwitcher.lang as Locale;
-const alternatePath = getLocalizedPath(cleanCurrentPath, alternateLang);
+const alternatePath = getLocalizedPath(normalizedPath, alternateLang);
 ---
 
 <nav class="nav" aria-label={t.nav.mainNavLabel}>

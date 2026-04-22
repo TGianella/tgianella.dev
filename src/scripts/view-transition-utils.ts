@@ -1,16 +1,11 @@
-export function stripLocale(pathname: string): string {
-  return pathname.replace(/^\/fr(?=\/|$)/, "") || "/";
-}
+import { stripLocale } from "../utils/routing.ts";
 
 /** Assigns a numeric weight to each route to determine slide direction.
  *  Navigating to a heavier page slides forward, lighter slides back.
  *  Detail pages sit between their parent and the next section so that
  *  "blog -> article" and "article -> talks" both slide forward. */
 export function getPageWeight(pathname: string): number {
-  const cleanPathname = pathname.endsWith("/")
-    ? pathname.slice(0, -1)
-    : pathname;
-  const p = stripLocale(cleanPathname);
+  const p = stripLocale(pathname);
   if (p === "/") return 0;
   if (p === "/blog") return 10;
   if (p === "/talks") return 20;
@@ -37,13 +32,19 @@ export function resolveDirection(
     toPath.startsWith("/blue-screens/") &&
     fromPath !== toPath
   ) {
-    if (to.pathname === galleryNav?.nextHref) return "forward";
-    if (to.pathname === galleryNav?.prevHref) return "back";
+    const nextPath = galleryNav?.nextHref
+      ? stripLocale(galleryNav.nextHref)
+      : undefined;
+    const prevPath = galleryNav?.prevHref
+      ? stripLocale(galleryNav.prevHref)
+      : undefined;
+    if (toPath === nextPath) return "forward";
+    if (toPath === prevPath) return "back";
     return "none";
   }
 
-  const fromW = getPageWeight(from.pathname);
-  const toW = getPageWeight(to.pathname);
+  const fromW = getPageWeight(fromPath);
+  const toW = getPageWeight(toPath);
   if (fromW !== -1 && toW !== -1 && fromW !== toW) {
     return toW > fromW ? "forward" : "back";
   }
