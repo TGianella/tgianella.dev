@@ -161,6 +161,10 @@ const t = useTranslations(lang);
       border-start-start-radius: var(--radius-2);
       opacity: 1;
       translate: calc(100% - var(--border-size-5)) 0;
+
+      &[aria-pressed="true"] {
+        translate: 0 0;
+      }
     }
 
     .gol-toggle:focus-visible {
