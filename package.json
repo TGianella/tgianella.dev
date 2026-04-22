@@ -24,7 +24,7 @@
   "nano-staged": {
     "*.{js,ts,mjs,cjs,astro,mdx}": "eslint",
     "*.{css,astro}": "stylelint",
-    "*.{js,ts,mjs,cjs,astro,mdx,css,json,md}": "prettier --check",
+    "*.{js,ts,mjs,cjs,astro,mdx,css,json,md}": "prettier --write",
     "*.astro": "bash -c 'pnpm astro check'",
     "*.ts": [
       "bash -c 'tsc --noEmit'",
