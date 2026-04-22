@@ -75,7 +75,7 @@ a `ThemeObserver` up front; creates the `Engine` lazily on `enable()`
 
 On `enable()`: guards on `matchMedia("(prefers-reduced-motion: reduce)")`,
 finds or creates `<canvas id="gol-canvas">`, attaches the renderer, mounts
-an off-DOM color probe so the renderer can read `--text-1`, snapshots
+an off-DOM color probe so the renderer can read `--text-2`, snapshots
 layout, initialises the engine with a `random` seed, starts observers and
 the scheduler, subscribes to `astro:before-swap` + `astro:after-swap` via
 a single `AbortController`, and sets `data-gol="on"` on `<html>` so site
@@ -148,8 +148,8 @@ stateful `LayoutObserver`.
 ### `theme.ts` — the color probe
 
 Canvas 2D's `fillStyle` can't parse `light-dark(...)` — the form the site
-uses for `--text-1`. Workaround: inject a zero-size hidden `<div>` whose
-CSS `color` is `var(--text-1)`, and read its resolved `color` via
+uses for `--text-2`. Workaround: inject a zero-size hidden `<div>` whose
+CSS `color` is `var(--text-2)`, and read its resolved `color` via
 `getComputedStyle`. The resolved value is always an `rgb`/`oklch` string
 the canvas accepts.
 
@@ -309,7 +309,7 @@ preserves the overlap region) and paints random cells into the newly
 revealed strip. Shrinking is a pure resize — the engine drops the outside
 cells.
 
-**Theme transitions.** `--text-1` is registered via `@property` so it
+**Theme transitions.** `--text-2` is registered via `@property` so it
 interpolates on theme swap. The controller re-reads the probe's computed
 color inside `redraw()` on every frame instead of caching it on the
 `ThemeObserver` callback — that callback fires synchronously with the

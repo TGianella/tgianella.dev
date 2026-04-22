@@ -1,4 +1,4 @@
-// Custom properties like `--text-1` declare as `light-dark(...)` text, which
+// Custom properties like `--text-2` declare as `light-dark(...)` text, which
 // canvas.fillStyle can't parse — reading `color` on an element that *uses*
 // the token forces resolution to an rgb/oklch value the canvas accepts.
 export function readCellColor(el: HTMLElement): string {
@@ -9,7 +9,7 @@ export function makeColorProbe(): HTMLDivElement {
   const probe = document.createElement("div");
   probe.setAttribute("aria-hidden", "true");
   probe.style.cssText =
-    "position:absolute;width:0;height:0;overflow:hidden;pointer-events:none;color:var(--text-1);";
+    "position:absolute;width:0;height:0;overflow:hidden;pointer-events:none;color:var(--text-2);";
   return probe;
 }
 
