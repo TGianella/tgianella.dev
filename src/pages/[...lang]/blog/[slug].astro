@@ -53,6 +53,7 @@ const minutes = readingTime(post.body);
   title={post.data.title}
   description={post.data.description}
   canonicalPath={`/blog/${slug}`}
+  canonicalUrl={post.data.firstPublishedIn?.url}
   ogImage={ogImage}
 >
   <MainContent>

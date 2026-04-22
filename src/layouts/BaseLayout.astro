@@ -16,8 +16,14 @@ interface Props {
   lang: Locale;
   title?: string;
   description: string;
-  /** Canonical path without locale prefix, e.g. "/blog/my-post" */
+  /** Canonical path without locale prefix, e.g. "/blog/my-post". Used to
+   * compute the alternate-locale hreflang URL. */
   canonicalPath?: string;
+  /** Override the canonical URL entirely (e.g. an external publication URL).
+   * When set, this replaces the URL derived from canonicalPath in the
+   * <link rel="canonical"> and og:url tags. canonicalPath is still used for
+   * the alternate-locale hreflang links. */
+  canonicalUrl?: string;
   ogImage?: string;
   noindex?: boolean;
 }
@@ -27,6 +33,7 @@ const {
   title,
   description,
   canonicalPath = "/",
+  canonicalUrl: canonicalUrlOverride,
   ogImage,
   noindex,
 } = Astro.props;
@@ -38,7 +45,13 @@ const alternateUrl = new URL(
   getLocalizedPath(canonicalPath, alternateLang),
   Astro.site,
 );
-const canonicalUrl = new URL(getLocalizedPath(canonicalPath, lang), Astro.site);
+const localCanonicalUrl = new URL(
+  getLocalizedPath(canonicalPath, lang),
+  Astro.site,
+);
+const canonicalUrl = canonicalUrlOverride
+  ? new URL(canonicalUrlOverride)
+  : localCanonicalUrl;
 
 const ogImageUrl = ogImage ?? new URL("/og-default.png", Astro.site).toString();
 const pageTitle = title ? `${title} — ${t.seo.siteName}` : t.seo.siteName;
