@@ -53,7 +53,8 @@ const canonicalUrl = canonicalUrlOverride
   ? new URL(canonicalUrlOverride)
   : localCanonicalUrl;
 
-const ogImageUrl = ogImage ?? new URL("/og-default.png", Astro.site).toString();
+const ogImageUrl =
+  ogImage ?? new URL(`/og-default-${lang}.png`, Astro.site).toString();
 const pageTitle = title ? `${title} — ${t.seo.siteName}` : t.seo.siteName;
 ---
 
