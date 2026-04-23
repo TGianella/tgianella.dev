@@ -106,6 +106,8 @@ const fr: Translations = {
   },
   seo: {
     siteName: "Théo Gianella",
+    description:
+      "Mon site personnel. Trouvez ici tous mes articles, conférences et bien plus !",
   },
   footer: {
     rights: "Tous droits réservés.",

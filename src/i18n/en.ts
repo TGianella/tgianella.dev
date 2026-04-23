@@ -104,6 +104,8 @@ const en = {
   },
   seo: {
     siteName: "Théo Gianella",
+    description:
+      "My personal website. Find here all my articles, talks and more!",
   },
   footer: {
     rights: "All rights reserved.",
