@@ -526,6 +526,40 @@ html[data-vt-swapping] {
   object-position: right;
 }
 
+::view-transition-image-pair(.text-transition-bottom) {
+  overflow-y: clip;
+}
+
+::view-transition-old(.text-transition-bottom),
+::view-transition-new(.text-transition-bottom) {
+  height: 100%;
+  object-fit: none;
+  object-position: left bottom;
+}
+
+::view-transition-old(.transition-position-bottom-right),
+::view-transition-new(.transition-position-bottom-right) {
+  object-position: right bottom;
+}
+
+::view-transition-old(.transition-position-bottom-left),
+::view-transition-new(.transition-position-bottom-left) {
+  object-position: left bottom;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(.text-transition-bottom) {
+    animation-duration: var(--duration-moderate-2);
+    animation-name: vt-out-bottom;
+  }
+
+  ::view-transition-new(.text-transition-bottom) {
+    animation-delay: var(--duration-moderate-2);
+    animation-duration: var(--duration-moderate-2);
+    animation-name: vt-in-bottom;
+  }
+}
+
 /* ── Directional slide for page navigation ───────────── */
 @media (width >= 560px) {
   :root {
@@ -576,6 +610,18 @@ html[data-vt-swapping] {
   from {
     opacity: 0;
     translate: calc(-1 * var(--vt-slide)) 0;
+  }
+}
+
+@keyframes vt-out-bottom {
+  to {
+    translate: 0 100%;
+  }
+}
+
+@keyframes vt-in-bottom {
+  from {
+    translate: 0 100%;
   }
 }
 

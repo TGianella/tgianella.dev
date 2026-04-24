@@ -42,7 +42,7 @@ const en = {
       "Passionate about the web platform as a whole, I am a developer, speaker and teacher. I strive to craft performant, accessible and beautiful web experiences. Being extremely curious, I'm always on the lookout for new things to learn, and you will find on this website articles and talks about some topics that caught my interest.",
       "I am very interested about browser internals, web toolchains (transpilation, bundling, etc.) and the intricacies of JavaScript and CSS. Beyond that, I come from an academic and research background in Liberal Arts and I'm your stereotypical French person, being a film nerd, a good cuisine enjoyer and often wearing a striped shirt.",
     ],
-    tagline: "Frontend Engineer",
+    tagline: ["Frontend", "Engineer"],
     github: "GitHub profile",
     linkedin: "LinkedIn profile",
     rss: "RSS feed",

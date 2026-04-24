@@ -58,7 +58,19 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
       width="3813"
       height="1870"
     />
-    <p class="hero__tagline" data-vt-name="hero-tagline">{t.home.tagline}</p>
+    <p class="hero__tagline" aria-label={t.home.tagline.join(" ")}>
+      {
+        t.home.tagline.map((line, i) => (
+          <span
+            class="tagline__line"
+            aria-hidden="true"
+            data-vt-name={`hero-tagline-${i}`}
+          >
+            {line}
+          </span>
+        ))
+      }
+    </p>
     <button class="hero__scroll-hint" aria-label={t.home.scrollToBio}>↓</button>
   </section>
 
@@ -231,9 +243,17 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
     font-family: var(--font-transitional);
     /* stylelint-disable-next-line defensive-css/no-unsafe-clamp-font-size */
     font-size: clamp(2.5rem, 12vw, 6rem);
-    line-height: 0.9;
+    line-height: 1.15;
+    margin-block-start: -0.2rem;
     padding-block-end: 0.2em;
-    view-transition-class: text-transition;
+  }
+
+  .tagline__line {
+    display: block;
+    margin-block-end: -0.25em;
+    text-box: trim-both text;
+    view-transition-class: text-transition-bottom
+      transition-position-bottom-left;
   }
 
   .hero__scroll-hint {
@@ -286,7 +306,11 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
       grid-row: image-top / tagline-bottom;
       place-self: end end;
       text-align: end;
-      view-transition-class: text-transition-right;
+    }
+
+    .tagline__line {
+      view-transition-class: text-transition-bottom
+        transition-position-bottom-right;
     }
 
     .hero__scroll-hint {

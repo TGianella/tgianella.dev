@@ -51,7 +51,12 @@ const dateFormatter = getDateFormatter(lang);
     </PageHeader>
 
     <div>
-      <div role="tablist" class="tab-list" aria-label={t.talks.title}>
+      <div
+        role="tablist"
+        class="tab-list"
+        aria-label={t.talks.title}
+        data-vt-name="talks-tab-list"
+      >
         <button
           role="tab"
           id="tab-list"
@@ -300,6 +305,7 @@ const dateFormatter = getDateFormatter(lang);
     isolation: isolate;
     margin-block: var(--size-6) var(--size-3);
     margin-inline-start: auto;
+    view-transition-class: text-transition-right;
   }
 
   [role="tab"] {
