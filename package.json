@@ -16,7 +16,8 @@
     "lint": "eslint .",
     "lint:style": "stylelint \"src/**/*.{css,astro}\"",
     "format": "prettier . --write",
-    "test": "node --experimental-strip-types --test 'src/**/*.test.ts'"
+    "test": "node --experimental-strip-types --test 'src/**/*.test.ts'",
+    "add-images": "bash -c './scripts/add-gallery-picture.sh'"
   },
   "simple-git-hooks": {
     "pre-commit": "npx nano-staged"
