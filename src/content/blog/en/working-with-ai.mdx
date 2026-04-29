@@ -1,0 +1,30 @@
+---
+title: "Working with AI"
+description: "How I worked with AI"
+tags: ["AI"]
+pubDate: 2026-12-22
+thumbnail: "../../../assets/posts/thumbnails/babel-swc-migration.webp"
+---
+
+## Working with an AI agent
+
+This side-project was the perfect opportunity to test working with an AI code agent, the greenfield status and small scale ensure that a low-tier subscription would cover the costs. I ended up going with the ubiquitous Claude Code as it seemed to be the best performer at the moment and Anthropic seems to hold ever so slightly stronger ethical values than other major players of the field — I know this sentence might age very poorly.
+
+I went with the Pro subscription which is the lowest tier with access to Claude Code. As you might know, the usage limits are purposefully not given in an absolute measure (you only see what ratio of your 5 hours session or weekly limit you have already consumed). Anthropic actually doesn't have a real detailed pricing page outside of API rates. This came as a bit of a shock to me and I'm still a bit baffled that somehow in AI you can pay for something whose very definition can change several times a day — I'm also aware that LLM pricing is very far from being mature so it should settle down in the upcoming years.
+
+The first thing I noticed very quickly is that your usage ratio burns down much quicker during US office hours (so basically during French afternoons/evenings). Even though this is never stated in the official docs (that I know of), it doesn't really feel like usage measurement is only correlated to the number of input/output tokens but also weighted by global usage, which makes sense from a business perspective to optimize throughput.
+
+The practical impact of this is that I had no usage issue when working outside of these hours (for the interlaps with my free time that meant early morning, lunchtime and outside working days) with my workflow which usually looks like firing a big plan request to get the ball rolling for a new feature and then interacting every 15 minutes in average after I looked at the code, understood it and validated the feature was working correctly (or that it was not working most of the time). Such a workflow drained my usage limit in less than one hour during peak time so it was not really sustainable and most of the heavy lifting was done outside that time window.
+
+Of course, another major caveat with the usage limits was that I couldn't really use Claude Code in full agentic mode (i.e. letting the model work autonomously on an end-to-end feature, iterating on it and only reviewing a PR) because of how expensive it would be — and also I was glad to actually get to participate in making this website, as it turns out, I like to code. In the end I adopted a middle-of-the-road workflow where I would only use Claude Code for tasks with a good ratio of tediousness/high value of the task over how complex/costly it would be for the model. Although I would have loved, by pure curiosity, to see how good the model could have performed with the right setup and full autonomy — I dreamt of Claude Code being able to navigate my app and validate by itself the feature it was working on —, I felt like this was the best setup for me, keeping a lot of agency while getting a lot of the LLM benefits.
+
+It won't come off as a surprise but my experience was globally positive. Claude Code is very efficient for these kind of projects and it's a real joy to see it handle all the boilerplate code. It is of course also a very good source of complex technical solutions to some problems. One more than one occasion it was able to find out a way I didn't know beforehand to solve a precise issue. As a result, I also found that it gave me a lot of occasions to learn new things and improve, as long as I put in the effort to actually read through all the output and review the code to truly understand the changes. I even found the tool was most useful when I was able to challenge the first outputs.
+
+I found that Claude Code shifted the way technical mastery impacts the output of a project. To produce a high-quality application, instead of needing to know intricately how every smallest part works — even though it never hurts and some people might even find a legitimate pleasure in it — what matters the most is the clarity of your design. When left unsupervised I found that Claude Code would default to outputting an averagely-coded website, way below my standards. It makes perfect sense because Claude learnt how to create a web application by having been trained on existing ones, and on average most websites are subpar, especially in a few not immediately visible places like responsive design or accessibility.
+
+What this means is that on a macro level, you still need to know where your Northern Star lies and have both a clear idea of what you want and the best way to achieve this vision. This doesn't mean that the LLM can't participate in the ideation/design phase — remember that even a low-grade LLM has been trained on far more data that most of us will see in our entire lifetime so on paper they are a great source of knowledge. I've actually had great success going back and forth with Claude Code about architecture or design, but once we start the implementation I noticed that it could drift away from the exact design or the best practices we outlined beforehand to more average solutions. The consequence is that I always needed to stay vigilant during implementation to make sure we follow the plan.
+
+This translates well to the micro level (think at the function scale),
+
+- Keep the design / Know what you want and what is possible
+- Browser debugging
