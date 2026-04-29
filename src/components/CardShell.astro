@@ -1,4 +1,6 @@
 ---
+import Pill from "./Pill.astro";
+
 interface Props {
   href: string;
   title: string;
@@ -7,6 +9,7 @@ interface Props {
   thumbAlt?: string;
   tags?: string[];
   thumbTransitionName?: string;
+  isDraft?: boolean;
 }
 
 const {
@@ -17,10 +20,15 @@ const {
   thumbAlt = "",
   tags = [],
   thumbTransitionName,
+  isDraft = false,
 } = Astro.props;
 ---
 
-<a href={href} class="card" data-vt-name={thumbTransitionName || undefined}>
+<a
+  href={href}
+  class:list={["card", { "card--draft": isDraft }]}
+  data-vt-name={thumbTransitionName || undefined}
+>
   <div class="card__side">
     <div class="card__thumb-wrap">
       <img
@@ -30,6 +38,13 @@ const {
         loading="lazy"
         decoding="async"
       />
+      {
+        isDraft && (
+          <Pill variant="brand" class="draft-badge">
+            DRAFT
+          </Pill>
+        )
+      }
       <slot name="thumb-overlay" />
     </div>
   </div>
@@ -167,5 +182,16 @@ const {
       padding: 1px var(--size-2);
       font-size: var(--font-size-0);
     }
+  }
+
+  /* ── Draft state ─────────────────────────────── */
+  .card--draft {
+    outline: 2px dashed light-dark(var(--yellow-6), var(--yellow-5));
+  }
+
+  :global(.draft-badge) {
+    position: absolute;
+    top: var(--size-2);
+    left: var(--size-2);
   }
 </style>

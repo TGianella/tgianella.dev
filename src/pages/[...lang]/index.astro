@@ -17,6 +17,7 @@ import {
   thumbnailUrl,
 } from "../../content/utils";
 import Portrait from "../../assets/portrait-theo-gianella-hero.webp";
+import Pill from "../../components/Pill.astro";
 
 export const getStaticPaths = getLocaleStaticPaths;
 
@@ -96,8 +97,13 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
             <li>
               <a
                 href={getLocalizedPath(`/blog/${slugOf(post.id, lang)}`, lang)}
-                class="card"
+                class:list={["card", { "card--draft": post.data.draft }]}
               >
+                {post.data.draft && (
+                  <Pill class="card__pill--draft" variant="brand">
+                    DRAFT
+                  </Pill>
+                )}
                 <time
                   class="card__date"
                   datetime={post.data.pubDate.toISOString()}
@@ -422,6 +428,7 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
   }
 
   .card {
+    position: relative;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -434,6 +441,11 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
     gap: 0.375rem;
     text-decoration: none;
     transition: border-color 0.15s;
+  }
+
+  .card__pill--draft {
+    position: absolute;
+    right: var(--size-4);
   }
 
   .card__meta {
@@ -464,6 +476,10 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
     color: var(--text-2);
     font-size: var(--font-size-1);
     -webkit-line-clamp: 3;
+  }
+
+  .card--draft {
+    outline: 2px dashed light-dark(var(--yellow-6), var(--yellow-5));
   }
 
   /* ── Gallery grid ──────────────────────────────────── */

@@ -13,7 +13,7 @@ interface Props {
     description: string;
     pubDate: Date;
     thumbnail?: ImageMetadata;
-
+    draft?: boolean;
     tags: string[];
     body?: string;
   };
@@ -39,6 +39,7 @@ const thumbSrc = post.thumbnail
   thumb={thumbSrc}
   tags={post.tags}
   thumbTransitionName={`blog-thumb-${slug}`}
+  isDraft={post.draft}
 >
   <p slot="meta" class="card__meta">
     <span class="icon-row">

@@ -112,6 +112,27 @@ describe("publishedPosts", () => {
     publishedPosts(posts);
     assert.deepEqual(posts, original);
   });
+
+  it("includes drafts in dev mode", () => {
+    const posts = [
+      makePost("published", new Date("2024-01-01")),
+      makePost("draft", new Date("2024-06-01"), true),
+    ];
+    const result = publishedPosts(posts, true);
+    assert.equal(result.length, 2);
+    assert.equal(result[0].data.title, "draft");
+    assert.equal(result[1].data.title, "published");
+  });
+
+  it("still sorts drafts by pubDate descending in dev mode", () => {
+    const posts = [
+      makePost("old-draft", new Date("2024-01-01"), true),
+      makePost("new-draft", new Date("2024-12-01"), true),
+    ];
+    const result = publishedPosts(posts, true);
+    assert.equal(result[0].data.title, "new-draft");
+    assert.equal(result[1].data.title, "old-draft");
+  });
 });
 
 // ── sortByDate ──────────────────────────────────────

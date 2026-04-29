@@ -16,9 +16,9 @@ export function thumbnailUrl(src: string): string {
 /** Filters out drafts and sorts by pubDate descending. */
 export function publishedPosts<
   T extends { data: { draft?: boolean; pubDate: Date } },
->(posts: T[]): T[] {
+>(posts: T[], isDev: boolean = import.meta.env?.DEV ?? false): T[] {
   return posts
-    .filter((p) => !p.data.draft)
+    .filter((p) => isDev || !p.data.draft)
     .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 }
 

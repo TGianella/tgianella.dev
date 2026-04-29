@@ -65,6 +65,12 @@ const minutes = readingTime(post.body);
         >{t.blog.backToList}</a
       >
 
+      {
+        post.data.draft && (
+          <div class="draft-banner">⚠ Draft — not published</div>
+        )
+      }
+
       <header class="post-header">
         <div class="post-header__meta">
           <span class="icon-row">
@@ -180,6 +186,23 @@ const minutes = readingTime(post.body);
   .back-link {
     display: inline-block;
     margin-block-end: var(--size-5);
+  }
+
+  .draft-banner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: var(--size-2) var(--size-4);
+    border-radius: var(--radius-2);
+    background: light-dark(
+      var(--yellow-1),
+      color-mix(in oklch, var(--yellow-8) 15%, transparent)
+    );
+    border-inline-start: 3px solid light-dark(var(--yellow-6), var(--yellow-5));
+    color: light-dark(var(--yellow-9), var(--yellow-4));
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-6);
+    margin-block-end: var(--size-4);
   }
 
   .post-header {
