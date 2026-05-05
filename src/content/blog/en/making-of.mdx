@@ -1,18 +1,16 @@
 ---
 title: "Making-of: building a technical blog in 2026"
-description: "An overview of all the interesting parts that went into making this website"
-tags: ["Meta", "Astro", "CSS", "Open Props", "Web", "i18n"]
-pubDate: 2026-04-17
+description: "An overview of all the technologies I used and the problems I faced when making this website."
+tags: ["Astro", "CSS", "Open Props", "Web", "i18n", "Cloudflare"]
+pubDate: 2026-05-05
 thumbnail: "../../../assets/posts/thumbnails/making-of.jpg"
-draft: true
 ---
 
-import { Image } from "astro:assets";
 import Callout from "../../../components/Callout.astro";
 
-This is the first exclusive post for this blog! I made it on my free time during April 2026 and I found it was a great learning experience on many levels. Although on the face of it this website is pretty much as normal as it gets (it is your run-of-the-mill content-oriented personal website), I found that I had to solve a lot of non-trivial problems in order to get exactly the result I wanted with the technical stack I chose.
+This is the first exclusive post for this blog! I made it on my free time during April 2026 and it was a great learning experience on many levels. Although on the face of it this website is pretty much as normal as it gets (it is your run-of-the-mill content-oriented personal website), I had to solve a lot of non-trivial problems in order to get exactly the result I wanted with the technical stack I chose.
 
-For some of the largest and most interesting issues I faced, I plan to write dedicated blog articles about the solutions I found, but for today let's see how this website was made and what were some interesting design and technical decisions I had to take.
+For some of the largest and most complex issues I faced, I plan to write dedicated blog articles about the solutions I found, but for today let's see how this website was made and what were some interesting design and technical decisions I had to take.
 
 <Callout>
   This website is open source so you can browse the
@@ -22,17 +20,27 @@ For some of the largest and most interesting issues I faced, I plan to write ded
 
 ## Astro does the job!
 
-It was a no-brainer for me to go with this framework for making my website, and I don't regret it one bit, although there are definitely some tradeoffs and pain points — many of these resulting from my choice to go full Static Site Generation (SSG) without a server to render my pages.
+It was a no-brainer for me to go with this framework for making my website, and I don't regret it one bit, although there are some tradeoffs and pain points — many of these resulting from my choice to go full Static Site Generation (SSG) without a server to render my pages.
 
 ### What's Astro?
 
-If you are not familiar with it, [Astro](https://astro.build/) is a JavaScript web framework created with static websites in mind. For me, it is basically a way to have a modern developer experience (fast dev server, scoped styles, reuseable components, etc.) to work on a traditional content-driven website without having to deal with the extra complexity and performance hit induced by using a client framework such as React (or a meta-framework based on it like Next).
+If you are not familiar with it, [Astro](https://astro.build/) is a web framework created with static websites in mind. For me, it is a way to have a developer experience (DX) on par with current standards (fast dev server, scoped styles, reusable components, etc.) to work on a traditional content-driven website without having to deal with the extra complexity and performance hit induced by using a client framework such as `React` (or a meta-framework based on it like `Next`).
 
-Under the hood, what Astro does for me (it is so much more than that but I have a very simple use case) is that it allows me to write simple `.astro` files either for UI components or pages, and at build time it will generate a static website from it with all my pages, ready to be served from any static site hosting services (I use Cloudflare Pages, more on that later). The key information here — and even for me it was a bit of a mind-blower at times coming from a server-side rendering + client-side rendering React background — is that **nothing happens on the server, at the time when users request the web page**, everything has to be known and handled either at build time or with a client-side script.
+Under the hood, what Astro does (it is so much more than that but I have a very simple use case) is that it allows me to write simple `.astro` files either for UI components or pages, and at build time it will generate a static website from it with all my pages, ready to be served from any static site hosting services. The key information here — and even for me it was very unintuitive and puzzling at times coming from a server-side rendering + client-side rendering React background — is that **nothing happens on the server at the time when users request a web page**, everything has to be known and handled either at build time or with a client-side script.
+
+<Callout>
+  An Astro component is made up of two parts. The **Component Script** is
+  arbitrary JavaScript code that will run at build time (so you have that
+  dynamic part, you can safely query data sources, import other components,
+  etc.) and the **Component Template** is the markup that will be rendered to
+  create the HTML file during the build. The important thing is that the
+  Component Script will run only during build time, so it's totally agnostic of
+  what will happen when your website is actually requested.
+</Callout>
 
 ### Icing on the Cake: Content Collections
 
-The killer feature that made it so pleasing to work with Astro for me is [Content collections](https://docs.astro.build/en/guides/content-collections/). It is an API that allows you to work with structured data (in my case, blog posts, talks and my blue screens pictures) as `.md` or `.mdx` files and easily access the data in the JavaScript part of your Astro components. With it, I just have to define the data schema for each type of content (a "Collection"), and then I can just write up any unit of content (post, talk, picture) in a `.mdx` file and generating an index page (a page that lists all members of a collection) or slug page (a page displaying one member of a collection) is extremely easy and can be done with two Astro page components. Here you can see for instance the only code that is needed to get all blog posts for the current locale (`publishedPosts` is a function I wrote that only filters out draft posts):
+The killer feature that made it so pleasing to work with Astro for me is [Content collections](https://docs.astro.build/en/guides/content-collections/). It is an API that allows you to work with structured data (in my case, [blog posts](/blog), [talks](/talks) and my [blue screens pictures](/blue-screens)) as `.md` or `.mdx` files and easily access the data in the component scripts. With it, I just have to define the data schema for each type of content (a "Collection"), and then I can just write up any unit of content (post, talk, picture) in a `.mdx` file and generating an index page (a page that lists all members of a collection) or details page (a page displaying one member of a collection) is extremely easy and can be done with two Astro page components. Here you can see for instance the only code that is needed to get all blog posts for the current locale (`publishedPosts` is a function I wrote that only filters out draft posts):
 
 ```typescript
 const posts = publishedPosts(
@@ -40,17 +48,23 @@ const posts = publishedPosts(
 );
 ```
 
+It also makes it very easy to start working with more complex data schemas. For instance my talks all have an `events` property which is an array of events with their own properties. It's actually where a lot of the "business logic" of my app lives — talks without events are drafts, events in the future are upcoming, talks are sorted from the date of their debut event, etc. — and being able to simply define it in the frontmatter for each individual talk and then having these values seamlessly pass in the JS/TS realm so that Astro can perform operations on them to generate all my pages correctly is total bliss! Also of course everything is validated statically so contribution errors are caught very quickly.
+
 ## Styling the Application
 
 ### Astro enables native CSS
 
-An undersold feature of Astro is that out-of-the-box, it solves the biggest CSS issue: [scoping](https://frontendmasters.com/blog/scope-in-css/). Each Astro component can include a `<style>` tag in the markup and during the build this style will be scoped to its Astro component, you can think of it as CSS modules directly baked in your components. With this feature, I feel like modern CSS works fine on its own (I quite like writing CSS) and no preprocessor is needed. It also means that I didn't even consider other CSS-in-JS solutions or even something like Tailwind.
+An undersold feature of Astro is that out-of-the-box, it solves the biggest CSS issue: [scoping](https://frontendmasters.com/blog/scope-in-css/). Each Astro component can include a `<style>` tag in the Component Template and during the build this style will be scoped to its Astro component, you can think of it as [CSS modules](https://github.com/css-modules/css-modules) directly baked in your components. With this feature, modern CSS works fine on its own (I quite like writing CSS) and no preprocessor is needed.
+
+It also means that I didn't even consider other CSS-in-JS solutions or even something like Tailwind. I am personally not a huge fan of using Tailwind as I don't like the clutter in the HTML markup. The easy solution for that is to make reusable components but for a small project that's a lot of boilerplate while CSS classes simply feel like the right level of abstraction. Also doing anything very slightly complex in Tailwind is so painful it feels very restrictive at times.
 
 ### Open Props: the designer I didn't know I needed
 
-However, being only a developer and not a designer, I realized I could get a little help in establishing a sensible basis for the styles I will use in my website. To this purpose, I discovered [open-props](https://open-props.style/) by Adam Argyle. Open Props is a very simple library: it exposes design tokens in the form of CSS custom properties for almost anything you can imagine. Instead of having to define those tokens myself (for spacings, typography, colors, etc.), I just have to import these tokens in my global stylesheet from Open Props, and they are provided for me. I still have total freedom as to how I will use (or not use for the vast majority) these tokens.
+One thing Tailwind has going for it though is the set of design tokens that ships with the library. If only there was a way to only get but for my native CSS... For this purpose, I discovered [open-props](https://open-props.style/) by Adam Argyle. Open Props is a very simple library: it exposes design tokens in the form of CSS custom properties for almost anything you can imagine. Instead of having to define those tokens myself (for spacings, typography, colors, etc.), I just have to import these tokens in my global stylesheet from Open Props, and they are provided for me. I still have total freedom as to how I will use (or not use for the vast majority) these tokens. The benefit is twofold: by restricting myself to using only a subset of Open Props design tokens, my design stays cohesive (there are only 5 spacing tokens for instance and they are mathematically correlated), and I can use values defined by a far better designer than myself.
 
-Almost every style value in this website is derived from these tokens, "derived" being the important word because I felt like sometimes the available tokens were not just enough to get the exact result I envisioned. A good exemple of that is the color palettes I used. Open Props provides 19 monotonal palettes which is great but I had a hard time finding two contrasting palettes for each theme (light and dark). I especially struggled with finding an indigo dark and muted enough to serve as a background on which reading is easy on the eyes. I ended up composing the palette myself by using the indigo design tokens as a base and using `color-mix()` to blend it with a dark shade of gray. You can see in this example the light and dark colors for the background of my website:
+I feel like Open Props is a nice best-of-both-worlds solution between going freestyle on design and using a pre-existing design system where every interesting decision has been made from you. It restricts the space of possible choices in an interesting way: you don't have to pick between an infinite number of values but you still get to pick from a sub-set of nicely curated ones.
+
+Almost every style value in this website is derived from these tokens, "derived" being the important word because I felt like sometimes the available tokens were not just enough to get the exact result I envisioned. A good example of that is the color palettes I used. Open Props provides 19 monotonal palettes which is great but I had a hard time finding two contrasting palettes for each theme (light and dark). I especially struggled with finding an indigo dark and muted enough to serve as a background on which reading is easy on the eyes. I ended up composing the palette myself by using the indigo design tokens as a base and using `color-mix()` to blend it with a dark shade of gray. You can see in this example the light and dark colors for the background of my website:
 
 ```css
 :root {
@@ -61,13 +75,33 @@ Almost every style value in this website is derived from these tokens, "derived"
 }
 ```
 
+<div style="display: flex; justify-content: space-evenly; margin-bottom: 1.5rem;">
+  <div style="height: 110px; width: 110px; background: var(--indigo-12); color: var(--yellow-1); text-align: center; vertical-align: middle; line-height: 110px; border: 1px solid var(--border)">
+    <span>indigo-12</span>
+  </div>
+  <div style="height: 110px; width: 110px; background: color-mix(in oklch, var(--indigo-12) 25%, var(--gray-12)); color: var(--yellow-1); text-align: center; vertical-align: middle; line-height: 110px; border: 1px solid var(--border)">
+    <span>Custom</span>
+  </div>
+</div>
+
 All in all, even though I had to tweak some properties, I loved the fact that I had a basic pool of tokens from which I could draw. It ensures a strong and effortless coherence in visual design.
 
 ### Adventures with the Normalize styles
 
-Another useful — but very misleading on my end — part of Open Props is the [normalize](https://open-props-ui.netlify.app/guide/getting-started/normalize) styles that are offered. While traditional CSS resets are very tame and limit themselves to removing default styles on most HTML elements, a CSS Normalize is much more opinionated and replace default styles with another set of (more sensible) default styles. While this is great on paper, because this is more opinionated it means that I sometimes didn't want/need the new defaults. However, by design the normalize styles are of very low specificity (with the `:where()` pseudo-class function) to be easily overridden by author styles (those we write as developers).
+Another useful — but very misleading on my end — part of Open Props is the [normalize](https://open-props-ui.netlify.app/guide/getting-started/normalize) styles that are offered.
 
-This works perfectly but these were the ingredients of a perfect storm during development: what happened to me 4-5 times across the development of this website is that I would see something that looked off on my site (like some inline start padding on lists) and try to investigate what was the root cause. But because of the very low specificity on the normalize rule, it would get hidden at the bottom of the styles DevTools panel for this element and I would usually take 10 minutes to 1 hour to debug this and find that the culprit is an explicit rule in the normalize stylesheet. Here is an example of one of those pesky rules (I spent so much time trying to investigate why the repeated `linear-gradient` lines forming my grid background weren't shown at all):
+<Callout>
+  While traditional **CSS resets** are very tame and limit themselves to
+  removing default styles on most HTML elements, a **CSS Normalize** is much
+  more opinionated and replaces default styles with another set of (more
+  sensible) default styles.
+</Callout>
+
+This is great on paper, but because this is more opinionated it means that I sometimes didn't want/need the new default values. Luckily, by design the normalize styles are of very low specificity (with the `:where()` pseudo-class function) to be easily overridden by author styles (those we write as developers).
+
+This works perfectly but these were the ingredients of a perfect storm during development: what happened to me 4-5 times across the development of this website is that I would see something that looked off on my site (like some inline start padding on lists) and try to investigate what was the root cause. But because of the very low specificity on the normalize rule, it would get hidden at the bottom of the styles DevTools panel for this element and I would usually take 10 minutes to 1 hour to debug this and find that the culprit is an explicit rule in the normalize stylesheet.
+
+A good example is the grid background on all pages. It is made with two `linear-gradient`s that repeat (one horizontally, the other vertically) every 40 pixels. Think of it like a 40px wide image with a gray 1 pixel border on one side that gets horizontally repeated on all the background (and the same with a 40px high image that gets repeated vertically). This is a very straightforward implementation, except that when I made it, absolutely nothing displayed on my page. I could see no lines. I couldn't find why nothing displayed and I even reimplemented it in a Codepen as sanity check and it worked. After a long and frustrating investigation, I found at the bottom of DevTools that the normalize stylesheet disables the default background repetition:
 
 ```css
 :where(:not(fieldset, progress, meter)) {
@@ -75,40 +109,50 @@ This works perfectly but these were the ingredients of a perfect storm during de
 }
 ```
 
-In short, the Open Props normalize is a great tool and I encourage you to use it, but always keep in the back of your mind that it is there and it can have some weird effect!
+This is sensible as more often than not repeating background are not what you want... except when it's what you want and you didn't even realize you are relying on a default value. In the end it only cost me half an hour of my time and a few hairs pulled out.
+
+In short, the Open Props normalize is a great tool and I encourage you to use it, but always keep in the back of your mind that it is there and **you cannot assume anymore that any default value will work like you are used to**!
 
 ## Internationalisation: a Tale of Two Locales
 
 As you might have noticed already, this is a fully bilingual English/French website (at this point in the article I sure hope you are on the right language for you). It turns out that this is also a strong suit of Astro and very easy to implement. You only have to declare your supported locales in the Astro configuration file and you can use dynamic routing at the root of your `/pages` folder (with something like `[...lang]`) and then each page component under this will generate both a default page (English) and a `/fr/` page. The `lang` param is also accessible in each component to use the correct translations' dictionary.
 
-On the type-safety side, The `fr` dictionary needs to satisfy the type of the `en` dictionary so any drift between languages is caught statically and early during development.
+On the type-safety side, the `fr` dictionary needs to satisfy the type of the `en` dictionary so any drift between languages is caught statically and early during development.
 
 ### How to Represent Content in Two Locales?
 
-This is my setup for the code/components part of the website, but I also had to handle the content part (which incidentally features so much more text than the rest of the website). For that I had to take the plunge and admit that content in French and content in English are two different objects even though they share many common properties (most metadata). This means that each piece of content is represented by two separate files, one for each language, and no data is shared between the two, so I rely on manual copy-pasting for the shared data — which is honestly a fine tradeoff and is the best solution at my scale rather than complexifying the data structure. In return, the code for content i18n is very simple, I only need to filter the collection with my `lang` param to only get the content in the right language.
+(Short answer: with a lot of hand translating...)
 
-### Pain points: indexation and error pages
+This is my setup for the code/components part of the website, but I also had to handle the content part (which incidentally features so much more text than the rest of the website). For that I had to take the plunge and admit that content in French and content in English are two different objects even though they share many common properties (most metadata). This means that each piece of content is represented by two separate files, one for each language, and no data is shared between the two, so I rely on manual copy-pasting for the shared data — which is honestly a fine tradeoff and is the best solution at my scale rather than complexifying the data structure. In return, the code for content i18n is very simple, I only need to filter the collection with my `lang` (see above) param to only get the content in the right language.
 
-At the beginning, I opted for a symmetrical routing solution with the English version being served under `tgianella.dev/en/` and the French version under `tgianella.dev/fr/` with a manual Astro redirect on `tgianella.dev` to the English landing page. It's a very simple mental model: all pages fall under one of the two locales and this is reflected in the routing. The code for the language switcher is very simple: just flip the locale in the current URL and generate the link. However as soon as I first deployed the website I saw the issue with this approach: the root of my website was a redirect and that was being indexed by Google so I had to find another solution. In the end I decided to drop the English locale prefix in routes so only French pages are prefixed with `/fr/`.
+Generally I write in English first and then I translate to French, both parts taking about the same time.
+
+### Pain point: error pages
 
 There is one final issue with i18n that was impossible to cleanly resolve with a purely static website: 404 page localization. Because all pages are generated at build time, it is impossible to have one dedicated 404 page for each locale. Anytime a user requests a page that doesn't exist, there is no server or middleware to interpret the request path to find out which locale the user was requesting to return a 404 page in the correct locale. This is a [known limitation of Astro SSG](https://github.com/withastro/astro/issues/12175). The only way to be able to serve a French 404 page to users requesting a non-existent French page is to have a client-side script detecting the `/fr/` locale in the URL and switch the English texts for French ones directly in the DOM nodes as soon as the DOM is loaded. The English text displays for a frame before being replaced. It goes without saying that this is not a solution that would scale very well for more languages or pages with longer texts but in this case it solved my problem.
 
 ## Easy deployment with Cloudflare Pages
 
-This section is going to be short because my deployment experience on Cloudflare Pages has been pretty seamless apart from the fact that their dashboard app has some very bad UX on random parts. Like Pages is somehow grouped with Workers but if you only want to use pages you kinda have to make it like you're going to deploy a Worker and at some point click a very tiny link to only deploy a Pages website, which is made worse by the fact that the Pages git integration trigger is not working so you have to actually create a Worker app to pair with your GitHub repo and after that if you create a Pages app it will see your repo.
+This section is going to be short because my deployment experience on Cloudflare Pages has been pretty seamless apart from the fact that their dashboard app has some very bad UX on random parts. Like Pages is somehow grouped with Workers but if you only want to use Pages you kinda have to make it like you're going to deploy a Worker. Then at some point you need to click a very tiny link to only deploy a Pages website, which is made worse by the fact that the Pages git integration trigger is not working. In the end you have to actually create a Worker app to pair with your GitHub repo and after that if you create a Pages app it will see your repo.
 
-Other than that, it is everything I want. It worked without any issue, it's free as long as I have very few readers (which should not last too long 🤞), I had to configure very few things (mostly redirect between the default Pages domain and my custom domain), and did I mention it was free ? Of course it comes with developer experience staples such as automatic previews on PRs which I enjoy very much.
+Other than that, it is everything I want. It worked without any issue, it's free as long as I have very few readers (which should not last too long 🤞), I had to configure very few things (mostly redirect between the default Pages domain and my custom domain), and did I mention it was free? Of course it comes with DX staples such as automatic previews on PRs which I enjoy very much.
+
+I also looked into Netlify and Vercel as natural competitors to Cloudflare. I discarded Netlify because I didn't really need the advanced features it boasted and contrary to Cloudflare there is a bandwidth limit on the free plan. I didn't even consider Vercel seriously since I didn't go with Next. My needs are very simple: deploy a static site for free, absolutely no compute needed, and anything beyond that is a bonus.
 
 ### Image storage on Cloudflare R2
 
 If you are a bit curious, you might have wandered on the [blue screens](/blue-screens) section of my website. It features a set of hand-made photos of public display screens in varying error states, which is a hobby of mine. Of course, although these pictures are snapped very quickly with my low-end cellphone, I still want the quality to be as high as possible so I can't just host them on the `assets` folder of my source code (even if Astro has a few killer image optimization components).
 
-The natural choice then was to just store them on Cloudflare R2 (it's just Cloudflare object storage, think like AWS S3), and once again, everything was pretty easy, I just had to upload the images, setup the cache configuration to be very sure that I would not risk paying anything unless I start having huge trafic, and setup the public URL to use in my site.
+The natural choice then was to just store them on Cloudflare R2 (it's just Cloudflare object storage, think like AWS S3), and once again, everything was pretty easy, I just had to upload the images, set up the cache configuration to be very sure that I would not risk paying anything unless I start having huge trafic, and set up the public URL to use in my site.
 
-I've gotta say that as for Pages, there are a few bugs/UX absurdities that made me want to pull my hair out. R2 doesn't have a folder system, you can add prefixes with a trailing slash (like `myFolder/`) to your filenames and the dashboard will group them together like a folder. The only issue is... that you somehow can't open a folder in the dashboard (everytime I tried I got redirected to my bucket root). So that was very frustrating, but not as much as a very pesky cache issue. My problem was that sometimes when I uploaded an image, I would get a 404 on the public URL (while in the dashboard everything was OK and I would see the uploaded picture). No matter how many times I deleted/re-uploaded the picture, it would not work. The only fix I had was to change the name of the file, and then it worked. But I couldn't do that because I have both original pictures and smaller thumbnails for the index page and their only link is that they are named the same, so I can't arbitrarily change my images filenames. It turns out that what made this impossible to fix manually was the cache. When I purged the cache and re-uploaded the file, the public URL started working again. I know it sounds very basic and you are probably sighing, but I only have one message to the me of the past: **When you have any weird issue with an R2 file, purge its cache before spending hours trying to debug**.
+I've gotta say that as for Pages, there are a few bugs/UX absurdities that made me want to pull my hair out. R2 doesn't have a folder system, you can add prefixes with a trailing slash (like `myFolder/`) to your filenames and the dashboard will group them together like a folder. The only issue is... that you somehow can't open a folder in the dashboard (everytime I tried I got redirected to my bucket root).
+
+So that was very frustrating, but not as much as a very pesky cache issue. My problem was that sometimes when I uploaded an image, I would get a 404 on the public URL (while in the dashboard everything was OK and I would see the uploaded picture). No matter how many times I deleted/re-uploaded the picture, it would not work. It turns out that what made this impossible to fix manually was the cache. When I purged the cache and re-uploaded the file, the public URL started working again. I know it sounds very basic and you are probably sighing, but I only have one message to the me of the past: **When you have any weird issue with an R2 file, purge its cache before spending hours trying to debug**.
 
 ### Conclusion
 
-These are the main technical parts powering this website. I actually wanted to include a section about my experience with Claude Code which I used extensively when working on this website but the section was growing so long that I think it actually deserves to be its own article so stay tuned for that!
+These are the main technical parts powering this website. In the end this post is as much an overview of the pieces of technology I used as a cathartic narrative about the most frustrating problems I encountered. I hope this can be of use to some people!
 
-I also kept the most interesting issues I faced for standalone articles. So in the upcoming months you should see some nice posts about fluid typography, view transitions and how the game of life background works under the hood! I know this is a very risky conclusion for me to write because let's be honest, there's a very large chance I don't actually get to write about these topics so don't get too excited!
+To sum up, I think that in 2026 Astro + Cloudflare is a very easy and safe stack for implementing and hosting a personal website for developers. It offers great DX while also allowing you to leverage your skills to go a step further than a totally generic website.
+
+I actually wanted to include a section about my experience with Claude Code — it was a rough ride — which I used extensively when working on this website but the section was growing so long that I think it actually deserves to be its own article so stay tuned for that! I also kept the most precise issues I faced for standalone articles. So in the upcoming months you should see some nice posts about fluid typography, view transitions and how the game of life background works under the hood! I know this is a very risky conclusion for me to write because let's be honest, there's a very large chance I don't actually get to write about these topics so don't get too excited!

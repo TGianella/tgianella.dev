@@ -1,0 +1,161 @@
+---
+title: "Making-of : développer un blog technique en 2026"
+description: "Un tour d'horizon des technologies utilisées et des problèmes surmontés qui pour réaliser ce site."
+tags: ["Astro", "CSS", "Open Props", "Web", "i18n", "Cloudflare"]
+pubDate: 2026-05-05
+thumbnail: "../../../assets/posts/thumbnails/making-of.jpg"
+---
+
+import Callout from "../../../components/Callout.astro";
+
+Ce post est le premier article exclusif de mon blog ! J'ai réalisé ce site sur mon temps libre en avril 2026 et j'ai eu l'occasion d'apprendre énormément de choses en le faisant. Même si à première vue ce site est tout à fait traditionnel (c'est un site personnel axé sur le contenu tout ce qu'il y a de plus classique), j'ai dû résoudre un certain nombre de problèmes pas triviaux afin d'obtenir le résultat exact que je souhaitais avec les outils que j'avais choisis.
+
+Pour les problèmes les plus complexes sur lesquels je suis tombé, je compte écrire des articles dédiés, mais pour aujourd'hui, concentrons-nous sur comment j'ai fait ce site et quels ont été les choix de _design_ et les décisions techniques les plus intéressantes que j'ai dû prendre.
+
+<Callout>
+  Ce site est *open source*, ce qui signifie que vous pouvez aller regarder le
+  [code](https://github.com/TGianella/tgianella.dev) si vous êtes curieux·se de
+  voir ce qui se cache sous le capot.
+</Callout>
+
+## Astro à la rescousse !
+
+Pour mon besoin, Astro était la solution la plus évidente en termes de _frameworks_, et je ne regrette absolument pas cette décision ! (Même s'il y a des compromis et des frustrations à accepter — la plupart résultant de mon choix d'avoir un site totalement statique sans serveur pour rendre mes pages à la demande.)
+
+### Qu'est-ce qu'Astro ?
+
+Si vous n'êtes pas déjà familiers avec, [Astro](https://astro.build/) est un _framework_ web conçu pour les sites statiques. Cela m'a permis d'avoir une expérience développeur (DX) correspondant aux standards actuels (serveur de développement très rapide, styles scopés, composants réutilisables, etc.) pour travailler sur un site axé sur le contenu sans avoir à gérer la complexité et le coût en performances induits par l'usage d'un _framework_ client comme React (ou même un meta-_framework_ comme Next).
+
+Dans le détail, Astro me permet d'écrire des fichiers `.astro` pour mes composants d'interface ou mes pages, et au moment du _build_, il va générer un site statique avec toutes mes pages, prêt à être servi sur n'importe quel service d'hébergement de site statique. Astro permet de faire beaucoup plus que ça, mais mon cas d'usage est assez simple donc je n'ai pas eu besoin d'aller chercher de fonctionnalités trop avancées. L'information-clé ici — et ça a été pour moi assez peu intuitif vu que je suis plus expérimenté avec du rendu côté serveur puis côté
+client en React — est que **rien ne se passe sur le serveur lorsque les utilisateurs requêtent une page**, tout doit être connu et géré au moment du _build_ ou alors avec un script exécuté dans le client.
+
+<Callout>
+  Un composant Astro est composé de deux parties : le **script** est constitué
+  de code JavaScript arbitraire qui sera éxécuté lors du _build_ (ce qui permet
+  de composer des pages dynamiquement, en allant chercher des données externes,
+  en important d'autres composants, etc.) et le **modèle** sert de base au
+  contenu de la page HTML générée au _build_. Il faut bien retenir que le script
+  ne sera exécuté qu'au _build_, donc le code doit être totalement agnostique de
+  toutes les informations disponibles uniquement lorsque le site est requêté par
+  un utilisateur.
+</Callout>
+
+### La Cerise sur le gâteau : les Collections de Contenu
+
+La fonctionnalité incontournable d'Astro pour moi a été [les Collections de Contenu](https://docs.astro.build/fr/guides/content-collections/). Il s'agit d'une API qui permet de travailler avec des données structurées (dans mon cas, des [articles de blog](/fr/blog), des [conférences](/fr/talks) et mes photos de [_blue screens_](/fr/blue-screens)) sous la forme de fichiers `.md` ou `.mdx` et d'accéder facilement à ces données dans le script du composant. Grâce à cette API, j'ai simplement eu à définir le schéma de données pour chaque type de contenu (chaque "collection"), et j'ai ensuite rédigé chaque unité de contenu (article, conférence, image) dans un fichier `.mdx` dédié. À partir de là, générer une page d'index (qui rassemble tous les élements d'une collection) ou de détails (qui affiche le contenu d'un élément d'une collection) est très aisé. On peut voir dans l'exemple suivant l'intégralité du code nécessaire pour récupérer tous les articles de blog pour une des langues du site (`publishedPosts` est une simple fonction que j'ai écrite qui filtre les articles en cours de rédaction) :
+
+```typescript
+const posts = publishedPosts(
+  await getCollection("blog", ({ id }) => id.startsWith(`${lang}/`)),
+);
+```
+
+Ce mécanisme rend aussi très facile de travailler avec des schémas de données plus complexes. Par exemple mes conférences ont toutes une propriété `events` qui est un tableau représentant les conférences et meetups où mes sujets ont été présentées. Une grande partie de la "logique métier" de mon application vit ici — les conférences données nulle part sont des brouillons, les conférences dans le futur sont notées comme "à venir", etc. — et pouvoir simplement définir ces données dans le _frontmatter_ de chaque talk et les voir passer dans le contexte JS/TS où Astro peut effectuer des opérations dessus pour générer mes pages est un vrai bonheur ! Il va sans dire que toutes les données sont validées statiquement donc les erreurs de contribution sont attrapées très rapidement.
+
+## Gestion des styles
+
+### Synergie entre Astro et le CSS natif
+
+Une fonctionnalité sous-estimée d'Astro est que par défaut, le _framework_ résout le plus gros problème du CSS : [la portée des sélecteurs](https://frontendmasters.com/blog/scope-in-css/). Chaque composant Astro peut inclure une balise `<style>` dans le modèle, et lors du _build_, les styles définis dans cette balise seront liés uniquement à ce composant, un peu comme si on avait un [CSS module](https://github.com/css-modules/css-modules) inclus directement dans le composant. Avec cette fonctionnalité, le CSS natif d'aujourd'hui fonctionne très bien tout seul et aucun préprocesseur n'est requis.
+
+Cela signifie aussi que je n'ai pas considéré d'autres solutions CSS-in-JS ou même quelque chose comme Tailwind. Personnellement, je ne suis pas un grand fan de Tailwind (j'aime bien écrire du CSS), je n'aime pas finir avec du code HTML complètement illisible. La solution à ce problème est de faire des composants réutilisables mais pour un petit projet comme le mien c'est beaucoup s'embêter pour pas grand-chose alors que les classes CSS me semblent être le bon niveau d'abstraction. Par ailleurs la plupart des fonctionnalités complexes sont pénibles à implémenter avec Tailwind donc c'est assez contraignant.
+
+### Open Props : le designer dont j'avais besoin sans le savoir
+
+Malgré ça, un avantage indéniable de Tailwind est la palette de _design tokens_ qu'il embarque. Si seulement il était possible de les utiliser mais dans mon CSS natif... Pour cela, j'ai découvert [open-props](https://open-props.style/), une librairie créée par Adam Argyle. Le principe d'Open Props est très simple : la librairie expose des _design tokens_ sous forme de variables CSS pour à peu près tout ce qui est possible et imaginable. Au lieu de devoir définir ces _tokens_ moi-même (pour les espacements, la typographie, les couleurs, etc.), il me suffit d'importer ces _tokens_ depuis Open Props dans ma feuille de style globale pour pouvoir les utiliser. Je dispose bien sûr d'une liberté totale sur le papier sur la manière dont je vais utiliser ou non ces _tokens_, il ne s'agit que d'un outil mis à ma disposition. L'intérêt est double : en me restreignant à un sous-ensemble des variables CSS exposées par Open Props, je garantis la cohérence du design (il n'y a par exemple que cinq tailles d'espacement possible, qui sont cohérentes mathématiquement entre elles), et je bénéficie de valeurs définies par quelqu'un qui s'y connaît un peu plus que moi en design.
+
+Open Props me semble être le meilleur des deux mondes entre partir en freestyle sur le design et utiliser un design system préexistant dans lequel toutes les décisions intéressantes ont déjà été prises. Ça restreint l'espace des choix possibles d'une manière intéressante : je n'ai plus à choisir entre un nombre infini de valeurs mais je peux tout de même faire mon choix parmi un sous-ensemble de valeurs sélectionnées à la main.
+
+Presque toutes les valeurs de style utilisées pour ce site sont dérivées de ces _tokens_. Le mot "dérivé" est particulièrement important parce que parfois les _tokens_ disponibles ne permettaient pas de réaliser exactement ma vision. Un bon exemple est celui des palettes de couleur que j'ai constituées. Open Props fournit entre autres 19 palettes monotonales (une couleur de la teinte la plus claire à la plus foncée), ce qui est très utile, mais j'ai eu beaucoup de mal à trouver deux palettes avec suffisamment de contraste pour mes deux thèmes (mode clair et mode sombre). Il m'a été difficile de trouver un indigo assez foncé et désaturé pour servir de fond sur lequel les caractères clairs s'afficheraient clairement et distinctement. J'ai fini par composer la palette moi-même à partir des _tokens_ indigo en utilisant la fonction `color-mix()` pour mélanger ces bases avec un gris foncé. L'exemple suivant montre les valeurs finales utilisées pour les fonds clairs et sombres de mon site :
+
+```css
+:root {
+  --surface-1: light-dark(
+    var(--yellow-1),
+    color-mix(in oklch, var(--indigo-12) 25%, var(--gray-12))
+  );
+}
+```
+
+<div style="display: flex; justify-content: space-evenly; margin-bottom: 1.5rem;">
+  <div style="height: 110px; width: 110px; background: var(--indigo-12); color: var(--yellow-1); text-align: center; vertical-align: middle; line-height: 110px; border: 1px solid var(--border)">
+    <span>indigo-12</span>
+  </div>
+  <div style="height: 110px; width: 110px; background: color-mix(in oklch, var(--indigo-12) 25%, var(--gray-12)); color: var(--yellow-1); text-align: center; vertical-align: middle; line-height: 110px; border: 1px solid var(--border)">
+    <span>Ma couleur</span>
+  </div>
+</div>
+
+En somme, même si j'ai dû ajuster certaines valeurs, j'ai particulièrement apprécié de disposer d'une base de _tokens_ dans laquelle piocher. C'est un ingrédient majeur de la cohérence visuelle de ce site.
+
+### Normalisation des styles : un cadeau empoisonné ?
+
+Une autre partie très pratique — mais qui a causé beaucoup de confusion chez moi — est la feuille de style de [normalisation](https://open-props-ui.netlify.app/guide/getting-started/normalize) proposée par Open Props.
+
+<Callout>
+  Un **reset CSS** traditionnel est un ensemble de propriétés CSS qui se limite
+  à annuler les styles par défaut que les navigateurs donnent aux éléments HTML.
+  Par opposition, la **normalisation CSS** est plus engagée et vise à remplacer
+  ces styles par défaut par un autre ensemble de styles (en théorie plus
+  adaptés).
+</Callout>
+
+Sur le papier, c'est très bien, pour des raisons de compatibilité avec les sites les plus anciens, les styles par défaut du navigateur ne sont pas très adaptés à un design moderne. Mais parce que la normalisation ne vise pas seulement à annuler ces styles, cela signifie que les nouveaux styles ne sont pas toujours ceux que j'aurais choisi. Heureusement, les styles de normalisation sont conçus pour avoir une spécificité très faible grâce à la fonction pseudo-classe `:where()` ce qui permet de surcharger très facilement ces valeurs.
+
+Ce mécanisme fonctionne parfaitement, mais tous les ingrédients étaient réunis pour me faire perdre beaucoup de temps : ce qui m'est arrivé quatre ou cinq fois durant le développement de ce site est de remarquer un problème visuel sur mon site (comme un espace trop grand à gauche de toutes les listes) et de commencer à investiguer pour trouver la source du problème. Mais à cause de la très faible spécificité des styles de normalisation que je n'ai pas introduits moi-même, les propriétés fautives se retrouvaient cachées tout au fond de l'onglet Styles de l'inspecteur et il m'a fallu en général 10 minutes à une heure dans le pire des cas pour trouver le coupable ! Ça peut paraître bête mais quand on a l'habitude de travailler avec un reset CSS plus classique ou avec les styles par défaut du navigateur, c'est très difficile de penser à aller chercher les styles les moins spécifiques quand on a un problème.
+
+J'ai par exemple rencontré ce problème lors de l'implémentation de la grille en fond de toutes mes pages. Cette grille est constituée de deux `linear-gradients` qui se répètent (un horizontalement, l'autre verticalement) tous les 40 pixels. Imaginez une image de 40 pixels de largeur avec une bordure grise d'un pixel sur un côté qui est répétée horizontalement sur tout le fond de la page (pareil avec les lignes horizontales qui sont faites avec une image de 40 pixels de haut répétée verticalement). C'est une implémentation très simple, et pourtant, absolument rien n'apparaissait sur la page. Je n'arrivais pas du tout à comprendre pourquoi et j'ai même essayé de réimplémenter ce fond dans un Codepen pour me convaincre que je ne devenais pas fou... Après une longue et pénible investigation, j'ai trouvé au fond de l'inspecteur que la normalisation désactivait la répétition des images de fond (ce qui est habituellement la valeur par défaut) :
+
+```css
+:where(:not(fieldset, progress, meter)) {
+  background-repeat: no-repeat;
+}
+```
+
+C'est plutôt sensé puisque le plus souvent une image de fond qui se répète n'est pas le résultat attendu... sauf quand c'est le résultat attendu et qu'on ne sait pas qu'on se base sur une valeur par défaut qui a été modifiée. Au total ça ne m'a coûté qu'une demi-heure de mon temps et quelques cheveux arrachés.
+
+En bref, les styles de normalisation d'Open Props sont un outil très intéressant et je vous encourage à les utiliser, mais gardez toujours dans un coin de votre tête que ces styles sont actifs et que **vous ne pouvez plus partir du principe que les valeurs par défaut sont celles dont vous avez l'habitude** !
+
+## Internationalisation : comment faire un site bilingue ?
+
+Comme vous l'avez probablement déjà remarqué, mon site est complètement bilingue Français/Anglais (arrivés à ce point de l'article, j'espère que vous êtes sur la page avec la langue la plus adaptée pour vous). Il s'avère que l'internationalisation est aussi un des points forts d'Astro. Il suffit de déclarer les langues supportées dans le fichier de configuration d'Astro et d'utiliser du routage dynamique dans le dossier `/pages` (avec un segment comme `[...lang]`), et ensuite chaque composant de page va générer une page par défaut (en anglais) et une page française accessible derrière le segment `/fr/` dans l'URL. Le paramètre `lang` est disponible dans les composants Astro pour récupérer le bon dictionnaire de clés de traduction.
+
+Pour la sécurité du typage, le dictionnaire `fr` doit satisfaire le type du dictionnaire `en` donc tout écart dans les textes entre les langages est attrapé statiquement au plus vite durant le cycle de développement.
+
+### Comment produire du contenu en deux langues ?
+
+(Réponse rapide : beaucoup de traductions à la main !)
+
+Le dispositif exposé plus haut fonctionne pour la partie code/composants/routes de mon site, mais il m'a aussi fallu gérer l'internationalisation du contenu (ce qui constitue la très vaste majorité des textes figurant sur ce site). Pour ce faire, j'ai dû accepter que le même contenu en français et en anglais constitue deux objets distincts même s'ils partagent de nombreuses propriétés (comme toutes les métadonnées). Cela signifie que chaque unité de contenu est représentée dans le code par deux fichiers distincts, un pour chaque langue, et aucune donnée n'est partagée entre les deux. Je copie-colle manuellement les données communes entre les deux fichiers, ce qui à mon échelle semble être la meilleure solution plutôt que de complexifier la structure de données. L'avantage est que le code pour l'internationalisation du contenu est extrêmement simple, il me suffit de filtrer les collections avec le paramètre `lang` (voir ci-dessus) pour récupérer les contenus dans la bonne langue.
+
+En général, je rédige les textes en anglais d'abord puis je les traduis en français, et les deux parties prennent à peu près autant de temps.
+
+### Localiser une page 404
+
+Il demeure un problème qu'il m'a été impossible de résoudre proprement avec un site purement statique : localiser une page 404. Comme toutes les pages sont générées au moment du _build_, il est impossible d'avoir une page 404 dédiée par langue. Lorsqu'un utilisateur demande une page qui n'existe pas, il n'y a aucun serveur ou _middleware_ pour interpréter l'URL requise pour renvoyer une page 404 dans la bonne langue. Ce problème est une [limitation connue de Astro en mode statique](https://github.com/withastro/astro/issues/12175). Le seul moyen de montrer une page 404 en français aux utilisateurs qui demandent une page inconnue en français est d'avoir un petit script côté client pour détecter le `/fr/` dans l'URL et remplacer à la volée les textes en anglais par ceux en français, directement dans les nœuds du DOM, dès qu'il est chargé. Cela signifie que le texte anglais s'affiche pour une frame avant d'être remplacé. Il va sans dire que cette solution passerait très mal à l'échelle avec plus de langues ou plus de textes que sur une simple page 404, mais dans mon cas, ça a résolu mon problème !
+
+## Déploiement les mains dans les poches avec Cloudflare Pages
+
+Cette section devrait être courte car mon expérience de déploiement sur Cloudflare Pages a été très fluide si on oublie quelques gros défauts d'UX sur le dashboard. Par exemple Pages est regroupé avec Workers, un autre service de Cloudflare, mais si l'on veut uniquement utiliser Pages, il faut faire comme si on allait déployer un Worker et à un moment apparaît un lien très discret pour simplement déployer un site sur Pages. Tout cela est encore rendu plus difficile par le fait que l'intégration git est cassée pour Pages, donc il faut appairer son dépôt GitHub comme si l'on voulait déployer un Worker, et ensuite seulement Pages aura accès au dépôt git.
+
+Mis à part ça, j'ai totalement trouvé mon bonheur. Le déploiement fonctionne tout seul sans aucun problème, c'est gratuit tant que j'ai très peu de visiteurs (ce qui ne devrait pas durer très longtemps 🤞), j'ai eu besoin de configurer très peu de choses (principalement la redirection vers mon domaine), et c'est gratuit. Bien sûr, les fonctionnalités standard de DX comme les previews automatiques sur les PR sont incluses ce qui est toujours très appréciable.
+
+J'ai aussi regardé ce qui se faisait du côté de Netlify et Vercel. Je n'ai pas choisi Netlify car je n'avais pas besoin des fonctionnalités avancées qu'ils mettaient en avant, et contrairement à Cloudflare, la formule gratuite a une limite de bande passante. Je n'ai pas vraiment sérieusement considéré Vercel puisque je n'ai pas choisi d'utiliser Next. Dans le fond, mes besoins sont très simples : déployer un site statique gratuitement, je n'ai besoin de rien de dynamique côté serveur et après ça, tout est du bonus !
+
+### Stockage d'images sur Cloudflare R2
+
+Si vous êtes un peu curieux, vous avez peut-être visité la partie [blue screens](/fr/blue-screens) de mon site. Y figure une collection de photos que j'ai prises d'écrans d'affichage montrant des erreurs variées. Bien que ces photos soient prises à la va-vite avec mon téléphone d'entrée de gamme et mes piètres compétences de photographe, je souhaite tout de même que la qualité des images soit aussi haute que possible donc je ne peux pas juste les mettre dans mon code source (même si Astro a quelques composants très bien faits pour optimiser les images).
+
+Le choix naturel était donc d'utiliser R2 (le service de stockage d'objets de Cloudflare, comparable à AWS S3), et une fois de plus, ça a été assez simple. Je n'ai eu qu'à télécharger les images, mettre en place le cache pour être bien sûr de ne rien payer avant d'avoir énormément de trafic, et mettre en place une URL publique où les images seront accessibles.
+
+Je dois dire que comme pour Pages, j'ai été confronté à quelques bugs/problèmes d'UX qui m'ont fait m'arracher les cheveux. R2 n'a pas vraiment de système de dossiers, il est possible d'ajouter des préfixes aux noms de fichiers (comme `monDossier/`) et le dashboard les groupera ensemble comme s'il s'agissait d'un vrai dossier. Le seul problème étant que... il m'a été impossible d'ouvrir un dossier sur le dashboard (je me faisais rediriger vers la racine de mon bucket à chaque fois).
+
+Voilà déjà un point de frustration, mais ce n'est rien à côté d'un problème de cache que j'ai rencontré. Parfois, quand je mettais des images en ligne, l'URL publique renvoyait une 404 (alors que sur le dashboard je voyais bien mon image ce qui confirmait qu'elle était en ligne). Peu importe combien de fois je supprimais/re-téléchargais l'image, le problème persistait. Il s'est en fait avéré qu'il s'agissait d'un problème de cache (je n'ai pas d'idée sur la cause plus profonde). En purgeant le cache pour les images qui posaient problème, l'URL publique fonctionnait de nouveau. Cela peut sembler très basique mais j'ai perdu beaucoup de temps là-dessus et je n'ai pas vraiment trouvé de documentation utile à ce sujet, donc j'ai un seul message pour le moi du passé : **En cas de problème incompréhensible avec un fichier R2, il faut bien penser à purger son cache avant de passer des heures à investiguer**.
+
+### Conclusion
+
+Voici pour les principales briques techniques de ce site. Au total cet article est autant une présentation des technologies utilisées qu'un récit cathartique des différents problèmes auxquels j'ai été confronté. J'espère que ça pourra vous être utile !
+
+En somme, je pense qu'en 2026 Astro et Cloudflare forment une combinaison très aisée et simple à l'usage pour implémenter et héberger un site personnel pour un·e développeur·euse. Ils permettent de bénéficier d'une DX de compétition tout en donnant assez de liberté pour mettre à profit ses compétences afin d'aller un peu plus loin qu'un site générique.
+
+Je voulais aussi inclure une partie sur mon expérience avec Claude Code, que j'ai utilisé extensivement pour réaliser ce site (ça n'a pas été une mince affaire), mais la partie devenait si longue que je me suis dit que le sujet méritait son propre article, donc vous devriez voir ça arriver sous peu ! J'ai aussi gardé les problèmes les plus précis pour des articles dédiés, donc dans les mois qui viennent je devrais poster au sujet de la typographie fluide utilisée sur ma page d'accueil, des view transitions utilisées pour assurer une expérience de navigation fluide, et sur comment le jeu de la vie en fond du site fonctionne. Je sais qu'il s'agit d'une conclusion très risquée à écrire puisqu'il y a de réelles chances que je ne tienne pas ma promesse d'écrire sur tous ces sujets, donc ne soyez pas trop impatients !
