@@ -462,10 +462,14 @@ const dateFormatter = new Intl.DateTimeFormat(lang, { dateStyle: "medium" });
   }
 
   .card__title {
+    display: -webkit-box;
+    overflow: hidden;
     margin: 0;
+    -webkit-box-orient: vertical;
     color: var(--text-1);
     font-size: var(--font-size-2);
     font-weight: var(--font-weight-6);
+    -webkit-line-clamp: 3;
   }
 
   .card__desc {

@@ -83,7 +83,14 @@ const dateStr = getDateFormatter(lang).format(photo.data.date);
           style={`--w: ${photo.data.width}; --h: ${photo.data.height};`}
         >
           <img
-            src={photo.data.src}
+            src={`https://images.tgianella.dev/cdn-cgi/image/width=1200/${photo.data.src}`}
+            srcset={`
+              https://images.tgianella.dev/cdn-cgi/image/width=640/${photo.data.src} 640w,
+              https://images.tgianella.dev/cdn-cgi/image/width=1200/${photo.data.src} 1200w,
+              https://images.tgianella.dev/cdn-cgi/image/width=1920/${photo.data.src} 1920w,
+              https://images.tgianella.dev/cdn-cgi/image/width=2560/${photo.data.src} 2560w
+            `}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 60vw"
             alt={photo.data.alt}
             width={photo.data.width}
             height={photo.data.height}
@@ -157,6 +164,7 @@ const dateStr = getDateFormatter(lang).format(photo.data.date);
       }
     </article>
     <Lightbox
+      src={photo.data.src}
       selector=".photo-hero"
       labelDialog={t.a11y.imagePreview}
       labelClose={t.a11y.close}
