@@ -1,16 +1,52 @@
 ---
-title: "Working with AI"
-description: "How I worked with AI"
-tags: ["AI"]
+title: "My time with Claude"
+description: "How I used Claude Code in making my website."
+tags: ["AI", "Claude Code"]
 pubDate: 2026-12-22
 thumbnail: "../../../assets/posts/thumbnails/babel-swc-migration.webp"
+draft: true
 ---
 
-## Working with an AI agent
+import Callout from "../../../components/Callout.astro";
 
-This side-project was the perfect opportunity to test working with an AI code agent, the greenfield status and small scale ensure that a low-tier subscription would cover the costs. I ended up going with the ubiquitous Claude Code as it seemed to be the best performer at the moment and Anthropic seems to hold ever so slightly stronger ethical values than other major players of the field — I know this sentence might age very poorly.
+[//]: # "* Why is this relevant? My context as a solo dev on a side project with Claude Pro, no unlimited token, full agent, so need to find ways to be efficient. This is also maybe the future if prices increase."
+[//]: # "* Main point: your role is shifting, you are not doing but the agent is not autonomous, it has a great power but you need to be there to say what to do. Different levels of knowledge: you know what there is to know even if you don't know the content. It knows all the content. Kind of maieutic, linked with the dialogue chatbot form."
+[//]: # "* Conversations about architecture are useful, learning experience"
 
-I went with the Pro subscription which is the lowest tier with access to Claude Code. As you might know, the usage limits are purposefully not given in an absolute measure (you only see what ratio of your 5 hours session or weekly limit you have already consumed). Anthropic actually doesn't have a real detailed pricing page outside of API rates. This came as a bit of a shock to me and I'm still a bit baffled that somehow in AI you can pay for something whose very definition can change several times a day — I'm also aware that LLM pricing is very far from being mature so it should settle down in the upcoming years.
+Creating this website was a great opportunity to try out working with a coding agent on a greenfield project. I set on Claude Code because it is very hyped at the moment and I already had some prior experience with Copilot and Cursor which we used extensively at my work so I was just curious to see what it was all about.
+
+<Callout>
+  In the AI world, a **greenfield** project is a new project started from
+  scratch, as opposed to **brownfield** projects which are pre-existing the use
+  of an AI agent. This lingo is used to talk about very basic things but this
+  distinction is actually very meaningful.
+</Callout>
+
+I found that it was a very interesting experience on many levels from technical to psychological so I felt that it was worth telling about. It was supposed to go in the [Making-of](/blog/making-of) article but what I had to say was long enough to deserve a standalone post and here we are!
+
+## My setup
+
+In order for this article to have a semblance of being relevant, we need to compare apples with apples and oranges with oranges. Nowadays saying that I used a code agent, or even a specific one — Claude Code — in my case is not precise enough because everything depends on what plan and what platform you used.
+
+### Claude Pro: the cheapest tier with access to Claude Code
+
+I went with the Pro subscription which is the lowest tier with access to Claude Code. As you might know, the usage limits are purposefully not given in an absolute measure (you only see what ratio of your 5-hours session or weekly limit you have already consumed). Anthropic actually doesn't have a real detailed pricing page outside of API rates. This came as a bit of a shock to me and I'm still a bit baffled that somehow in AI you can pay for something whose very definition can change several times a day — I'm also aware that LLM pricing is very far from being mature so it should settle down in the upcoming years. I'm putting this there for posterity when the same plan will be 10x more expensive in a few years!
+
+This plan allows access to Claude Code with a double limitation: there is a weekly quota and a 5-hour session one. It means that whenever you start using Claude Code, a 5-hour session start and you will not be able to use the tool past a certain point of usage. Hence why limiting your usage is an extremely high priority for a lot of users.
+
+### Terminal
+
+As a developer I felt like using the OG terminal application was the most intuitive and easy to use. It was even so comfortable that at times I would forget that I was prompting Claude and I just started running terminal commands as prompt so a puzzled Claude would from times to times get instructions like `sudo apt install libheif-examples`. (real example from a session where I created a script to pre-process my blue-screen pictures before sending them to Cloudflare R2...)
+
+The biggest caveat I have with using the terminal vs using an IDE plugin is that I found that Claude Code can be a little inefficient when handling source code (like looking for a pattern, or bulk replacement). Because it can use terminal commands, it will usually do that with complex `grep` or `glob` commands that it whips up on the fly and I found that to yield subpar results and can sometimes spiral in a lot of costly commands being fired if the model doesn't find what it is looking for.
+
+Of course the obvious fix is to plug it to my IDE (Webstorm) MCP to allow the model to call the IDE tools directly and benefit from the powerful semantic indexing, type resolution, diagnostics and refactoring engine. Doing that is very straightforward but I found that I had a very hard time to get the LLM to use the MCP reliably. I added comprehensive instructions about that in my `CLAUDE.md` to improve MCP usage and it worked somehow but I still sometimes caught Claude using good old terminal commands and I found that I always needed to be on the lookout to interrupt it and manually instruct to use the Webstorm MCP which was a bit tedious.
+
+I guess (I hope) that this is not an issue when you run Claude Code directly from the IDE — even though it might come with its own problems...
+
+## The battle for usage
+
+As a lowest-tier pro plan user, I had pretty low usage limitations which worked ok with the very small scale of my project. The model has to ingest less code into its context window which is one of the biggest factors in usage
 
 The first thing I noticed very quickly is that your usage ratio burns down much quicker during US office hours (so basically during French afternoons/evenings). Even though this is never stated in the official docs (that I know of), it doesn't really feel like usage measurement is only correlated to the number of input/output tokens but also weighted by global usage, which makes sense from a business perspective to optimize throughput.
 
