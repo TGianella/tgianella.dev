@@ -9,10 +9,6 @@ draft: true
 
 import Callout from "../../../components/Callout.astro";
 
-[//]: # "* Why is this relevant? My context as a solo dev on a side project with Claude Pro, no unlimited token, full agent, so need to find ways to be efficient. This is also maybe the future if prices increase."
-[//]: # "* Main point: your role is shifting, you are not doing but the agent is not autonomous, it has a great power but you need to be there to say what to do. Different levels of knowledge: you know what there is to know even if you don't know the content. It knows all the content. Kind of maieutic, linked with the dialogue chatbot form."
-[//]: # "* Conversations about architecture are useful, learning experience"
-
 Creating this website was a great opportunity to try out working with a coding agent on a greenfield project. I set on Claude Code because it is very hyped at the moment and I already had some prior experience with Copilot and Cursor which we used extensively at my work so I was just curious to see what it was all about.
 
 <Callout>
@@ -44,23 +40,66 @@ Of course the obvious fix is to plug it to my IDE (Webstorm) MCP to allow the mo
 
 I guess (I hope) that this is not an issue when you run Claude Code directly from the IDE — even though it might come with its own problems...
 
-## The battle for usage
+## The Battle for Usage
 
-As a lowest-tier pro plan user, I had pretty low usage limitations which worked ok with the very small scale of my project. The model has to ingest less code into its context window which is one of the biggest factors in usage
+### Why Usage Matters?
+
+Let's start with a first statement: Claude Code is very good at writing code for a simple and common project like creating a tech blog. This is not a niche project at all, there is training data aplenty with a lot of both code examples and literature around the topic.
+
+What this means however is that my focus shifted from "How to get the agent to the desired output" to "How to get the agent to the desired output **efficiently**, without hitting the limits". This is the number one challenge and I expect it to stay that way as LLMs are going to become competent enough to handle a lot of tasks but costs are going to keep rising.
+
+As a lowest-tier pro plan user, I had to work with pretty low usage limitations. But it worked ok with the very small scale of my project because the model has to ingest less code into its context window which is one of the biggest factors in usage.
+
+### Best Usage Reduction Tip: Don't Be American
 
 The first thing I noticed very quickly is that your usage ratio burns down much quicker during US office hours (so basically during French afternoons/evenings). Even though this is never stated in the official docs (that I know of), it doesn't really feel like usage measurement is only correlated to the number of input/output tokens but also weighted by global usage, which makes sense from a business perspective to optimize throughput.
 
 The practical impact of this is that I had no usage issue when working outside of these hours (for the interlaps with my free time that meant early morning, lunchtime and outside working days) with my workflow which usually looks like firing a big plan request to get the ball rolling for a new feature and then interacting every 15 minutes in average after I looked at the code, understood it and validated the feature was working correctly (or that it was not working most of the time). Such a workflow drained my usage limit in less than one hour during peak time so it was not really sustainable and most of the heavy lifting was done outside that time window.
 
-Of course, another major caveat with the usage limits was that I couldn't really use Claude Code in full agentic mode (i.e. letting the model work autonomously on an end-to-end feature, iterating on it and only reviewing a PR) because of how expensive it would be — and also I was glad to actually get to participate in making this website, as it turns out, I like to code. In the end I adopted a middle-of-the-road workflow where I would only use Claude Code for tasks with a good ratio of tediousness/high value of the task over how complex/costly it would be for the model. Although I would have loved, by pure curiosity, to see how good the model could have performed with the right setup and full autonomy — I dreamt of Claude Code being able to navigate my app and validate by itself the feature it was working on —, I felt like this was the best setup for me, keeping a lot of agency while getting a lot of the LLM benefits.
+### Picking the right model
 
-It won't come off as a surprise but my experience was globally positive. Claude Code is very efficient for these kind of projects and it's a real joy to see it handle all the boilerplate code. It is of course also a very good source of complex technical solutions to some problems. One more than one occasion it was able to find out a way I didn't know beforehand to solve a precise issue. As a result, I also found that it gave me a lot of occasions to learn new things and improve, as long as I put in the effort to actually read through all the output and review the code to truly understand the changes. I even found the tool was most useful when I was able to challenge the first outputs.
+### On the doorstep of agentic workflows
 
-I found that Claude Code shifted the way technical mastery impacts the output of a project. To produce a high-quality application, instead of needing to know intricately how every smallest part works — even though it never hurts and some people might even find a legitimate pleasure in it — what matters the most is the clarity of your design. When left unsupervised I found that Claude Code would default to outputting an averagely-coded website, way below my standards. It makes perfect sense because Claude learnt how to create a web application by having been trained on existing ones, and on average most websites are subpar, especially in a few not immediately visible places like responsive design or accessibility.
+Of course, another major caveat with the usage limits was that I couldn't really use Claude Code in full agentic mode (i.e. letting the model work autonomously on an end-to-end feature, iterating on it and only reviewing a PR) because of how expensive it would be — and also I was glad to actually get to participate in making this website, as it turns out, I like to code. In the end I adopted a middle-of-the-road workflow where I would only use Claude Code for tasks with a good ratio of tediousness/high value of the task over how complex/costly it would be for the model.
 
-What this means is that on a macro level, you still need to know where your Northern Star lies and have both a clear idea of what you want and the best way to achieve this vision. This doesn't mean that the LLM can't participate in the ideation/design phase — remember that even a low-grade LLM has been trained on far more data that most of us will see in our entire lifetime so on paper they are a great source of knowledge. I've actually had great success going back and forth with Claude Code about architecture or design, but once we start the implementation I noticed that it could drift away from the exact design or the best practices we outlined beforehand to more average solutions. The consequence is that I always needed to stay vigilant during implementation to make sure we follow the plan.
+Although I would have loved, by pure curiosity, to see how good the model could have performed with the right setup and full autonomy — I dreamt of Claude Code being able to navigate my app and validate by itself the feature it was working on —, I felt like this was the best setup for me, keeping a lot of agency while getting a lot of the LLM benefits. I'd be very curious to see an agent using something like a Playwright MCP to browse and review changes autonomously so it can iterate on its own.
 
-This translates well to the micro level (think at the function scale),
+## Bilan
 
-- Keep the design / Know what you want and what is possible
+It won't come off as a surprise but my experience was globally positive. Claude Code is very efficient for these kind of projects and it's a real joy to see it handle all the boilerplate code. It is of course also a very good source of complex technical solutions to some problems. One more than one occasion it was able to find out a way I didn't know beforehand to solve a precise issue. As a result, I also found that it gave me a lot of occasions to learn new things and improve, as long as I put in the effort to actually read through all the output and review the code to truly understand the changes. I even found the tool was most useful when I was able to challenge the first output and steer it in the right direction.
+
+### What it Means to be Skilled as a Human in the LLM Era
+
+To me, Claude Code shifted the way your technical mastery impacts the output of a project. To produce a high-quality application, instead of needing to know intricately how every smallest part works — even though it never hurts and there is a legitimate pleasure and pride to find in it — what matters the most is the clarity of your design. When left unsupervised I found that Claude Code would default to outputting an averagely-coded website, way below my standards. It makes perfect sense because Claude learnt how to create a web application by having been trained on existing ones, and on average most websites are subpar, especially in a few not immediately visible places like responsive design or accessibility.
+
+I experimented with plugins and skills but like for the Webstorm MCP I realized that the issue wasn't lying in the fact that good documentation on these matters didn't exist. I found plenty of great skills to cover these areas, but I found that the agent would not always use them spontaneously and I would have to remind it manually to use the skills so it kinda defeated the purpose for me.
+
+#### Macro level: system design and architecture
+
+What this means is that on a macro level — think architecture and system design —, you still need to know where your Northern Star lies and have both a clear idea of what you want and the best way to achieve this vision. This doesn't mean that the LLM can't participate in the ideation/design phase — remember that even a low-grade LLM has been trained on far more data that most of us will see in our entire lifetime so on paper they are a great source of knowledge.
+
+I've actually had great success going back and forth with Claude Code about architecture or design, but once we start the implementation I noticed that it could drift away from the exact design or the best practices we outlined beforehand to more average solutions. The consequence is that I always needed to stay vigilant during implementation to make sure we follow the plan.
+
+#### Micro level: writing the code
+
+This translates well to the micro level — think writing a function for instance. To me the advent of code agents only strengthens a dynamic that I had already identified: it is much more valuable to know what are the solutions and tools at your disposal (like what are the functions/methods/CSS properties that exist in your context and what is their specific use case) than to know exactly how they work and what is the exact interface. And it makes sense, because the specifics can almost always be found in documentation but if you don't even know that something exist, you cannot even look for it. Code agents push this even further: they are extremely competent are implementing what you ask for in the right way, but if you leave them unsupervised, they will default to the most common solutions which are not always the best ones.
+
+A very good example of that is responsive web design (making sure that the website displays well on most screen sizes). When prompted to implement an UI that is responsive, more often than not, the agent will default to implementing three different UIs at three breakpoints (desktop, tablet and phone). This works but nowadays [it is very far from optimal](/talks/responsive-css). As a developer you have to know that better alternatives exist to tell the agent to use them, and even if you don't know exactly how to use them in detail, that's where the agent is the most valuable because it knows that very well.
+
+## Things I wish I had known from the start
+
+### Importance of a proper code quality setup
+
+Having started my project from scratch with Claude Code, at first I disregarded stuff like formatters and linters, thinking that they were not the highest priority if I worked with an agent. My line of reasoning was that if an agent was outputting the vast majority of the code, these tools were not as important as when you write the code yourself. In a way I thought that maybe code agents would deprecate these utilities. I couldn't have been more wrong!
+
+The hard-learned truth is that all code quality tools matter as much for agent-authored code as for human-authored code. It turns out that code agents don't favor a single style and often make small mistakes, which doesn't come off as a surprise as their output is probabilistic. They can of course fix their own mistakes when prompted to do so, but this can prove tedious and costly, almost like fixing this by hand. I'll never forget a time when I asked Claude Code to format my CSS in a certain way and it ended up running for 5 straight minutes, rewriting all my CSS and consuming upwards of 40000 tokens, thereby blowing up my usage. Let's say that this was a learning moment: before the LLM era, the developer community came up with a lot of great tools to improve productivity, which work in a simple, deterministic and reliable way; these tools are far from useless now and it is far better to leave everything that can be automated to scripts, hooks, linters, formatters, etc. instead of handing them off to a LLM. It's the traditional "using a bazooka to kill a fly" pitfall. You can actually shave a lot of your usage off if you make sure that you run a tight ship with a good code quality setup: every change that is made automatically is usage (and energy, and water) saved.
+
+What's more, LLM and traditional tools don't only complement each other, LLMs are actually very adept at using them. You just have to update your `CLAUDE.md` file to indicate what your formatting/linting setup is and Claude will gladly run the commands when it's relevant. You must still be careful with that however because I've found that agents can have a hard time debugging some format/lint failures and have a hard time to judge whether it's sensible to mute an error or if it should be fixed instead, or just plainly misunderstanding an error that happens because of a setup issue. It happened on several occasions that after having implemented some minor changes, I found the model spent most of its time trying over and over again to fix an error that occurred because of there was a problem in my linter setup. Instead of seeing that, it went down the rabbit hole of trying to fix an unfixable error.
+
+So all in all my advice is to have a strong code quality setup and automate usage after your agent is done. One great way to do that is with [hooks](https://code.claude.com/docs/en/hooks-guide#auto-format-code-after-edits) for instance. There's a real benefit to the commands being run after the agent is done so it does not interact with the output. You get the best of both worlds: your code is properly formatted automatically, but if anything goes wrong, you're in charge to debug (and of course you can ask the agent for help but you're able to frame this request so the debugging will usually be much more effective).
+
+### Be good at debugging
+
+The previous sections is a perfect lead in to this one.
+
 - Browser debugging
