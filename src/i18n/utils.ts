@@ -15,8 +15,9 @@ export function getLocalizedPath(path: string, lang: Locale): string {
   // inputs too: strip any existing /en or /fr so callers can pass either a
   // bare path ("/blog") or an already-localized one ("/fr/blog").
   const bare = path.replace(/^\/(en|fr)(?=\/|$)/, "") || "/";
-  if (lang === "en") return bare;
-  return bare === "/" ? "/fr/" : `/fr${bare}`;
+  const withSlash = bare.endsWith("/") ? bare : `${bare}/`;
+  if (lang === "en") return withSlash;
+  return `/fr${withSlash}`;
 }
 
 /** Returns the alternate locale for use in hreflang / lang switcher */
