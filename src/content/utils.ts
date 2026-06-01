@@ -43,17 +43,29 @@ export type RawEvent = {
 
 /** Returns the debut event for a talk: earliest national, then regional, then internal.
  *  Ignores upcoming events when past events exist, so a talk already given at a regional
- *  conference doesn't show an upcoming national event as its debut. */
+ *  conference doesn't show an upcoming national event as its debut.
+ *  Staleness rule: if the highest-tier event is more than a year after the very first event,
+ *  the chronologically first event wins regardless of tier. */
 export function debutEvent(events: RawEvent[]): RawEvent | undefined {
   const now = new Date();
   const pool = events.some((e) => e.date <= now)
     ? events.filter((e) => e.date <= now)
     : events;
+  if (pool.length === 0) return undefined;
   const earliest = (scope: RawEvent["scope"]) =>
     pool
       .filter((e) => e.scope === scope)
       .sort((a, b) => a.date.valueOf() - b.date.valueOf())[0];
-  return earliest("national") ?? earliest("regional") ?? earliest("internal");
+  const winner =
+    earliest("national") ?? earliest("regional") ?? earliest("internal");
+  const first = pool.reduce((a, b) => (a.date <= b.date ? a : b));
+  const ONE_YEAR_MS = 365 * 24 * 60 * 60 * 1000;
+  if (
+    winner !== first &&
+    winner!.date.valueOf() - first.date.valueOf() > ONE_YEAR_MS
+  )
+    return first;
+  return winner;
 }
 
 export type TimelineTalk = {

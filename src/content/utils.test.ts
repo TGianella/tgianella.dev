@@ -253,6 +253,43 @@ describe("debutEvent", () => {
     debutEvent(events);
     assert.deepEqual(events, original);
   });
+
+  it("prefers first event when higher-tier is more than a year later", () => {
+    const events = [
+      event("internal", "2023-06-01"),
+      event("regional", "2025-03-01"),
+    ];
+    const result = debutEvent(events);
+    assert.equal(result!.scope, "internal");
+    assert.equal(result!.date.toISOString(), "2023-06-01T00:00:00.000Z");
+  });
+
+  it("keeps higher-tier preference within one year", () => {
+    const events = [
+      event("internal", "2025-01-01"),
+      event("regional", "2025-05-01"),
+    ];
+    const result = debutEvent(events);
+    assert.equal(result!.scope, "regional");
+  });
+
+  it("staleness rule: exactly one year does not trigger override", () => {
+    const events = [
+      event("internal", "2024-03-01"),
+      event("regional", "2025-03-01"),
+    ];
+    const result = debutEvent(events);
+    assert.equal(result!.scope, "regional");
+  });
+
+  it("staleness rule: one year plus one day triggers override", () => {
+    const events = [
+      event("internal", "2024-02-28"),
+      event("regional", "2025-03-01"),
+    ];
+    const result = debutEvent(events);
+    assert.equal(result!.scope, "internal");
+  });
 });
 
 // ── buildTimeline ───────────────────────────────────
