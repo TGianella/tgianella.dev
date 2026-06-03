@@ -1,0 +1,131 @@
+---
+title: "My time with Claude"
+description: "In making this website I had the opportunity to use Claude Code extensively, here are my thoughts on that!"
+tags: ["AI", "Claude Code"]
+pubDate: 2026-12-22
+thumbnail: "../../../assets/posts/thumbnails/my-time-with-claude.jpg"
+draft: true
+---
+
+import Callout from "../../../components/Callout.astro";
+
+Creating this website was a great opportunity to try out working with a coding agent on a greenfield project. I settled on Claude Code because it is very hyped at the moment and I already had some prior experience with Copilot and Cursor which we used extensively at my work so I was just curious to see what it was all about.
+
+<Callout>
+  In the AI world, a **greenfield** project is a new project started from
+  scratch, as opposed to **brownfield** projects which are pre-existing the use
+  of an AI agent. This lingo is used to talk about very basic things but this
+  distinction is actually very meaningful because it induces a very different
+  workflow.
+</Callout>
+
+It was a very interesting experience on many levels from technical to psychological so I felt that it was worth telling about. It was supposed to go in the [Making-of](/blog/making-of) article but what I had to say was long enough to deserve a standalone post and here we are! Here's what I learned about working with a coding agent, and in surprising ways old-school dev practices turned out to matter more, not less!
+
+## My Personal Claude Code Setup
+
+In order for this article to be useful, we need to compare apples with apples. Nowadays saying that I used a code agent, or even a specific one — Claude Code in my case — is not precise enough because everything depends on what plan and what platform you used.
+
+### Claude Pro: the cheapest tier with access to Claude Code
+
+I went with one month of Pro subscription which is the lowest tier with access to Claude Code, for the cost of $21.60. As you might know, the usage limits are purposefully not given in an absolute measure (you only see what ratio of your 5-hours session or weekly limit you have already consumed). Anthropic actually doesn't have a real detailed pricing page outside of API rates. This came as a bit of a shock to me and I'm still a bit baffled that somehow in AI you can pay for something whose very definition can change several times a day — I'm also aware that LLM pricing is very far from being mature so it should settle down in the upcoming years. I'm putting this there for posterity when the same plan will be 10x more expensive in a few years!
+
+This plan allows access to Claude Code with a double limitation: there is a weekly quota and a 5-hour session one. It means that whenever you start using Claude Code, a 5-hour session starts and you will not be able to use the tool past a certain point of usage. Hence limiting your usage is an extremely high priority for a lot of users — no LLM provider is offering unlimited plans, the best plans just give you higher usage limitations.
+
+<Callout>
+  LLM usage is measured in tokens. **Tokens** are sequences of characters into
+  which your input text is broken down and from which the output is formed, so
+  the longer your input or the agent output, the more usage you are consuming.
+  Tokens are the ubiquitous unit from which everything is derived in LLMs. If
+  you are curious you can try playing with a
+  [Tokenizer](https://platform.openai.com/tokenizer) to see how natural language
+  is converted into tokens.
+</Callout>
+
+### Using the Terminal Application
+
+As a developer I felt like using the OG terminal application was the most intuitive and easy to use. It was even so comfortable that at times I would forget that I was prompting Claude and I just started running terminal commands as prompt so a puzzled Claude would occasionally receive instructions like `sudo apt install libheif-examples`. (Real example from a session where I created a script to pre-process my blue-screen pictures before sending them to Cloudflare R2...)
+
+The biggest caveat I have with using the terminal as opposed to using an IDE plugin is that I found that Claude Code can be a little inefficient when handling source code (like looking for a pattern, or bulk replacement of text). Because it can use terminal commands, it will usually do that with complex `grep` or `glob` commands that it whips up on the fly and I found that to yield subpar results and even sometimes spiral in a lot of costly commands being fired if the model doesn't find what it is looking for quickly.
+
+Of course the obvious fix is to plug it to my IDE (Webstorm) MCP to allow the model to call the IDE tools directly and benefit from the powerful semantic indexing, type resolution, diagnostics and refactoring engine. Doing that is very straightforward but I found that I had a very hard time getting the LLM to use the MCP reliably. I added comprehensive instructions about that in my `CLAUDE.md` to improve MCP usage and it worked somehow but I still sometimes caught Claude using good old terminal commands and I found that I always needed to be on the lookout to interrupt it and manually instruct to use the Webstorm MCP which was a bit tedious.
+
+<Callout>
+  Broadly speaking, **MCP** (Model Context Protocol) is a protocol that enables
+  standardised communication between an **agentic client** (think Claude Code)
+  and a **MCP server** (here Webstorm in my case but it could be anything) that
+  provides data, tools and resources for the model to use.
+</Callout>
+
+I guess (I hope) that this is not an issue when you run Claude Code directly from the IDE — even though it might come with its own set of specific problems...
+
+## The Battle for Usage
+
+### Why Usage Matters?
+
+Let's start with a first statement: Claude Code is very good at writing code for a simple and common project like creating a tech blog. This is not a niche project at all, there is training data aplenty with a lot of both code examples and literature around the topic.
+
+What this means however is that my focus shifted from "How to get the agent to the desired output" to "How to get the agent to the desired output **efficiently**, without hitting the usage limits". This is the number one challenge for any Gen AI user at the moment and I expect it to stay that way as LLMs are going to become competent enough to handle a lot more tasks while costs are going to keep rising.
+
+As a lowest-tier pro plan user, I had to work with pretty low usage limits. But it worked ok with the very small scale of my project because the model has to ingest less code into its context window which is one of the biggest factors in usage.
+
+### Best Usage Reduction Tip: Don't Be American
+
+The first thing I noticed very quickly is that your usage ratio burns down much quicker during US office hours (so basically during French afternoons/evenings). Even though this is never stated in the official docs (that I know of), it doesn't really feel like usage measurement is only correlated to the number of input/output tokens but also weighted by global usage, which makes sense from a business perspective to optimize throughput.
+
+The practical impact of this is that I had no usage issue when working outside of these hours (for the overlap with my free time that meant early morning, lunchtime and outside working days) with my workflow which usually looks like firing a big plan request to get the ball rolling for a new feature and then interacting every 15 minutes in average after I looked at the code, understood it and validated the feature was working correctly (or that it was not working most of the time). Such a workflow drained my usage limit in less than one hour during peak time so it was not really sustainable and most of the heavy lifting was done outside that time window.
+
+### On the doorstep of agentic workflows
+
+Of course, another major caveat with the usage limits was that I couldn't really use Claude Code in full agentic mode (i.e. letting the model work autonomously on an end-to-end feature, iterating on it and only reviewing a PR) because of how expensive it would be — and also I was glad to actually get to participate in making this website, as it turns out, I like to code. In the end I adopted a middle-of-the-road workflow where I would only use Claude Code for tasks with a good ratio of tediousness/high value of the task over how complex/costly it would be for the model.
+
+Although I would have loved, by pure curiosity, to see how good the model could have performed with the right setup and full autonomy — I dreamt of Claude Code being able to navigate my app and validate by itself the feature it was working on —, I felt like this was the best setup for me, keeping a lot of agency while getting a lot of the LLM benefits. If I ever get the opportunity before token prices skyrocket, I'd be very curious to test working with an agent that uses something like a Playwright MCP to browse and review changes autonomously so it can iterate on its own.
+
+## Things I wish I had known from the start: Don't Forget the Basics!
+
+### Importance of a proper code quality setup
+
+Having started my project from scratch with Claude Code, at first I disregarded tools such as formatters and linters, thinking that they were not the highest priority if I worked with an agent. My line of reasoning was that if an agent was outputting the vast majority of the code, these tools were not as important as when you write the code yourself. In a way I thought that maybe code agents would deprecate these utilities. I couldn't have been more wrong!
+
+The hard-learned truth is that all code quality tools matter as much for agent-authored code as for human-authored code. It turns out that code agents don't favor a single style and often make small mistakes, which doesn't come as a surprise as their output is probabilistic. They can of course fix their own mistakes when prompted to do so, but this can prove tedious and costly, almost like fixing this by hand. I'll never forget a time when I asked Claude Code to format my CSS in a certain way and it ended up running for 5 straight minutes, rewriting all my CSS and consuming upwards of 40000 tokens, thereby blowing up my usage (it's a lot for such a mundane task). Let's say that this was a learning moment: before the LLM era, the developer community came up with a lot of great tools to improve productivity, which work in a simple, deterministic and reliable way; these tools are far from useless now and it is far better to leave everything that can be automated to scripts, hooks, linters, formatters, etc. instead of handing them off to a LLM. It's the traditional "using a bazooka to kill a fly" pitfall. You can actually shave a lot of your usage off if you make sure that you run a tight ship with a good code quality setup: every change that is made automatically is usage (and energy, and water) saved.
+
+What's more, LLM and traditional tools don't only complement each other, LLMs are actually very adept at using them. You just have to update your `CLAUDE.md` file to indicate what your formatting/linting setup is and Claude will gladly run the commands when it's relevant. You must still be careful with that however because I've found that agents can struggle debugging some format/lint failures and to judge whether it's sensible to mute an error or if it should be fixed instead, or just plainly misunderstanding an error that happens because of a setup issue. On several occasions, after implementing some minor changes, I found the model spending most of its time trying over and over again to fix an error that occurred because there was a problem in my linter setup. Instead of seeing that, it went down the rabbit hole of trying to fix an unfixable error.
+
+So all in all my advice is to have a strong code quality setup and automate usage after your agent is done. One great way to do that is with [hooks](https://code.claude.com/docs/en/hooks-guide#auto-format-code-after-edits) for instance. There's a real benefit to the commands being run after the agent is done so it does not interact with the output. You get the best of both worlds: your code is properly formatted automatically, but if anything goes wrong, you're in charge of debugging (and of course you can ask the agent for help but you're able to frame this request so the debugging will usually be much more effective).
+
+### Be good at debugging
+
+The previous section is a perfect lead in to this one. To me as a front-end developer the biggest limit I've found to the coding agent magic is their poor ability to debug front-end applications. It is logical, after all it is much easier for an LLM to predict what server code will output than to visualize what will happen on screen. I quickly experimented with the Playwright MCP but the effectiveness to usage ratio was far too low when I tried that so I didn't go with it because of my low usage limits (as I said, I would have loved to see that in action). However this should not be set in stone and we can expect agents to get better in this regard.
+
+The worst times I've had were probably those when I chose to stay in the backseat and let the agent try to fix a visual issue with the website, only providing feedback about whether the bug was resolved or not. The agent would most often fail to pinpoint the exact root cause of the issue and so would try random fixes that were ineffective. Of course, the more abstract the issue, the worse the situation — I've pulled quite a lot of hair out trying to fix some nasty view transition bugs...
+
+Conversely, it means that a great efficiency gain can be found in AI-Assisted debugging for front-end by leveraging your own skills, not to fix the code, but to give the relevant information to the agent. I've found that just being able to pinpoint the exact DOM element at fault or even the CSS property that has an unexpected value will help the agent make short work of the bug. In this domain, once again, teamwork makes the dreamwork!
+
+## What I think after a month of intensive companionship
+
+It won't come off as a surprise but my experience was globally positive. Claude Code is very efficient for these kind of projects and it's a real joy to see it handle all the boilerplate code. It is of course also a very good source of complex technical solutions to some problems. On more than one occasion it was able to find a way I didn't know beforehand to solve a precise issue. As a result, I also found that it gave me a lot of opportunities to learn new things and improve, as long as I put in the effort to actually read through all the output and review the code to truly understand the changes. I even found the tool was most useful when I was able to challenge the first output and steer it in the right direction.
+
+### What it Means to be Skilled as a Human in an Era of LLMs
+
+To me, code agents such as Claude Code shifted the way your technical mastery impacts the output of a project. To produce a high-quality application, instead of needing to know intricately how every smallest part works — even though it never hurts and there is a legitimate pleasure and pride to find in it — what matters the most is the clarity of your design. When left unsupervised I found that Claude Code would default to outputting a mediocre website, way below my standards. It makes perfect sense because Claude learnt how to create a web application by having been trained on existing ones, and on average most websites are subpar, especially in a few not immediately visible places like responsive design or accessibility.
+
+I experimented with plugins and skills but like for the Webstorm MCP I realized that the issue wasn't lying in the fact that good documentation on these matters didn't exist. I found plenty of great skills to cover these areas, but I found that the agent would not always use them spontaneously and I would have to remind it manually to use the skills so it kinda defeated the purpose for me. It was a clear improvement, but not enough that I could confidently let the agent make all decisions — and where is the fun in that anyway?
+
+#### Macro level: system design and architecture
+
+What this means is that on a macro level — think architecture and system design —, you still need to know where your Northern Star lies and have both a clear idea of what you want and the best way to achieve this vision. This doesn't mean that the LLM can't participate in the ideation/design phase — remember that even a low-grade LLM has been trained on far more data than most of us will see in our entire lifetime so on paper they are a great source of knowledge.
+
+I've actually had great success going back and forth with Claude Code about architecture or design, and it made some really great points when trying to decide what would be the best way to serve my images (for instance choosing between having all images directly in the code repository and leverage Astro image optimisation tools vs. using an external hosting service such as Cloudflare R2). However I also had great points to make and it was very important that I was able to challenge some of the assertions made by the agent with my own sense of system design, for instance regarding the architecture needed to make bilingual routing work.
+
+Clarity of vision is also paramount during implementation. I noticed that the agent could drift away from the exact design or the best practices we outlined beforehand to more average solutions. The consequence is that I always needed to stay vigilant during implementation to make sure we follow the plan. This is actually in keeping with one of the current biggest trends in LLM frameworks: using a Spec-Driven Development tool such as [OpenSpec](https://openspec.dev/) to enforce the technical and functional vision.
+
+#### Micro level: writing the code
+
+This translates well to the micro level — think writing a function for instance. To me the advent of code agents only strengthens a dynamic that I had already identified: it is much more valuable to know what solutions and tools are at your disposal (like what are the functions/methods/CSS properties that exist in your context and what is their specific use case) than to know exactly how they work and what is the exact interface. And it makes sense, because the specifics can almost always be found in documentation but if you don't even know that something exists, you cannot even look for it. Code agents push this even further: they are extremely competent at implementing what you ask for in the right way, but if you leave them unsupervised, they will default to the most common solutions which are not always the best ones.
+
+A very good example of that is responsive web design (making sure that the website displays well on most screen sizes). When prompted to implement a UI that is responsive, more often than not, the agent will default to implementing three different UIs at three breakpoints (desktop, tablet and phone). This works but nowadays [it is very far from optimal](/talks/responsive-css). As a developer you have to know that better alternatives exist to tell the agent to use them, and even if you don't know exactly how to use them in detail, that's where the agent is the most valuable because it knows that very well.
+
+### Conclusion
+
+The AI world moves very fast, and who knows if anything I did when working on this website will be applicable to the same tasks in even one year. That's why I tried to extract some valuable insights from my experience.
+
+In the end my main takeaway is that even though on the face of it, the experience of creating an application feels very different; actually, there is still a lot of room for you to express skill and mastery. Things didn't change as much as what I already identified as an existing trend got amplified: your value doesn't lie in the fingers that type on the keyboard, but in the brain that decides what solution is being implemented.
