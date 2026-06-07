@@ -2,9 +2,8 @@
 title: "My time with Claude"
 description: "In making this website I had the opportunity to use Claude Code extensively, here are my thoughts on that!"
 tags: ["AI", "Claude Code"]
-pubDate: 2026-12-22
+pubDate: 2026-06-08
 thumbnail: "../../../assets/posts/thumbnails/my-time-with-claude.jpg"
-draft: true
 ---
 
 import Callout from "../../../components/Callout.astro";
@@ -98,21 +97,23 @@ The previous section is a perfect lead in to this one. To me as a front-end deve
 
 The worst times I've had were probably those when I chose to stay in the backseat and let the agent try to fix a visual issue with the website, only providing feedback about whether the bug was resolved or not. The agent would most often fail to pinpoint the exact root cause of the issue and so would try random fixes that were ineffective. Of course, the more abstract the issue, the worse the situation — I've pulled quite a lot of hair out trying to fix some nasty view transition bugs...
 
-Conversely, it means that a great efficiency gain can be found in AI-Assisted debugging for front-end by leveraging your own skills, not to fix the code, but to give the relevant information to the agent. I've found that just being able to pinpoint the exact DOM element at fault or even the CSS property that has an unexpected value will help the agent make short work of the bug. In this domain, once again, teamwork makes the dreamwork!
+Conversely, it means that a great efficiency gain can be found in AI-Assisted debugging for front-end by leveraging your own skills, not to fix the code, but to give the relevant information to the agent. Just being able to pinpoint the exact DOM element at fault or even the CSS property that has an unexpected value will help the agent make short work of the bug. In this domain, once again, teamwork makes the dreamwork!
 
 ## What I think after a month of intensive companionship
 
-It won't come off as a surprise but my experience was globally positive. Claude Code is very efficient for these kind of projects and it's a real joy to see it handle all the boilerplate code. It is of course also a very good source of complex technical solutions to some problems. On more than one occasion it was able to find a way I didn't know beforehand to solve a precise issue. As a result, I also found that it gave me a lot of opportunities to learn new things and improve, as long as I put in the effort to actually read through all the output and review the code to truly understand the changes. I even found the tool was most useful when I was able to challenge the first output and steer it in the right direction.
+It won't come off as a surprise but my experience was globally positive. Claude Code is very efficient for these kind of projects and it's a real joy to see it handle all the boilerplate code. It is of course also a very good source of complex technical solutions to some problems. On more than one occasion it was able to find a way I didn't know beforehand to solve a precise issue. As a result, it gave me a lot of opportunities to learn new things and improve, as long as I put in the effort to actually read through all the output and review the code to truly understand the changes. The tool even was most useful when I was able to challenge the first output and steer it in the right direction.
 
 ### What it Means to be Skilled as a Human in an Era of LLMs
 
-To me, code agents such as Claude Code shifted the way your technical mastery impacts the output of a project. To produce a high-quality application, instead of needing to know intricately how every smallest part works — even though it never hurts and there is a legitimate pleasure and pride to find in it — what matters the most is the clarity of your design. When left unsupervised I found that Claude Code would default to outputting a mediocre website, way below my standards. It makes perfect sense because Claude learnt how to create a web application by having been trained on existing ones, and on average most websites are subpar, especially in a few not immediately visible places like responsive design or accessibility.
+To me, code agents such as Claude Code shifted the way your technical mastery impacts the output of a project. To produce a high-quality application, instead of needing to know intricately how every smallest part works — even though it never hurts and there is a legitimate pleasure and pride to find in it — what matters the most is the clarity of your design. When left unsupervised Claude Code would default to outputting a mediocre website, way below my standards. It makes perfect sense because Claude learnt how to create a web application by having been trained on existing ones, and on average most websites are subpar, especially in a few not immediately visible places like responsive design or accessibility.
 
-I experimented with plugins and skills but like for the Webstorm MCP I realized that the issue wasn't lying in the fact that good documentation on these matters didn't exist. I found plenty of great skills to cover these areas, but I found that the agent would not always use them spontaneously and I would have to remind it manually to use the skills so it kinda defeated the purpose for me. It was a clear improvement, but not enough that I could confidently let the agent make all decisions — and where is the fun in that anyway?
+I experimented with plugins and skills but like for the Webstorm MCP I realized that the issue wasn't lying in the fact that good documentation on these matters didn't exist. I found plenty of great skills to cover these areas, but the agent would not always use them spontaneously and I would have to remind it manually to use the skills so it kinda defeated the purpose for me. It was a clear improvement, but not enough that I could confidently let the agent make all decisions — and where is the fun in that anyway?
+
+This shift in the way technical skill can influence a project can be seen at two different scales, on the macro as well as on the micro level.
 
 #### Macro level: system design and architecture
 
-What this means is that on a macro level — think architecture and system design —, you still need to know where your Northern Star lies and have both a clear idea of what you want and the best way to achieve this vision. This doesn't mean that the LLM can't participate in the ideation/design phase — remember that even a low-grade LLM has been trained on far more data than most of us will see in our entire lifetime so on paper they are a great source of knowledge.
+On a macro level — think architecture and system design —, you still need to know where your Northern Star lies and have both a clear idea of what you want and the best way to achieve this vision. This doesn't mean that the LLM can't participate in the ideation/design phase — remember that even a low-grade LLM has been trained on far more data than most of us will see in our entire lifetime so on paper they are a great source of knowledge.
 
 I've actually had great success going back and forth with Claude Code about architecture or design, and it made some really great points when trying to decide what would be the best way to serve my images (for instance choosing between having all images directly in the code repository and leverage Astro image optimisation tools vs. using an external hosting service such as Cloudflare R2). However I also had great points to make and it was very important that I was able to challenge some of the assertions made by the agent with my own sense of system design, for instance regarding the architecture needed to make bilingual routing work.
 
