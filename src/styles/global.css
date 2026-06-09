@@ -179,12 +179,19 @@ body {
   background-image:
     linear-gradient(
       to right,
-      color-mix(in oklch, var(--text-1) 10%, transparent) 1px,
+      light-dark(
+          color-mix(in oklch, var(--text-1) 5%, transparent),
+          color-mix(in oklch, var(--text-1) 10%, transparent)
+        )
+        1px,
       transparent 1px
     ),
     linear-gradient(
       to bottom,
-      color-mix(in oklch, var(--text-1) 12%, transparent),
+      light-dark(
+        color-mix(in oklch, var(--text-1) 5%, transparent),
+        color-mix(in oklch, var(--text-1) 10%, transparent)
+      ),
       transparent 1px
     );
   background-repeat: repeat;
