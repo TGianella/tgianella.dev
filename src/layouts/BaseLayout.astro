@@ -26,6 +26,7 @@ interface Props {
   canonicalUrl?: string;
   ogImage?: string;
   noindex?: boolean;
+  mutedGrid?: boolean;
 }
 
 const {
@@ -36,6 +37,7 @@ const {
   canonicalUrl: canonicalUrlOverride,
   ogImage,
   noindex,
+  mutedGrid,
 } = Astro.props;
 const t = useTranslations(lang);
 const currentPath = Astro.url.pathname;
@@ -146,7 +148,7 @@ const pageTitle = title ? `${title} — ${t.seo.siteName}` : t.seo.siteName;
 
     <ClientRouter />
   </head>
-  <body>
+  <body class:list={[{ "muted-grid": mutedGrid }]}>
     <canvas id="gol-canvas" transition:persist="gol-canvas" aria-hidden="true"
     ></canvas>
     <a href="#main-content" class="skip-link">{t.a11y.skipToMain}</a>

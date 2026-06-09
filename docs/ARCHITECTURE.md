@@ -5,8 +5,10 @@ For basic setup and structure, see the [README](../README.md).
 
 ## i18n
 
-All routes are locale-prefixed (`/en/blog/...`, `/fr/talks/...`). The root `/`
-redirects to `/en` via a 301.
+Pages live under `src/pages/[...lang]/`. The `[...lang]` rest parameter is
+optional: English (the default locale, `prefixDefaultLocale: false`) has **no
+prefix** (`/blog/...`, `/talks/...`), while French is prefixed (`/fr/blog/...`,
+`/fr/talks/...`). The root `/` renders the English home page.
 
 Translation dictionaries live in `src/i18n/en.ts` and `fr.ts`. The English file
 is the source of truth for the translation shape: `fr.ts` must satisfy
@@ -180,6 +182,9 @@ avoids depending on the Astro runtime for a static error page.
   Global styles are in `src/styles/global.css`.
 - **`@property`-based color transitions** -- custom properties are registered
   with explicit types so the browser can interpolate them during theme switches.
+- **Muted background grid** -- `BaseLayout` accepts an optional `mutedGrid` prop
+  that adds a `muted-grid` class to `<body>`, overriding the background grid to a
+  uniform 5% opacity. Currently used on blog post pages.
 
 ## Accessibility
 

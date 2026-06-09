@@ -207,6 +207,21 @@ body {
   min-block-size: 100dvh;
 }
 
+body.muted-grid {
+  background-image:
+    linear-gradient(
+      to right,
+      color-mix(in oklch, var(--text-1) 5%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in oklch, var(--text-1) 5%, transparent),
+      transparent 1px
+    );
+  background-repeat: repeat;
+}
+
 img,
 video {
   display: block;

@@ -30,8 +30,10 @@ This is an **Astro 6** personal site with MDX and full i18n (English + French).
 
 ### Routing & i18n
 
-All content routes are prefixed with `[lang]`: `/en/blog/...`, `/fr/talks/...`.
-The root `/` redirects to `/en`.
+Pages live under `src/pages/[...lang]/`. The `[...lang]` rest parameter is
+**optional**: English (the default locale) has **no prefix** (`/blog/...`,
+`/talks/...`), while French is prefixed (`/fr/blog/...`, `/fr/talks/...`).
+The root `/` renders the English home page; `/fr/` renders the French one.
 
 - `src/i18n/en.ts` is the source of truth for translations. `fr.ts` must
   satisfy `typeof en` (enforced via `satisfies`), so missing keys are
@@ -67,7 +69,8 @@ Native CSS only. Design tokens from **Open Props**. Key custom tokens defined in
 
 Rules: mobile-first (default styles for mobile, `@media (width >= ...)` to
 enhance), BEM class names (enforced by Stylelint), component-scoped `<style>`
-blocks in `.astro` files.
+blocks in `.astro` files. `BaseLayout` accepts a `mutedGrid` prop that adds a
+`muted-grid` class to `<body>` for a subtler background grid.
 
 ### Layout
 
