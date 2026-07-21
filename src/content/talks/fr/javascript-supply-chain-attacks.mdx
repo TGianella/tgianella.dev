@@ -1,0 +1,21 @@
+---
+title: "node_modules : analyse d'une scène de crime"
+description: "Comment les attaquants utilisent vos dépendances comme porte d'entrée et comment s'en protéger."
+abstract: |
+  Un lundi matin de septembre 2025, le mainteneur d'une vingtaine de packages JavaScript populaires reçoit un mail qui semble venir de NPM : il doit mettre à jour son MFA dans les 48 heures, sinon son compte sera bloqué. Il clique, saisit ses identifiants... et déclenche sans le savoir une réaction en chaîne. Quelques heures plus tard, 18 packages dont chalk, debug et ansi-styles (cumulant 2,6 milliards de téléchargements hebdomadaires) sont compromis. Et ce n'est qu'un épisode parmi d'autres : Tanstack, Nx, Shai-Hulud... L'écosystème JavaScript vit une année sans précédent pour les attaques sur la supply chain.
+  Derrière ces incidents, des techniques aussi variées qu'ingénieuses : phishing ultra-ciblé, typosquatting, dependency confusion, scripts pre/post-install malveillants, tokens de publication volés, propagation virale... Toutes exploitent les failles d'un écosystème bâti sur la confiance. Et que vous soyez auteur·ice d'un package omniprésent ou simple utilisateur·ice d'une dépendance transitive cachée dans vos node_modules, vous êtes en première ligne.
+  Venez plonger avec moi dans les coulisses de ces attaques : nous reconstituerons les scénarios, comprendrons pourquoi ils fonctionnent si bien, et verrons concrètement comment s'en protéger côté auteur·ice comme côté consommateur·ice. À la sortie du talk, npm install ne sera plus jamais une commande anodine pour vous !
+thumbnail: "../../../assets/talks/thumbnails/javascript-supply-chain-attacks.jpg"
+tags: ["JavaScript", "NPM", "Supply Chain", "Securité"]
+events:
+  - date: 2026-10-29
+    name: "BDX I/O"
+    url: "https://bdxio.fr/"
+    location: "Bordeaux, France"
+    duration: 45
+  - date: 2026-12-04
+    name: "Devfest Lyon"
+    url: "https://devfest.gdglyon.com/"
+    location: "Lyon, France"
+    duration: 50
+---

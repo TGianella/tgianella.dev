@@ -1,0 +1,21 @@
+---
+title: "node_modules : a crime scene analysis"
+description: "How attackers use your dependencies to compromise your systems and how to protect yourselves."
+abstract: |
+  One Monday morning in September 2025, the maintainer of more than twenty of the most popular JavaScript packages receives an email that seems to come from NPM : he needs to update his MFA under 48 hours or his account will be blocked. He clicks, signs in... and unknowingly triggers a chain reaction. A few hours later, 18 packages among which chalk, debug and ansi-styles (totaling 2.6 billions weekly downloads) are compromised. And there's more: Tanstack, Nx, Shai-Hulud... The JavaScript ecosystem is under unprecedented pressure with those supply chain attacks.
+  Behind these incidents are various techniques: spear phishing, typosquatting, dependency confusion, malicious pre/post-install scripts, stolen publishing tokens, viral propagation... All are exploiting the shortcomings of an ecosystem built on trust. Whether you are the author of an ubiquitous package or the simple user of a transitive dependency hidden in your node_modules, you are on the frontline.
+  Come explore with me what is behind these attacks: we'll reconstruct the scenarios, understand why they work so well and see how to avert them in the real world, as an author or consumer. Getting out of this talk, npm install will never be an innocuous command again for you !
+thumbnail: "../../../assets/talks/thumbnails/javascript-supply-chain-attacks.jpg"
+tags: ["JavaScript", "NPM", "Supply Chain", "Security"]
+events:
+  - date: 2026-10-29
+    name: "BDX I/O"
+    url: "https://bdxio.fr/"
+    location: "Bordeaux, France"
+    duration: 45
+  - date: 2026-12-04
+    name: "Devfest Lyon"
+    url: "https://devfest.gdglyon.com/"
+    location: "Lyon, France"
+    duration: 50
+---

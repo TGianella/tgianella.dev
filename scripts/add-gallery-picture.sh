@@ -92,14 +92,16 @@ for arg in "$@"; do
     echo
     echo "── $(basename "$src") ──"
 
+    # Capture the date-bearing stem before maybe_convert_heic reassigns src to a temp file
+    stem="$(basename "$src")"
+    stem="${stem%.*}"
+
     tmp_jpeg=""
     maybe_convert_heic src
     # shellcheck disable=SC2064
     [[ -n "$tmp_jpeg" ]] && trap "rm -f '$tmp_jpeg'" EXIT
 
     # Extract date from filename stem if it is already YYYYMMDD
-    stem="$(basename "$src")"
-    stem="${stem%.*}"
     if [[ "$stem" =~ ^[0-9]{8}$ ]]; then
         date_str="$stem"
         echo "  date: ${date_str} (from filename)"
