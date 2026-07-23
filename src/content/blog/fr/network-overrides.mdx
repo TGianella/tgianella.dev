@@ -1,0 +1,169 @@
+---
+title: "Surcharges réseau natives : tour d'horizon des trois navigateurs majeurs"
+description: "Comment développer du code front-end sans attendre les données du back-end ? Proxies complexes, mocks manuels... Depuis 2025, tous les navigateurs majeurs proposent une alternative intégrée : la surcharge de requêtes réseau directement dans l'inspecteur. Safari offre le système le plus complet, Chrome privilégie la simplicité, Firefox n’est pas encore au niveau. Comparatif des trois implémentations et de leurs cas d'usage."
+tags: ["Devtools", "Safari", "Chrome", "Firefox"]
+pubDate: 2026-07-22
+firstPublishedIn:
+  name: "programmez! 274 (mai 2026)"
+  url: "https://www.programmez.com/magazine-papier/programmez-274"
+thumbnail: "../../../assets/posts/thumbnails/network-overrides.webp"
+---
+
+import { Image } from "astro:assets";
+import figure1 from "../../../assets/posts/network-overrides/1.png";
+import figure2 from "../../../assets/posts/network-overrides/2.png";
+import figure3 from "../../../assets/posts/network-overrides/3.png";
+import figure4 from "../../../assets/posts/network-overrides/4.png";
+import figure5 from "../../../assets/posts/network-overrides/5.png";
+import figure6 from "../../../assets/posts/network-overrides/6.png";
+import figure7 from "../../../assets/posts/network-overrides/7.png";
+import figure8 from "../../../assets/posts/network-overrides/8.png";
+import figure9 from "../../../assets/posts/network-overrides/9.png";
+import figure10 from "../../../assets/posts/network-overrides/10.png";
+import figure11 from "../../../assets/posts/network-overrides/11.png";
+import figure12 from "../../../assets/posts/network-overrides/12.png";
+import figure13 from "../../../assets/posts/network-overrides/13.png";
+
+Le besoin de modifier les réponses d’un serveur ne date pas d’aujourd’hui. Depuis les années 2000, les développeur.euses web comptent parmi leurs outils les logiciels de proxy, utilisés pour intercepter les requêtes réseau émises par leur navigateur, visualiser le statut, les en-têtes et le corps des requêtes et réponses, et potentiellement les modifier. Le plus connu d’entre eux est probablement [Charles](https://www.charlesproxy.com/), qui propose un ensemble très complet de fonctionnalités pour interagir avec les appels réseau. Avec l’avènement des _single page applications_ qui consomment des API dans les années 2010, de nouveaux cas d’usages sont apparus : il est devenu de plus en plus courant pour les développeur.euses de ne pas pouvoir facilement jouer avec le backend de leur application pour modifier un en-tête ou le contenu des réponses serveur. De nos jours, les proxies dédiés restent toujours des outils pertinents pour les développeur.euses qui ont des besoins très spécifiques ou intensifs de contrôle et d'interaction avec les échanges réseau. Des extensions navigateur comme Requestly ou ModHeader ont également comblé ce besoin pendant quelques années, mais elles sont désormais largement obsolètes : pour les cas simples, les navigateurs modernes intègrent l'essentiel de ces fonctionnalités directement dans leurs inspecteurs.
+
+Au cours des années 2010, les navigateurs se sont concentrés sur l’inspection et l’édition des ressources statiques (HTML/CSS/JS) des applications web. En 2018, Chrome 65 pose la première brique avec une fonctionnalité de surcharges locales : les modifications appliquées aux ressources statiques dans l’onglet Sources peuvent être persistées entre plusieurs sessions, mais il n’est pas encore possible de surcharger n’importe quelle réponse. C’est ce système qui va ensuite être généralisé pour servir de base aux surcharges de n’importe quelle requête.
+
+Faisons le tour des trois implémentations majeures, de la plus aboutie (Safari) à la plus décevante pour le moment (Firefox), en passant par le bon compromis de Chrome.
+
+## Safari : le précurseur
+
+Le vrai pionnier en la matière est Safari, même si la fonctionnalité n’a guère été mise en avant lors de sa sortie en janvier 2021. Le système de surcharge mis en place à ce moment-là est et reste à ce jour le plus complet, au prix de nécessiter quelques efforts de prise en main.
+
+Comme dans chaque navigateur, il s’agit avant tout de choisir la requête à surcharger dans l’onglet réseau de l’inspecteur, puis de faire un clic droit dessus.
+
+<Image
+  src={figure1}
+  alt="Inspecteur du navigateur safari ouvert sur l'onglet réseau avec un menu déroulant ouvert pour créer une surcharge réseau"
+  style="--img-max-width: 670px"
+/>
+
+Le menu propose alors d’éditer la requête ou la réponse, ce qui ouvre une vue éditable dans l’onglet Sources.
+
+<Image
+  src={figure2}
+  alt="Inspecteur du navigateur safari ouvert sur l'onglet sources avec un sous-onglet pour les surcharges locales"
+/>
+
+Le navigateur se charge de créer et stocker les fichiers de surcharge, le seul moyen de les modifier est de passer par l’onglet Sources. Il est possible d’exporter les fichiers de surcharge créés, mais les modifications manuelles ne seront pas reportées. Il est aussi possible de lier la surcharge à un fichier existant, mais dans ce cas il est impossible de le modifier directement dans le navigateur et il faut utiliser un éditeur de texte externe.
+
+Le fichier de surcharge affiché dans l’onglet Sources ne contient que la surcharge du corps de la requête/réponse, mais Safari propose des capacités de surcharge particulièrement complètes avec l’option “Editer surcharge locale”, au clic droit sur une surcharge locale.
+
+<Image
+  src={figure3}
+  alt="Une surcharge locale dans l'inspecteur avec un menu déroulant pour l'éditer"
+  style="--img-max-width: 500px"
+/>
+
+L’interface qui s’ouvre vous permet de surcharger le statut (ce qui est impossible dans tous les autres navigateurs majeurs), tous les en-têtes, et de modifier le motif utilisé pour déterminer quelles requêtes seront remplacées par la surcharge. Il est même possible d’utiliser une expression régulière comme motif, ce qui permet de surcharger très facilement des réponses qui ne diffèrent que par leur paramètres par exemple. Il est impossible de détailler toutes les fonctionnalités tant il y en a : le système n’est pas très intuitif, mais le jeu en vaut la chandelle, il reste très peu de cas d’usages basiques qui ne soient pas couverts.
+
+<Image
+  src={figure4}
+  alt="Interface d'édition d'une surcharge locale dans Safari"
+  style="--img-max-width: 600px"
+/>
+
+Finalement, une fois la surcharge mise en place, les réponses serveur sont remplacées par le fichier de surcharge. Il est très important à ce moment que les requêtes surchargées soient très clairement identifiables sans quoi il est très facile d’être plongé dans une grande confusion. Dans Safari, les requêtes surchargées sont indiquées par une icône en négatif et un bandeau au message très explicite avec un bouton pour retourner vers l’onglet Sources où il est possible de désactiver la surcharge.
+
+<Image
+  src={figure5}
+  alt="Bannière indiquant qu'un appel réseau est surchargé dans l'inspecteur réseau de Safari"
+/>
+
+Au total, la très grande flexibilité offerte par le système de surcharges locales mis en place par Safari permet de se passer d’un proxy dédié dans la très grande majorité des cas, même si l’ergonomie laisse parfois à désirer.
+
+## Chrome : le challenger
+
+Du côté du navigateur de Google, c’est en 2023 que la fonctionnalité fait son apparition pour la première fois, au-delà de l’édition de ressources statiques. À partir de la version 117, ce sont tous les types de requêtes qu’il devient possible de surcharger. Les points d’entrée sont multiples dans l’onglet Réseau de l’inspecteur et la fonctionnalité beaucoup plus facile à découvrir que dans Safari. On peut au choix modifier la valeur d’un en-tête, en rajouter un, ou comme chez Safari, faire un clic droit sur une requête et choisir l’option “override content”.
+
+<Image
+  src={figure6}
+  alt="Menu déroulant permettant de créer une surcharge locale dans Chrome"
+  style="--img-max-width: 300px"
+/>
+
+Si vous utilisez cette fonctionnalité pour la première fois, le navigateur vous demandera de choisir un dossier où placer les fichiers de surcharge. Vos surcharges persistent ainsi entre les sessions et restent éditables dans votre IDE préféré (en plus de l'onglet Sources) pour les modifications complexes.
+
+Après cela, la réponse réseau choisie s’ouvre dans l’éditeur de l’onglet sources (sous-onglet overrides) du navigateur.
+
+<Image
+  src={figure7}
+  alt="Onglet Sources de l'inspecteur de Chrome avec une surcharge locale affichée"
+  style="--img-max-width: 800px"
+/>
+
+Le nom et la localisation du fichier créé correspondent au chemin de la requête.
+Il est désormais possible d’éditer le contenu de la réponse de manière arbitraire. Il suffit de sauvegarder le fichier et de rafraîchir la page pour que la surcharge soit active.
+
+Pour modifier les en-têtes, l’approche est plus simple: dans l'onglet En-têtes de la requête, au survol de chaque en-tête, une icône d’édition apparaît, il suffit de cliquer dessus (ou directement sur l’option “override headers” au clic droit sur la requête) pour transformer l’onglet en-têtes en une vue éditable, où l’on peut modifier/ajouter des en-têtes. Sous le capot, cette modification crée automatiquement un fichier spécial `.headers` dans le dossier correspondant au domaine de la requête, avec des règles générées correspondant aux modifications effectuées. La structure des règles est simple : un motif pour savoir quelles requêtes cibler sur ce domaine, et des paires clés/valeurs pour les en-têtes à ajouter/modifier. Il est aussi possible d’utiliser le joker \* pour cibler toutes les requêtes sur le domaine. La principale limitation est qu’il est impossible de modifier le code de statut http de la réponse.
+
+<Image
+  src={figure8}
+  alt="Surcharge d'en-têtes dans Chrome"
+  style="--img-max-width: 500px"
+/>
+
+Une fois la surcharge active, de nombreux éléments permettent de le voir dans l’inspecteur : dès que la fonctionnalité globale de surcharge est active, une icône d’avertissement avec un message explicite au survol est affichée à droite de l’onglet Réseau (voir ci-dessus). Les requêtes surchargées sont indiquées individuellement par une pastille violette.
+
+<Image
+  src={figure9}
+  alt="Une requête réseau surchargée dans Chrome"
+  style="--img-max-width: 150px"
+/>
+
+Le bilan est plutôt positif : il s’agit du système de surcharge le plus intuitif et pratique à prendre en main (la flexibilité qu’offre la possibilité d’éditer les fichiers dans l’onglet Sources ou un IDE est particulièrement appréciable), avec seulement quelques fonctionnalités manquantes par rapport à Safari (principalement l’impossibilité de modifier le code de statut http).
+
+## Firefox : le moins pratique
+
+Firefox est le dernier navigateur majeur à avoir sorti cette fonctionnalité en 2025. Malheureusement, cette sortie tardive ne s'accompagne pas d'une implémentation à la hauteur pour le moment, puisque le système mis en place souffre de nombreux défauts et limitations.
+
+Contrairement aux autres navigateurs, Firefox a fait le choix de ne pas intégrer les surcharges locales de ressources non-statiques à l’onglet Sources du Débugger. Cet onglet reste réservé à l’édition des fichiers HTML/CSS/JS : toutes les modifications d’un fichier de surcharge d’un autre type doivent être faites dans un éditeur externe. Lors de la création au clic droit sur une requête dans l’onglet Réseau de l’inspecteur, le navigateur ouvre un prompt de sauvegarde de fichier pour demander où créer et comment nommer le fichier de surcharge.
+
+<Image
+  src={figure10}
+  alt="Menu déroulant permettant de créer une surcharge réseau dans Firefox"
+  style="--img-max-width: 600px"
+/>
+
+La surcharge est alors active et les modifications du fichier seront visibles lors des prochains appels. Le seul indicateur qu’une surcharge est active est une colonne “Overrides” dans l’onglet réseau qui affiche une pastille violette pour les requêtes surchargées.
+
+<Image src={figure11} alt="Requête réseau surchargée dans Firefox" />
+
+Malheureusement, la surcharge est active uniquement pour la session de débogage. Si l’inspecteur est fermé, le lien entre le fichier de surcharge et la réponse réseau est perdu. Essayer de configurer une nouvelle surcharge sur un fichier existant écrase le fichier de surcharge avec le contenu de la vraie réponse réseau, l’ancienne surcharge ne sert donc plus à rien. Finalement, il est impossible d’éditer les en-têtes d’une réponse sur Firefox.
+
+Ce système de surcharge est donc clairement conçu pour un usage ponctuel, au cours d’une seule session, et non pas pour un usage prolongé, mais l’impossibilité d’éditer la réponse directement dans le navigateur le rend très fastidieux à utiliser, même dans ce contexte simple. La fonctionnalité étant très récente (moins d'un an), on peut espérer des améliorations rapides pour rattraper les navigateurs concurrents.
+
+## Bonus : ralentissement de requêtes réseau individuelles dans Chrome
+
+Depuis Chrome 145 sorti en février 2026, il est possible d’augmenter artificiellement le temps de réponse pour chaque requête individuellement. Tous les navigateurs proposent depuis longtemps de simuler une connexion lente dans sa globalité, ce qui permet de reproduire des cas réels de mauvaise connexion. Il est aussi possible de bloquer certains domaines individuellement pour tester ce qui advient si jamais un service distant tombe. Mais il a jusqu’ici été impossible de simuler de la latence sur une seule requête, comme si ce n’était pas la connexion de l’utilisateur qui était mauvaise, mais un service distant qui ne répondait pas dans les temps.
+
+Chez Chrome, l’interface permettant de bloquer certains domaines a été améliorée pour permettre de ralentir la réponse pour des requêtes arbitraires. Il suffit de sélectionner l’option au clic droit sur la requête puis de choisir un niveau de ralentissement. Cette nouvelle fonctionnalité très pratique est un nouveau cas dans lequel il n’est plus nécessaire d’utiliser un proxy dédié.
+
+<Image
+  src={figure12}
+  alt="Menu déroulant permettant de ralentir une requête dans Chrome"
+  style="--img-max-width: 600px"
+/>
+
+<Image
+  src={figure13}
+  alt="Menu déroulant permettant de choisir le niveau de ralentissement d'une requête dans Chrome"
+/>
+
+## Conclusion et perspectives
+
+Les trois navigateurs majeurs proposent donc désormais des systèmes de surcharge réseau intégrés, mais avec des niveaux de maturité très différents. Safari reste le plus complet avec sa capacité unique à modifier les codes de statut HTTP et ses expressions régulières pour les motifs, mais son ergonomie parfois déroutante peut rebuter. Chrome offre le meilleur compromis : interface intuitive, fichiers éditables dans l'IDE de votre choix, et toutes les fonctionnalités essentielles (sauf le statut HTTP). Firefox déçoit avec son système non-persistant et l'impossibilité d'éditer directement dans le navigateur. Le tableau suivant récapitule les différentes fonctionnalités disponibles.
+
+|                             | Safari                            | Chrome                                              | Firefox                    |
+| --------------------------- | --------------------------------- | --------------------------------------------------- | -------------------------- |
+| Moyen d’édition du fichier  | Onglet Sources OU éditeur externe | Onglet Sources ET éditeur externe                   | Éditeur externe uniquement |
+| Persistance de la surcharge | Oui                               | Oui                                                 | Non                        |
+| Édition des en-têtes        | Oui                               | Oui (mais pas supprimer)                            | Non                        |
+| Édition du statut           | Oui                               | Non                                                 | Non                        |
+| Motifs avancés              | Oui (regex)                       | Seulement pour les en-têtes au sein du même domaine | Non                        |
+
+Pour la majorité des développeur.euses front-end, ces outils intégrés suffisent largement au quotidien et permettent de se passer d'un proxy dédié comme d’extensions navigateur spécialisées. Les proxies restent cependant indispensables pour certains cas comme la modification dynamique de réponses avec scripts (pour générer timestamps ou tokens à la volée). Par ailleurs, les différents systèmes implémentés par les navigateurs ne sont pas compatibles entre eux : il est impossible de facilement définir une seule fois un fichier de surcharge et de le faire fonctionner dans tous les navigateurs. Si vous devez travailler avec des surcharges dans plusieurs navigateurs, il reste encore plus simple de configurer une seule fois la surcharge dans un proxy dédié.
