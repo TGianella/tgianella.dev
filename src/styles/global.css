@@ -363,8 +363,20 @@ a {
 
   & > img,
   & > p:has(> img:only-child) {
-    width: 100cqi;
-    max-inline-size: 100cqi;
+    /* Images may span wider than the prose column (up to the full
+       container), but never beyond their native size. Cap an individual
+       image by setting `--img-max-width` inline, e.g.
+       `<Image ... style="--img-max-width: 400px" />`; it still shrinks
+       to the container on narrow screens. */
+    max-inline-size: min(100cqi, var(--img-max-width, 100cqi));
+  }
+
+  & > img {
+    margin-inline: auto;
+  }
+
+  & > p:has(> img:only-child) {
+    text-align: center;
   }
 }
 
